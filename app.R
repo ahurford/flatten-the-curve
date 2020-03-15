@@ -115,9 +115,7 @@ ui <- fluidPage(
 
         "),
 
-             p("In my CBC St. John's Morning Show talk, I discussed exponential growth"),
-
-             p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca")
+             p("In my CBC St. John's Morning Show talk, I discussed exponential growth")
 
            ),
     # Sidebar panel for inputs ----
@@ -131,6 +129,10 @@ ui <- fluidPage(
       plotOutput("SIR")
       # Alec do you know how to make a slider note?
     )
+    ),
+  fluidRow(
+    column(3,
+           p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca"))
     )# end layout
   )# end ui
 
