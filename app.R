@@ -1,5 +1,5 @@
-library("deSolve")
-library("shiny")
+library(deSolve)
+library(shiny)
 library(ggplot2)
 library(patchwork)
 library(gridExtra)
@@ -49,25 +49,25 @@ server <- function(input, output) {
     out <- ode(y = c(Sx=S0, Ix=I0,Fx=0,Hx=0, S=S0, I=I0, FS=0, HS=0), times=seq(mintime, maxtime, .1), SIR, parms)
     df <- data.frame(out)
 
-
+    areaAlpha <- 0.6
     g1 <- ggplot(df, aes(x = time)) +
-      geom_line(aes(y = Ix * 100)) +
-      geom_line(aes(y = I * 100), color = 'red', linetype = 'dashed') +
-      geom_hline(aes(yintercept = H)) +
-      labs(x = NULL, y = NULL, title = "% of population infected")
+      geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
+      geom_hline(aes(yintercept = H), alpha = 0.2) +
+      labs(x = NULL, y = NULL, title = "Percent of population infected")
 
     g2 <- ggplot(df, aes(x = time)) +
-      geom_line(aes(y = Fx * 100)) +
-      geom_line(aes(y = FS * 100), color = 'red', linetype = 'dashed') +
-      labs(x = NULL, y = NULL, title = "Cumulative fatalities (% of population)")
+      geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = areaAlpha) +
+      labs(x = "time (months)", y = NULL, title = "Cumulative fatalities")
 
-    g3 <- ggplot(df, aes(x = time)) +
-      geom_line(aes(y = Hx * 100)) +
-      geom_line(aes(y = HS * 100), color = 'red', linetype = 'dashed') +
-      labs(x = "time (months)", y = NULL, title = "% population infected while capacity exceeded")
+    # g3 <- ggplot(df, aes(x = time)) +
+    #   geom_line(aes(y = Hx * 100)) +
+    #   geom_line(aes(y = HS * 100), color = 'red', linetype = 'dashed') +
+    #   labs(x = "time (months)", y = NULL, title = "% population infected while capacity exceeded")
 
 
-    # xTODO (Alec #2): I would also like to print out R_0 1, R_2,
+    # xTODO (Alec #2): I would also like to print out R_0 1, R_2
     # doubling time 1, doubling time 2, and final size....
     # TODO (AH): update this placeholder
     R_0 <- 10
@@ -75,7 +75,12 @@ server <- function(input, output) {
     toprint <- data.frame(R_0, R_2)
 
 
-    g1 / g2 / g3 / tableGrob(toprint, rows = NULL)
+    (g1 /
+      g2 &
+      scale_y_continuous(expand = expand_scale(c(0, 0.1)), labels = function(x) paste0(x,"%")) &
+        scale_x_continuous(expand = c(0, 0)) ) /
+      # g3 /
+      tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
 
 
   })
@@ -139,7 +144,10 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            sliderInput("m2", "social distancing improvement factor:", min = 0, max = 1,step=0.01, value = .2),
            sliderInput("chi", "case fatality (%):", min = 0, max = 10, step = 0.1, value = 3)),
            column(8,
+
                   # TODO (AH): include second plot here
+
+
        )
   )
 ))
