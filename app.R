@@ -95,7 +95,8 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
   fluidRow(
     column(6,
-           h1("The math behind flatten the curve")),
+           h1("The math behind flatten the curve"),
+           p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca.")),
     column(6,
              p("Have you heard the remark:"),
 
@@ -137,8 +138,8 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
            )
     ),
-  fluidRow(style='padding:3px;',
-    column(12,
+  fluidRow(
+    column(12, style = "padding: 20px 20px",
            p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca"))
     )# end layout
   )# end ui
