@@ -3,8 +3,7 @@ library("shiny")
 library(ggplot2)
 library(patchwork)
 
-theme_set(theme_light() +
-            theme(plot.margin = unit(c(1, 1, 1, 1) , "in")))
+theme_set(theme_light())
 
 
 SIR <- function(t, y, p) {
@@ -57,13 +56,11 @@ server <- function(input, output) {
     g2 <- ggplot(df, aes(x = time)) +
       geom_line(aes(y = Fx * 100)) +
       geom_line(aes(y = FS * 100), color = 'red', linetype = 'dashed') +
-      geom_hline(aes(yintercept = H)) +
       labs(xlab = "time (months)", ylab = "Cumulative fatalities (% of population)")
 
     g3 <- ggplot(df, aes(x = time)) +
       geom_line(aes(y = Hx * 100)) +
       geom_line(aes(y = HS * 100), color = 'red', linetype = 'dashed') +
-      geom_hline(aes(yintercept = H)) +
       labs(xlab = "time (months)", ylab = "% population infected while capacity exceeded")
 
     g1 / g2 / g3
