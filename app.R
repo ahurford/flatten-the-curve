@@ -98,7 +98,9 @@ ui <- fluidPage(
 
       # Input: Slider for the number of bins ----
       sliderInput("m1", "social distancing (0=none ---> 1=complete isolation):",
-                  min = 0, max = 1, step = 0.01, value = .2)
+                  min = 0, max = 1, step = 0.01, value = .2),
+      # Output:
+      plotOutput("SIR")
       # Alec do you know how to make a slider note?
     ),
 
@@ -120,8 +122,7 @@ ui <- fluidPage(
         and the disease mortality rate.
         "),
 
-      # Output:
-      plotOutput("SIR"),
+
 
       p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
         model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
