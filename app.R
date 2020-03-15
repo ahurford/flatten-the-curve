@@ -63,13 +63,13 @@ server <- function(input, output) {
       labs(x = NULL, y = NULL, title = "Cumulative fatalities (percent of population)") +
       scale_y_continuous(labels = function(x) paste0(x,"%"))
 
-    g3 <- ggplot(df, aes(x = time)) +
-      geom_line(aes(y = Hx * 100)) +
-      geom_line(aes(y = HS * 100), color = 'red', linetype = 'dashed') +
-      labs(x = "time (months)", y = NULL, title = "% population infected while capacity exceeded")
+    # g3 <- ggplot(df, aes(x = time)) +
+    #   geom_line(aes(y = Hx * 100)) +
+    #   geom_line(aes(y = HS * 100), color = 'red', linetype = 'dashed') +
+    #   labs(x = "time (months)", y = NULL, title = "% population infected while capacity exceeded")
 
 
-    # xTODO (Alec #2): I would also like to print out R_0 1, R_2,
+    # xTODO (Alec #2): I would also like to print out R_0 1, R_2
     # doubling time 1, doubling time 2, and final size....
     # TODO (AH): update this placeholder
     R_0 <- 10
@@ -79,7 +79,7 @@ server <- function(input, output) {
 
     g1 /
       g2 /
-      g3 /
+      # g3 /
       tableGrob(toprint, rows = NULL)
 
 
