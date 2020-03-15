@@ -108,17 +108,6 @@ ui <- fluidPage(
     ),
   fluidRow(
     column(6,
-             p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
-        model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
-        the characteristics of the disease.
-
-        "),
-
-             p("In my CBC St. John's Morning Show talk, I discussed exponential growth")
-
-           ),
-    # Sidebar panel for inputs ----
-    column(6,
 
            p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
         The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
@@ -126,15 +115,26 @@ ui <- fluidPage(
         and the disease mortality rate.
         "),
 
-      # Input: Slider for the number of bins ----
-      sliderInput("m1", "social distancing (0=none ---> 1=complete isolation):",
-                  min = 0, max = 1, step = 0.01, value = .2,
-                  width = '100%'),
+           # Input: Slider for the number of bins ----
+           sliderInput("m1", "social distancing (0=none ---> 1=complete isolation):",
+                       min = 0, max = 1, step = 0.01, value = .2,
+                       width = '100%'),
 
-      # Output:
-      plotOutput("SIR")
-      # Alec do you know how to make a slider note?
-    )
+           # Output:
+           plotOutput("SIR")
+           # Alec do you know how to make a slider note?
+    ),
+    column(6,
+             p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
+        model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
+        the characteristics of the disease.
+
+        "),
+
+           # TODO (AH): where does this go?
+             p("In my CBC St. John's Morning Show talk, I discussed exponential growth")
+
+           )
     ),
   fluidRow(
     column(12,
