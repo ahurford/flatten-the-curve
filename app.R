@@ -36,12 +36,14 @@ server <- function(input, output) {
     H=40
     I0 = 0.01
     S0 = 1-I0
-    out <- ode(y = c(Sx=S0, Ix=I0,Fx=0,Hx=0, S=S0, I=I0, FS=0, HS=0), times=seq(0, 3, .1), SIR, parms)
+    mintime <- 0
+    maxtime <- 3
+    out <- ode(y = c(Sx=S0, Ix=I0,Fx=0,Hx=0, S=S0, I=I0, FS=0, HS=0), times=seq(mintime, maxtime, .1), SIR, parms)
     #matplot.0D(out)
     par(mfrow=c(3,1))
     plot(out[,1], 100*out[,3], typ ="l", ylim = c(0,max(100*out[,3])), ylab = "% of population infected", xlab = "time (months)")
     lines(out[,1], 100*out[,7], lty=2, col = "red")
-    lines(c(0,12), c(H,H))
+    lines(c(mintime,maxtime), c(H,H))
     text(12,0.8, "Final size: print")
 
     # Alec #1: can you make the plot a bit prettier.
