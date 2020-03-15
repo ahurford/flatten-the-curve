@@ -137,12 +137,8 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              p("In my CBC St. John's Morning Show talk, I discussed exponential growth")
 
            )
-    ),
-  fluidRow(
-    column(12, style = "padding: 20px 20px",
-           p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca"))
-    )# end layout
-  )# end ui
+    )
+  )
 
 
 # Alec #3: I would like a layout with: a sidebar and a plot, and then another sidebar and a plot
