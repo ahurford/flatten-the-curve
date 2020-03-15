@@ -1,5 +1,11 @@
 library("deSolve")
 library("shiny")
+library(ggplot2)
+
+
+theme_set(theme_light() +
+            theme(plot.margin = unit(c(0, 0, 0, 0) , "in")))
+
 
 SIR <- function(t, y, p) {
   with(as.list(c(y, p)), {
