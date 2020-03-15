@@ -86,6 +86,8 @@ server <- function(input, output) {
 } # End server function
 
 # Define UI for app that draws a histogram ----
+borderstyle <- 'outline: 1px solid black; outline-offset: -3px; padding: 10px 10px'
+
 ui <- fluidPage(title = "The math behind flatten the curve",
 
   # App title ----
@@ -107,8 +109,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            )
     ),
   fluidRow(
-    column(6,
-
+    column(5, offset = 1, style = borderstyle,
            p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
         The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
         rather, they are based on epidemiological characteristics such the duration of infectivity,
@@ -124,7 +125,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            plotOutput("SIR")
            # Alec do you know how to make a slider note?
     ),
-    column(6,
+    column(5, style = borderstyle,
              p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
         model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
         the characteristics of the disease.
@@ -136,7 +137,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
            )
     ),
-  fluidRow(
+  fluidRow(style='padding:3px;',
     column(12,
            p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca"))
     )# end layout
