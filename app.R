@@ -154,7 +154,7 @@ p(tags$a(href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiolog
         rather, rather it is based on epidemiological characteristics such the duration of infectivity,
         and the disease mortality rate. The SIR equations have been used for decades,
 and today, these equations remain a good start for understanding the time course of epidemics. The graphics below
-are the computational output due to solving the SIR equation.s
+are the computational output due to solving the SIR equation.
         "),
 
            # Input: Slider for the number of bins ----
