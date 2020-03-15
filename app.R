@@ -107,7 +107,7 @@ ui <- fluidPage(
            )
     ),
   fluidRow(
-    column(4,
+    column(6,
              p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
         model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
         the characteristics of the disease.
@@ -118,7 +118,7 @@ ui <- fluidPage(
 
            ),
     # Sidebar panel for inputs ----
-    column(8,
+    column(6,
 
            p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
         The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
