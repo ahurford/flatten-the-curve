@@ -1,5 +1,11 @@
 library("deSolve")
 library("shiny")
+library(ggplot2)
+library(patchwork)
+library(gridExtra)
+
+theme_set(theme_light())
+
 
 SIR <- function(t, y, p) {
   with(as.list(c(y, p)), {
@@ -37,52 +43,40 @@ server <- function(input, output) {
                v = v, H = H)
     H = 40
     I0 = 0.01
-    S0 = 1 - I0
-	mintime <- 0
-	maxtime <- 3
-    out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Hx = 0,
-                     S = S0, I = I0, FS = 0, HS = 0),
-               times = seq(mintime, maxtime, .1),
-               SIR,
-               parms)
-    #matplot.0D(out)
-    par(mfrow = c(3, 1))
-    plot(
-      out[, 1],
-      100 * out[, 3],
-      typ = "l",
-      ylim = c(0, max(100 * out[, 3])),
-      ylab = "% of population infected",
-      xlab = "time (months)"
-    )
-    lines(out[, 1], 100 * out[, 7], lty = 2, col = "red")
-    lines(c(0, maxtime), c(H, H))
-    text(maxtime, 0.8, "Final size: print")
+    S0 = 1-I0
+    mintime <- 0
+    maxtime <- 3
+    out <- ode(y = c(Sx=S0, Ix=I0,Fx=0,Hx=0, S=S0, I=I0, FS=0, HS=0), times=seq(mintime, maxtime, .1), SIR, parms)
+    df <- data.frame(out)
 
-    # Alec #1: can you make the plot a bit prettier.
-    # Alec #2: I would also like to print out R_0 1, R_2,
-    # doubling time 1, doubling time 2, and final size. I can put the formulas for
-    # these in later, if you can make some dummy outputs appear.
 
-    plot(
-      out[, 1],
-      100 * out[, 4],
-      typ = "l",
-      ylab = "Cumulative fatalities (% of population)",
-      xlab = "time (months)",
-      ylim = c(0, max(100 * out[, 4]))
-    )
-    lines(out[, 1], 100 * out[, 8], lty = 2, col = "red")
+    g1 <- ggplot(df, aes(x = time)) +
+      geom_line(aes(y = Ix * 100)) +
+      geom_line(aes(y = I * 100), color = 'red', linetype = 'dashed') +
+      geom_hline(aes(yintercept = H)) +
+      labs(x = NULL, y = NULL, title = "% of population infected")
 
-    plot(
-      out[, 1],
-      100 * out[, 5],
-      typ = "l",
-      ylab = "% population infected while capacity exceeded",
-      xlab = "time (months)",
-      ylim = c(0, max(100 * out[, 5]))
-    )
-    lines(out[, 1], 100 * out[, 9], lty = 2, col = "red")
+    g2 <- ggplot(df, aes(x = time)) +
+      geom_line(aes(y = Fx * 100)) +
+      geom_line(aes(y = FS * 100), color = 'red', linetype = 'dashed') +
+      labs(x = NULL, y = NULL, title = "Cumulative fatalities (% of population)")
+
+    g3 <- ggplot(df, aes(x = time)) +
+      geom_line(aes(y = Hx * 100)) +
+      geom_line(aes(y = HS * 100), color = 'red', linetype = 'dashed') +
+      labs(x = "time (months)", y = NULL, title = "% population infected while capacity exceeded")
+
+
+    # xTODO (Alec #2): I would also like to print out R_0 1, R_2,
+    # doubling time 1, doubling time 2, and final size....
+    # TODO (AH): update this placeholder
+    R_0 <- 10
+    R_2 <- 12
+    toprint <- data.frame(R_0, R_2)
+
+
+    g1 / g2 / g3 / tableGrob(toprint, rows = NULL)
+
 
   })
 } # End server function
@@ -115,24 +109,6 @@ ui <- fluidPage(title = "The math behind flatten the curve",
         and the disease mortality rate.
         "),
 
-<<<<<<< HEAD
-      # Output:
-      plotOutput("SIR"),
-
-      p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
-        model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
-        the characteristics of the disease.
-
-        "),
-
-      p("In my CBC St. John's Morning Show talk, I discussed exponential growth"),
-
-      p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca")
-
-      )# end main panel
-    )# end layout
-  )# end ui
-=======
            # Input: Slider for the number of bins ----
            sliderInput("m1", "social distancing (0=none -> 1=complete isolation):",
                        min = 0, max = 1, step = 0.01, value = .2,
@@ -166,7 +142,6 @@ ui <- fluidPage(title = "The math behind flatten the curve",
        )
   )
 ))
->>>>>>> a7f4b79ccf418100b75f37bf5a8406f401d05155
 
 
 # Alec #3: I would like a layout with: a sidebar and a plot, and then another sidebar and a plot
