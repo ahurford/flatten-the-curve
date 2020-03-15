@@ -50,17 +50,16 @@ SIR2 <- function(t, y, p) {
 
 server <- function(input, output) {
   output$SIR <- renderPlot({
-    gamma = 1
-    chi = 0.03
-    v = gamma * chi / (1 - chi)
-    H = 40
-    c = 7
-    a = 1
+    gamma <- 1
+    chi <- 0.03
+    v <- gamma * chi / (1 - chi)
+    H <- 40
+    c <- 7
+    a <- 1
     parms <- c(a = a, m1 = input$m1, c = c, gamma = gamma,
                v = v, H = H)
-    H = 40
-    I0 = 0.01
-    S0 = 1 - I0
+    I0 <- 0.01
+    S0 <- 1 - I0
     mintime <- 0
     maxtime <- 6
     out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Hx = 0, S = S0, I = I0, FS = 0, HS = 0), times = seq(mintime, maxtime, .1), SIR, parms)
@@ -95,12 +94,11 @@ server <- function(input, output) {
 
   output$more <- renderPlot({
     gamma = 0.5
-    v = gamma * input$chi / (1 - input$chi / 100) / 100
-    parms <- c(a = input$a, m1 = input$m1, c = input$c, m2 = input$m2, gamma = gamma, v =
-                 v)
-    H = input$H
-    I0 = 0.01
-    S0 = 1 - I0
+    v <- gamma * input$chi / (1 - input$chi / 100) / 100
+    parms <- c(a = input$a, m1 = input$m1, c = input$c, m2 = input$m2, gamma = gamma, v = v)
+    H <- input$H
+    I0 <- 0.01
+    S0 <- 1 - I0
     out2 <- ode(y = c(Sx = S0, Ix = I0, S = S0, I = I0), times = seq(0, 12, .1), SIR2, parms)
     df2 <- data.frame(out2)
 
