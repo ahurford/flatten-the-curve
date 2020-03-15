@@ -117,7 +117,8 @@ server <- function(input, output) {
       geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
       geom_hline(aes(yintercept = H), alpha = 0.2) +
-      labs(x = NULL, y = NULL, title = "Percent of population infected")
+      labs(x = NULL, y = NULL, title = "Percent of population infected") + scale_y_continuous(expand = expand_scale(c(0, 0.1)), labels = function(x) paste0(x,"%")) +
+      scale_x_continuous(expand = c(0, 0))
   })
 } # End server function
 
