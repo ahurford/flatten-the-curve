@@ -50,17 +50,18 @@ server <- function(input, output) {
     df <- data.frame(out)
 
 
-    ggplot(df, aes(x = time)) +
+    g1 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = 0.5) +
       geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = 0.5) +
       geom_hline(aes(yintercept = H), alpha = 0.4) +
       labs(x = NULL, y = NULL, title = "Percent of population infected") +
       scale_y_continuous(labels = function(x) paste0(x,"%"))
 
-    g2 <- ggplot(df, aes(x = time)) +
-      geom_line(aes(y = Fx * 100)) +
-      geom_line(aes(y = FS * 100), color = 'red', linetype = 'dashed') +
-      labs(x = NULL, y = NULL, title = "Cumulative fatalities (% of population)")
+    ggplot(df, aes(x = time)) +
+      geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = 0.5) +
+      geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = 0.5) +
+      labs(x = NULL, y = NULL, title = "Cumulative fatalities (percent of population)") +
+      scale_y_continuous(labels = function(x) paste0(x,"%"))
 
     g3 <- ggplot(df, aes(x = time)) +
       geom_line(aes(y = Hx * 100)) +
@@ -76,7 +77,10 @@ server <- function(input, output) {
     toprint <- data.frame(R_0, R_2)
 
 
-    g1 / g2 / g3 / tableGrob(toprint, rows = NULL)
+    g1 /
+      g2 /
+      g3 /
+      tableGrob(toprint, rows = NULL)
 
 
   })
