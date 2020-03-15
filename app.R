@@ -164,19 +164,21 @@ are the computational output due to solving the SIR equation.
              p("Similar resources: https://alhill.shinyapps.io/COVID19seir/"),
              # TODO (AH): where does this go?
              p("In my CBC St. John's Morning Show talk, I discussed exponential growth"),
+             column(4,
+                    # Input: Slider for the number of bins ----
+                    sliderInput("H", "hospital capacity:", min = 0, max = 1, value = 0.4),
+                    sliderInput("a", "hygiene:", min = 0, max = 1, step = 0.01, value = .5),
+                    sliderInput("m1", "hygiene improvement factor:", min = 0, max = 1, step = 0.01, value = .2)),
+             column(4,
+                    sliderInput("c", "contact rate:", min = 0, max = 10, step = 0.1, value = 10),
+                    sliderInput("m2", "social distancing improvement factor:", min = 0, max = 1, step = 0.01, value = .2),
+                    sliderInput("chi", "case fatality (%):", min = 0, max = 10, step = 0.1, value = 3))
 
-           # Input: Slider for the number of bins ----
-           sliderInput("H", "hospital capacity:", min = 0, max = 1, value = 0.4),
-           sliderInput("a", "hygiene:", min = 0, max = 1, step = 0.01, value = .5),
-           sliderInput("m1", "hygiene improvement factor:", min = 0, max = 1, step = 0.01, value = .2),
-           sliderInput("c", "contact rate:", min = 0, max = 10, step = 0.1, value = 10),
-           sliderInput("m2", "social distancing improvement factor:", min = 0, max = 1, step = 0.01, value = .2),
-           sliderInput("chi", "case fatality (%):", min = 0, max = 10, step = 0.1, value = 3)),
+           ),
            column(8,
                   plotOutput("more")
-                  # TODO (AH): include second plot here
-       )
-  ),
+           )
+       ),
   tabPanel("Newfoundland",
 
            column(4,
