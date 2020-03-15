@@ -57,10 +57,10 @@ server <- function(input, output) {
       labs(x = NULL, y = NULL, title = "Percent of population infected") +
       scale_y_continuous(labels = function(x) paste0(x,"%"))
 
-    ggplot(df, aes(x = time)) +
+    g2 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = 0.5) +
       geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = 0.5) +
-      labs(x = NULL, y = NULL, title = "Cumulative fatalities (percent of population)") +
+      labs(x = NULL, y = NULL, title = "Cumulative fatalities") +
       scale_y_continuous(labels = function(x) paste0(x,"%"))
 
     # g3 <- ggplot(df, aes(x = time)) +
