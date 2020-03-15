@@ -51,15 +51,15 @@ server <- function(input, output) {
 
     areaAlpha <- 0.6
     g1 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha) +
+      geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
-      geom_hline(aes(yintercept = H), alpha = 0.3) +
+      geom_hline(aes(yintercept = H), alpha = 0.2) +
       labs(x = NULL, y = NULL, title = "Percent of population infected")
 
     g2 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = areaAlpha) +
+      geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = areaAlpha) +
-      labs(x = NULL, y = NULL, title = "Cumulative fatalities")
+      labs(x = "time (months)", y = NULL, title = "Cumulative fatalities")
 
     # g3 <- ggplot(df, aes(x = time)) +
     #   geom_line(aes(y = Hx * 100)) +
