@@ -45,7 +45,7 @@ server <- function(input, output) {
     I0 = 0.01
     S0 = 1-I0
     mintime <- 0
-    maxtime <- 3
+    maxtime <- 6
     out <- ode(y = c(Sx=S0, Ix=I0,Fx=0,Hx=0, S=S0, I=I0, FS=0, HS=0), times=seq(mintime, maxtime, .1), SIR, parms)
     df <- data.frame(out)
 
@@ -91,14 +91,14 @@ ui <- fluidPage(title = "The math behind flatten the curve",
   fluidRow(
     column(6,
            h1("The math behind flatten the curve"),
-           p("This app was made by XXX."),
+           p("by Amy Hurford, Alec Robitialle, and Joseph Baafi (Memorial University)"),
            p("Anyone interested in contributing should contact ahurford-at-mun-dot-ca.")),
     column(6,
              p("Have you heard the remark:"),
              p("\"We'll never know the effect that social distancing has had;
-                we'll never know how many lives were saved?\""
+                we'll never know how many lives were saved\""
              ),
-             p("We can never answer this question with absolute certainty, but we can get some idea using mathematical
+             p("We can never know this with absolute certainty, but we can get some idea using mathematical
         models.
         ")
            )
@@ -106,23 +106,31 @@ ui <- fluidPage(title = "The math behind flatten the curve",
   tabsetPanel(
     tabPanel("Social distancing",
              column(4,
-           p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
-        The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
-        rather, they are based on epidemiological characteristics such the duration of infectivity,
-        and the disease mortality rate.
+           p("Below we show that the 'flatten the curve' graphic arises from a mathematical model:"),
+
+p(tags$a(href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "The SIR equations")),
+        p("The 'flatten the curve' graphic is not simply a drawing of an idea,
+        rather, rather it is based on epidemiological characteristics such the duration of infectivity,
+        and the disease mortality rate. The SIR equations have been used for decades,
+and today, these equations remain a good start for understanding the time course of epidemics. The graphics below
+are the computational output due to solving the SIR equation.s
         "),
 
            # Input: Slider for the number of bins ----
-           sliderInput("m1", "social distancing (0=none -> 1=complete isolation):",
+           sliderInput("m1", "social distancing:",
                        min = 0, max = 1, step = 0.01, value = .2,
-                       width = '100%')),
+                       width = '100%'),helpText("0: no efforts to enact social distance"),helpText("1: fully effective isolation"), ),
            column(8,
 
            # Output:
-           plotOutput("SIR"))
-           # Alec do you know how to make a slider note?
+           plotOutput("SIR"),
+           helpText("Cumulative fatalities does not account for increased death rate when health resourses are exceeded")
+
+           )
+
+
     ),
-    tabPanel("Characeristics of the disease",
+    tabPanel("More models",
 
            # TODO (AH): update this p with "to the left" etc
            column(4,
