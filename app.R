@@ -79,7 +79,7 @@ server <- function(input, output) {
       g2 &
       scale_y_continuous(labels = function(x) paste0(x,"%"))) /
       # g3 /
-      tableGrob(toprint, rows = NULL)
+      tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
 
 
   })
@@ -142,7 +142,10 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            sliderInput("m2", "social distancing improvement factor:", min = 0, max = 1,step=0.01, value = .2),
            sliderInput("chi", "case fatality (%):", min = 0, max = 10, step = 0.1, value = 3)),
            column(8,
+
                   # TODO (AH): include second plot here
+
+
        )
   )
 ))
