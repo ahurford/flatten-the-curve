@@ -51,10 +51,9 @@ server <- function(input, output) {
 
 
     ggplot(df, aes(x = time)) +
+      geom_area(aes(y = Ix * 100)) +
       geom_hline(aes(yintercept = H)) +
       geom_area(aes(y = I * 100), color = 'red', linetype = 'dashed') +
-
-      geom_area(aes(y = Ix * 100)) +
       labs(x = NULL, y = NULL, title = "% of population infected")
 
     g2 <- ggplot(df, aes(x = time)) +
