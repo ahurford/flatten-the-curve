@@ -4,8 +4,11 @@ library(ggplot2)
 library(patchwork)
 library(gridExtra)
 
-theme_set(theme_light())
+# To deploy
+#rsconnect::deployApp("/Users/amyhurford/Desktop/flatten-the-curve")
+# in R Console
 
+theme_set(theme_light())
 
 SIR <- function(t, y, p) {
   with(as.list(c(y, p)), {
@@ -50,12 +53,14 @@ SIR2 <- function(t, y, p) {
 
 server <- function(input, output) {
   output$SIR <- renderPlot({
+    # Parameters are taken for Bolker & Dushoff model
     gamma <- 1
     chi <- 0.03
     v <- gamma * chi / (1 - chi)
     H <- 40
     c <- 7
     a <- 1
+    print(a*c/(v+gamma))
     parms <- c(a = a, m1 = input$m1, c = c, gamma = gamma,
                v = v, H = H)
     I0 <- 0.01
@@ -69,7 +74,7 @@ server <- function(input, output) {
     g1 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
-      geom_hline(aes(yintercept = H), alpha = 0.2) +
+      geom_hline(aes(yintercept = H), alpha = 0.2, size=3) +
       labs(x = NULL, y = NULL, title = "Percent of population infected")
 
     g2 <- ggplot(df, aes(x = time)) +
@@ -112,7 +117,7 @@ server <- function(input, output) {
 
 
     # TODO (AH): update these placeholders
-    R_0 <- 10
+    R_0 <- a*c*1/(gamma+v)
     R_2 <- 12
     toprint <- data.frame(R_0, R_2)
 
@@ -128,18 +133,19 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            p("by Amy Hurford, Alec Robitaille, and Joseph Baafi (Memorial University)"),
            p("Anyone interested in contributing should contact ahurford-at-mun-dot-ca.")),
     column(6,
-             p(""),
-             p("Have you heard the remark:"),
-             p("\"We'll never know the effect that social distancing has had;
-                we'll never know how many lives were saved\""
-             ),
-             p("We can never know this with absolute certainty,
-                but we can get some idea using mathematical models. ")
+
            )
     ),
   tabsetPanel(
     tabPanel("Social distancing",
              column(3,
+                    p(""),
+                    p("Have you heard the remark:"),
+                    p("\"We'll never know the effect that social distancing has had;
+                      we'll never know how many lives were saved\""
+                    ),
+                    p("We can never know this with absolute certainty,
+                      but we can get some idea using mathematical models. "),
            p("Below we show that the 'flatten the curve' graphic arises from a mathematical model:"),
 
 p(tags$a(href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "The SIR equations")),
