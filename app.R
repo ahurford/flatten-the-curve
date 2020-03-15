@@ -130,7 +130,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     ),
   tabsetPanel(
     tabPanel("Social distancing",
-             column(4,
+             column(3,
            p("Below we show that the 'flatten the curve' graphic arises from a mathematical model:"),
 
 p(tags$a(href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "The SIR equations")),
@@ -145,7 +145,7 @@ are the computational output due to solving the SIR equation.
            sliderInput("m1", "social distancing:",
                        min = 0, max = 1, step = 0.01, value = .2,
                        width = '100%'),helpText("0: no efforts to enact social distance"),helpText("1: fully effective isolation"), ),
-           column(8,
+           column(9,
 
            # Output:
            plotOutput("SIR"),
@@ -156,26 +156,29 @@ are the computational output due to solving the SIR equation.
     tabPanel("More models",
 
            # TODO (AH): update this p with "to the left" etc
-           column(4,
+           column(3,
              p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
         model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
         the characteristics of the disease.
         "),
              p("Similar resources: https://alhill.shinyapps.io/COVID19seir/"),
              # TODO (AH): where does this go?
-             p("In my CBC St. John's Morning Show talk, I discussed exponential growth"),
-             column(4,
-                    # Input: Slider for the number of bins ----
-                    sliderInput("H", "hospital capacity:", min = 0, max = 1, value = 0.4),
-                    sliderInput("a", "hygiene:", min = 0, max = 1, step = 0.01, value = .5),
-                    sliderInput("m1", "hygiene improvement factor:", min = 0, max = 1, step = 0.01, value = .2)),
-             column(4,
-                    sliderInput("c", "contact rate:", min = 0, max = 10, step = 0.1, value = 10),
-                    sliderInput("m2", "social distancing improvement factor:", min = 0, max = 1, step = 0.01, value = .2),
-                    sliderInput("chi", "case fatality (%):", min = 0, max = 10, step = 0.1, value = 3))
+             p("In my CBC St. John's Morning Show talk, I discussed exponential growth")
+
 
            ),
-           column(8,
+           column(9,
+                  column(4,
+                         # Input: Slider for the number of bins ----
+                         sliderInput("H", "hospital capacity:", min = 0, max = 1, value = 0.4),
+                         sliderInput("a", "hygiene:", min = 0, max = 1, step = 0.01, value = .5)),
+                  column(4,
+                         sliderInput("m1", "hygiene improvement factor:", min = 0, max = 1, step = 0.01, value = .2),
+
+                         sliderInput("c", "contact rate:", min = 0, max = 10, step = 0.1, value = 10)),
+                 column(4,
+                         sliderInput("m2", "social distancing improvement factor:", min = 0, max = 1, step = 0.01, value = .2),
+                         sliderInput("chi", "case fatality (%):", min = 0, max = 10, step = 0.1, value = 3)),
                   plotOutput("more")
            )
        ),
