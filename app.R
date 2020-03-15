@@ -1,10 +1,10 @@
 library("deSolve")
 library("shiny")
 library(ggplot2)
-
+library(patchwork)
 
 theme_set(theme_light() +
-            theme(plot.margin = unit(c(0, 0, 0, 0) , "in")))
+            theme(plot.margin = unit(c(1, 1, 1, 1) , "in")))
 
 
 SIR <- function(t, y, p) {
@@ -48,27 +48,31 @@ server <- function(input, output) {
     df <- data.frame(out)
 
 
-    ggplot(df, aes(x = time)) +
+    g1 <- ggplot(df, aes(x = time)) +
       geom_line(aes(y = Ix * 100)) +
       geom_line(aes(y = I * 100), color = 'red', linetype = 'dashed') +
       geom_hline(aes(yintercept = H)) +
-      labs(ylab = "% of population infected", xlab = "time (months)")
+      labs(xlab = "time (months)", ylab = "% of population infected")
 
-    # plot(out[,1], 100*out[,3], typ ="l", ylim = c(0,max(100*out[,3])), ylab = "% of population infected", xlab = "time (months)")
-    # lines(out[,1], 100*out[,7], lty=2, col = "red")
-    # lines(c(mintime,maxtime), c(H,H))
-    # text(maxtime,0.8, "Final size: print")
+    g2 <- ggplot(df, aes(x = time)) +
+      geom_line(aes(y = Fx * 100)) +
+      geom_line(aes(y = FS * 100), color = 'red', linetype = 'dashed') +
+      geom_hline(aes(yintercept = H)) +
+      labs(xlab = "time (months)", ylab = "Cumulative fatalities (% of population)")
 
-    # Alec #1: can you make the plot a bit prettier.
+    g3 <- ggplot(df, aes(x = time)) +
+      geom_line(aes(y = Hx * 100)) +
+      geom_line(aes(y = HS * 100), color = 'red', linetype = 'dashed') +
+      geom_hline(aes(yintercept = H)) +
+      labs(xlab = "time (months)", ylab = "% population infected while capacity exceeded")
+
+    g1 / g2 / g3
+
+
+
     # Alec #2: I would also like to print out R_0 1, R_2,
     # doubling time 1, doubling time 2, and final size. I can put the formulas for
     # these in later, if you can make some dummy outputs appear.
-
-    # plot(out[,1], 100*out[,4], typ="l", ylab = "Cumulative fatalities (% of population)", xlab = "time (months)",ylim = c(0,max(100*out[,4])))
-    # lines(out[,1], 100*out[,8], lty=2, col = "red")
-    #
-    # plot(out[,1], 100*out[,5], typ="l", ylab = "% population infected while capacity exceeded", xlab = "time (months)",ylim = c(0,max(100*out[,5])))
-    # lines(out[,1], 100*out[,9], lty=2, col = "red")
 
   })
 } # End server function
