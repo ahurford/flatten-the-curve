@@ -75,8 +75,9 @@ server <- function(input, output) {
     toprint <- data.frame(R_0, R_2)
 
 
-    g1 /
-      g2 /
+    (g1 /
+      g2 &
+      scale_y_continuous(labels = function(x) paste0(x,"%"))) /
       # g3 /
       tableGrob(toprint, rows = NULL)
 
