@@ -103,12 +103,6 @@ ui <- fluidPage(
         models.
         "),
 
-             p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
-        The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
-        rather, they are based on epidemiological characteristics such the duration of infectivity,
-        and the disease mortality rate.
-        "),
-
              p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
         model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
         the characteristics of the disease.
@@ -119,19 +113,26 @@ ui <- fluidPage(
 
            ),
     # Sidebar panel for inputs ----
-    column(5,
+    column(8,
+
+           p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
+        The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
+        rather, they are based on epidemiological characteristics such the duration of infectivity,
+        and the disease mortality rate.
+        "),
 
       # Input: Slider for the number of bins ----
       sliderInput("m1", "social distancing (0=none ---> 1=complete isolation):",
                   min = 0, max = 1, step = 0.01, value = .2,
                   width = '100%'),
+
       # Output:
       plotOutput("SIR")
       # Alec do you know how to make a slider note?
     )
     ),
   fluidRow(
-    column(3,
+    column(12,
            p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca"))
     )# end layout
   )# end ui
