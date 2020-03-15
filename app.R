@@ -96,8 +96,8 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            p("Anyone interested in contributing should contact ahurford-at-mun-dot-ca.")),
     column(6,
              p("Have you heard the remark:"),
-             p("We'll never know the effect that social distancing has had;
-                we'll never know how many lives were saved?"
+             p("\"We'll never know the effect that social distancing has had;
+                we'll never know how many lives were saved?\""
              ),
              p("We can never answer this question with absolute certainty, but we can get some idea using mathematical
         models.
