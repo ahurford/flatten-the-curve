@@ -141,6 +141,18 @@ ui <- fluidPage(title = "The math behind flatten the curve",
        )
   ),
   tabPanel("Newfoundland",
+
+           column(4,
+
+                  # TODO: sidebar content
+
+                  ),
+
+           column(8,
+
+                  # TODO: main content
+                  )
+
            )
 ))
 
