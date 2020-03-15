@@ -91,10 +91,37 @@ ui <- fluidPage(
   # App title ----
   titlePanel("The math behind flatten the curve"),
 
-  sidebarLayout(
+  fluidRow(
+    column(4,
+             p("Have you heard the remark:"),
 
+             p("We'll never know the effect that social distancing has had;
+        we'll never know how many lives were saved?"
+             ),
+
+             p("We can never answer this question with absolute certainty, but we can get some idea using mathematical
+        models.
+        "),
+
+             p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
+        The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
+        rather, they are based on epidemiological characteristics such the duration of infectivity,
+        and the disease mortality rate.
+        "),
+
+             p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
+        model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
+        the characteristics of the disease.
+
+        "),
+
+             p("In my CBC St. John's Morning Show talk, I discussed exponential growth"),
+
+             p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca")
+
+           ),
     # Sidebar panel for inputs ----
-    sidebarPanel(
+    column(5,
 
       # Input: Slider for the number of bins ----
       sliderInput("m1", "social distancing (0=none ---> 1=complete isolation):",
@@ -102,39 +129,7 @@ ui <- fluidPage(
       # Output:
       plotOutput("SIR")
       # Alec do you know how to make a slider note?
-    ),
-
-    # Main panel for displaying outputs ----
-    mainPanel(
-      p("Have you heard the remark:"),
-
-      p("We'll never know the effect that social distancing has had;
-        we'll never know how many lives were saved?"
-        ),
-
-      p("We can never answer this question with absolute certainty, but we can get some idea using mathematical
-        models.
-        "),
-
-      p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
-        The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
-        rather, they are based on epidemiological characteristics such the duration of infectivity,
-        and the disease mortality rate.
-        "),
-
-
-
-      p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
-        model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
-        the characteristics of the disease.
-
-        "),
-
-      p("In my CBC St. John's Morning Show talk, I discussed exponential growth"),
-
-      p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca")
-
-      )# end main panel
+    )
     )# end layout
   )# end ui
 
