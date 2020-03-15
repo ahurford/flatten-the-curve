@@ -89,10 +89,12 @@ server <- function(input, output) {
 ui <- fluidPage(
 
   # App title ----
-  titlePanel("The math behind flatten the curve"),
+  # titlePanel("The math behind flatten the curve"),
 
   fluidRow(
-    column(4,
+    column(6,
+           h1("The math behind flatten the curve")),
+    column(6,
              p("Have you heard the remark:"),
 
              p("We'll never know the effect that social distancing has had;
@@ -101,8 +103,11 @@ ui <- fluidPage(
 
              p("We can never answer this question with absolute certainty, but we can get some idea using mathematical
         models.
-        "),
-
+        ")
+           )
+    ),
+  fluidRow(
+    column(4,
              p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
         model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
         the characteristics of the disease.
