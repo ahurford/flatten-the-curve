@@ -125,7 +125,8 @@ ui <- fluidPage(
 
       # Input: Slider for the number of bins ----
       sliderInput("m1", "social distancing (0=none ---> 1=complete isolation):",
-                  min = 0, max = 1, step = 0.01, value = .2),
+                  min = 0, max = 1, step = 0.01, value = .2,
+                  width = '100%'),
       # Output:
       plotOutput("SIR")
       # Alec do you know how to make a slider note?
