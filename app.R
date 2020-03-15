@@ -11,10 +11,10 @@ SIR <- function(t, y, p) {
     } else {
       dHx<-0
     }
-    
-    dS <- -a*(1-m1)*c*S*I 
+
+    dS <- -a*(1-m1)*c*S*I
     dI <-  a*(1-m1)*c*S*I - gamma*I - v*I
-    dF <- v*I 
+    dF <- v*I
     if (I > H/100) {
       dH <- a*(1-m1)*c*S*I
     } else {
@@ -31,7 +31,7 @@ server <- function(input, output) {
     v = gamma*chi/(1-chi)
     H = 40
     c=7
-    a=1  
+    a=1
     parms <- c(a=a,m1=input$m1,c=c, gamma=gamma, v=v, H=H)
     H=40
     I0 = 0.01
@@ -48,63 +48,63 @@ server <- function(input, output) {
     # Alec #2: I would also like to print out R_0 1, R_2,
     # doubling time 1, doubling time 2, and final size. I can put the formulas for
     # these in later, if you can make some dummy outputs appear.
-    
+
     plot(out[,1], 100*out[,4], typ="l", ylab = "Cumulative fatalities (% of population)", xlab = "time (months)",ylim = c(0,max(100*out[,4])))
     lines(out[,1], 100*out[,8], lty=2, col = "red")
-    
+
     plot(out[,1], 100*out[,5], typ="l", ylab = "% population infected while capacity exceeded", xlab = "time (months)",ylim = c(0,max(100*out[,5])))
     lines(out[,1], 100*out[,9], lty=2, col = "red")
-    
+
   })
 } # End server function
 
 # Define UI for app that draws a histogram ----
 ui <- fluidPage(
-  
+
   # App title ----
   titlePanel("The math behind flatten the curve"),
-  
+
   sidebarLayout(
-    
+
     # Sidebar panel for inputs ----
     sidebarPanel(
-      
+
       # Input: Slider for the number of bins ----
       sliderInput("m1", "social distancing (0=none ---> 1=complete isolation):", min = 0, max = 1,step=0.01, value = .2)
       # Alec do you know how to make a slider note?
     ),
-    
+
     # Main panel for displaying outputs ----
     mainPanel(
       p("Have you heard the remark:"),
-      
+
       p("We'll never know the effect that social distancing has had;
         we'll never know how many lives were saved?"
         ),
-      
+
       p("We can never answer this question with absolute certainty, but we can get some idea using mathematical
         models.
         "),
-      
+
       p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
         The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
         rather, they are based on epidemiological characteristics such the duration of infectivity,
         and the disease mortality rate.
         "),
-      
+
       # Output:
       plotOutput("SIR"),
-      
+
       p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
         model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
         the characteristics of the disease.
-        
+
         "),
-      
+
       p("In my CBC St. John's Morning Show talk, I discussed exponential growth"),
-      
+
       p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca")
-      
+
       )# end main panel
     )# end layout
   )# end ui
@@ -117,12 +117,12 @@ ui <- fluidPage(
 #   with(as.list(c(y, p)), {
 #     dSx <- -(1-m1)*(1-m2)*a*c*Sx*Ix
 #     dIx <- (1-m1)*(1-m2)*a*c*Sx*Ix - gamma*Ix - v*Ix
-#     dS <- -a*c*S*I 
+#     dS <- -a*c*S*I
 #     dI <-  a*c*S*I - gamma*I - v*I
 #     list(c(Sx=dSx, Ix=dIx, S=dS, I=dI))
 #   })
 # }
-# 
+#
 # server <- function(input, output) {
 #   output$SIR <- renderPlot({
 #     gamma = 0.5
@@ -139,18 +139,18 @@ ui <- fluidPage(
 #     text(12,0.8, "Final size: print")
 #   })
 # } # End server function
-# 
+#
 # # Define UI for app that draws a histogram ----
 # ui <- fluidPage(
-#   
+#
 #   # App title ----
 #   titlePanel("The math behind flatten the curve"),
-#   
+#
 #   sidebarLayout(
-#     
+#
 #     # Sidebar panel for inputs ----
 #     sidebarPanel(
-#       
+#
 #       # Input: Slider for the number of bins ----
 #       sliderInput("H", "hospital capacity:", min = 0, max = 1, value = 0.4),
 #       sliderInput("a", "hygiene:", min = 0, max = 1,step=0.01, value = .5),
@@ -159,15 +159,15 @@ ui <- fluidPage(
 #       sliderInput("m2", "social distancing improvement factor:", min = 0, max = 1,step=0.01, value = .2),
 #       sliderInput("chi", "case fatality (%):", min = 0, max = 10, step = 0.1, value = 3)
 #     ),
-#     
+#
 #     # Main panel for displaying outputs ----
 #     mainPanel(
-#       
+#
 #       p("Below we show that the 'flatten the curve' graphic can be
-#         produced from mathematical equations that explain the time course of 
+#         produced from mathematical equations that explain the time course of
 #         an epidemic: an SIR model (link to wikipedia).
 #         "),
-#       
+#
 #       # Output:
 #       plotOutput("SIR")
 #   )# end main panel
