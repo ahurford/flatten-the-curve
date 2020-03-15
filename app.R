@@ -44,7 +44,7 @@ server <- function(input, output) {
     plot(out[,1], 100*out[,3], typ ="l", ylim = c(0,max(100*out[,3])), ylab = "% of population infected", xlab = "time (months)")
     lines(out[,1], 100*out[,7], lty=2, col = "red")
     lines(c(mintime,maxtime), c(H,H))
-    text(12,0.8, "Final size: print")
+    text(maxtime,0.8, "Final size: print")
 
     # Alec #1: can you make the plot a bit prettier.
     # Alec #2: I would also like to print out R_0 1, R_2,
