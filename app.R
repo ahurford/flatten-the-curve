@@ -31,6 +31,23 @@ SIR <- function(t, y, p) {
   })
 }
 
+# TODO: is there a better name for this function?
+SIR2 <- function(t, y, p) {
+  with(as.list(c(y, p)), {
+    dSx <- -(1 - m1) * (1 - m2) * a * c * Sx * Ix
+    dIx <- (1 - m1) * (1 - m2) * a * c * Sx * Ix - gamma * Ix - v * Ix
+    dS <- -a * c * S * I
+    dI <-  a * c * S * I - gamma * I - v * I
+    list(c(
+      Sx = dSx,
+      Ix = dIx,
+      S = dS,
+      I = dI
+    ))
+  })
+}
+
+
 server <- function(input, output) {
   output$SIR <- renderPlot({
     gamma = 1
