@@ -109,8 +109,8 @@ ui <- fluidPage(title = "The math behind flatten the curve",
         ")
            )
     ),
-  fluidRow(
-    column(5, offset = 1, style = borderstyle,
+  tabsetPanel(
+    tabPanel("Social Distancing",#5, offset = 1, style = borderstyle,
            p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
         The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
         rather, they are based on epidemiological characteristics such the duration of infectivity,
@@ -126,7 +126,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            plotOutput("SIR")
            # Alec do you know how to make a slider note?
     ),
-    column(5, style = borderstyle,
+    tabPanel("Characeristics of the disease",#5, style = borderstyle,
            # TODO (AH): update this p with "to the left" etc
              p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
         model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
