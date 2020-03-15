@@ -210,34 +210,23 @@ are the computational output due to solving the SIR equation.
 
 
 # Alec #3: I would like a layout with: a sidebar and a plot, and then another sidebar and a plot
-# This code below is the start of what I would like for the SECOND sidebar and plot.
 
-# SIR <- function(t, y, p) {
-#   with(as.list(c(y, p)), {
-#     dSx <- -(1-m1)*(1-m2)*a*c*Sx*Ix
-#     dIx <- (1-m1)*(1-m2)*a*c*Sx*Ix - gamma*Ix - v*Ix
-#     dS <- -a*c*S*I
-#     dI <-  a*c*S*I - gamma*I - v*I
-#     list(c(Sx=dSx, Ix=dIx, S=dS, I=dI))
-#   })
-# }
-#
-# server <- function(input, output) {
-#   output$SIR <- renderPlot({
-#     gamma = 0.5
-#     v = gamma*input$chi/(1-input$chi/100)/100
-#     parms <- c(a=input$a,m1=input$m1,c=input$c, m2=input$m2, gamma=gamma, v=v)
-#     H=input$H
-#     I0 = 0.01
-#     S0 = 1-I0
-#     out <- ode(y = c(Sx=S0, Ix=I0, S=S0, I=I0), times=seq(0, 12, .1), SIR, parms)
-#     #matplot.0D(out)
-#     plot(out[,1], out[,3], typ ="l", ylim = c(0,S0), ylab = "prop. of population infected", xlab = "time (months)")
-#     lines(out[,1], out[,5], lty=2, col = "red")
-#     lines(c(0,12), c(H,H))
-#     text(12,0.8, "Final size: print")
-#   })
-# } # End server function
+server <- function(input, output) {
+  output$SIR <- renderPlot({
+    gamma = 0.5
+    v = gamma*input$chi/(1-input$chi/100)/100
+    parms <- c(a=input$a,m1=input$m1,c=input$c, m2=input$m2, gamma=gamma, v=v)
+    H=input$H
+    I0 = 0.01
+    S0 = 1-I0
+    out <- ode(y = c(Sx=S0, Ix=I0, S=S0, I=I0), times=seq(0, 12, .1), SIR, parms)
+    #matplot.0D(out)
+    plot(out[,1], out[,3], typ ="l", ylim = c(0,S0), ylab = "prop. of population infected", xlab = "time (months)")
+    lines(out[,1], out[,5], lty=2, col = "red")
+    lines(c(0,12), c(H,H))
+    text(12,0.8, "Final size: print")
+  })
+} # End server function
 #
 # # Define UI for app that draws a histogram ----
 # ui <- fluidPage(
