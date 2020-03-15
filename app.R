@@ -52,17 +52,17 @@ server <- function(input, output) {
       geom_line(aes(y = Ix * 100)) +
       geom_line(aes(y = I * 100), color = 'red', linetype = 'dashed') +
       geom_hline(aes(yintercept = H)) +
-      labs(xlab = "time (months)", ylab = "% of population infected")
+      labs(x = "time (months)", y = NULL, title = "% of population infected")
 
     g2 <- ggplot(df, aes(x = time)) +
       geom_line(aes(y = Fx * 100)) +
       geom_line(aes(y = FS * 100), color = 'red', linetype = 'dashed') +
-      labs(xlab = "time (months)", ylab = "Cumulative fatalities (% of population)")
+      labs(x = "time (months)", y = NULL, title = "Cumulative fatalities (% of population)")
 
     g3 <- ggplot(df, aes(x = time)) +
       geom_line(aes(y = Hx * 100)) +
       geom_line(aes(y = HS * 100), color = 'red', linetype = 'dashed') +
-      labs(xlab = "time (months)", ylab = "% population infected while capacity exceeded")
+      labs(x = "time (months)", y = NULL, title = "% population infected while capacity exceeded")
 
 
     # xTODO (Alec #2): I would also like to print out R_0 1, R_2,
