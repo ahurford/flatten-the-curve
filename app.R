@@ -113,17 +113,11 @@ server <- function(input, output) {
     df <- data.frame(out)
 
     areaAlpha <- 0.6
-    g1 <- ggplot(df, aes(x = time)) +
+    ggplot(df, aes(x = time)) +
       geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
       geom_hline(aes(yintercept = H), alpha = 0.2) +
       labs(x = NULL, y = NULL, title = "Percent of population infected")
-
-    #matplot.0D(out)
-    plot(out[,1], out[,3], typ ="l", ylim = c(0,S0), ylab = "prop. of population infected", xlab = "time (months)")
-    lines(out[,1], out[,5], lty=2, col = "red")
-    lines(c(0,12), c(H,H))
-    text(12,0.8, "Final size: print")
   })
 } # End server function
 
