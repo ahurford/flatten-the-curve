@@ -3,36 +3,58 @@ library("shiny")
 
 SIR <- function(t, y, p) {
   with(as.list(c(y, p)), {
-    dSx <- -(1-m1)*a*c*Sx*Ix
-    dIx <- (1-m1)*a*c*Sx*Ix - gamma*Ix - v*Ix
-    dS <- -a*c*S*I 
-    dI <-  a*c*S*I - gamma*I - v*I
-    list(c(Sx=dSx, Ix=dIx, S=dS, I=dI))
+    dSx <- -a*c*Sx*Ix
+    dIx <- a*c*Sx*Ix - gamma*Ix - v*Ix
+    dFx <- v*Ix
+    if (Ix > H/100) {
+      dHx <- a*c*Sx*Ix
+    } else {
+      dHx<-0
+    }
+    
+    dS <- -a*(1-m1)*c*S*I 
+    dI <-  a*(1-m1)*c*S*I - gamma*I - v*I
+    dF <- v*I 
+    if (I > H/100) {
+      dH <- a*(1-m1)*c*S*I
+    } else {
+      dH <- 0
+    }
+    list(c(Sx=dSx, Ix=dIx, Fx=dFx, Hx = dHx, S=dS, I=dI, Fs=dF, HS=dH))
   })
 }
 
 server <- function(input, output) {
   output$SIR <- renderPlot({
-    gamma = 0.5
+    gamma = 1
     chi = 0.03
     v = gamma*chi/(1-chi)
-    H = 0.4
-    c=5
+    H = 40
+    c=7
     a=1  
-    parms <- c(a=a,m1=input$m1,c=c, gamma=gamma, v=v)
-    H=0.4
+    parms <- c(a=a,m1=input$m1,c=c, gamma=gamma, v=v, H=H)
+    H=40
     I0 = 0.01
     S0 = 1-I0
-    out <- ode(y = c(Sx=S0, Ix=I0, S=S0, I=I0), times=seq(0, 12, .1), SIR, parms)
+    out <- ode(y = c(Sx=S0, Ix=I0,Fx=0,Hx=0, S=S0, I=I0, FS=0, HS=0), times=seq(0, 3, .1), SIR, parms)
     #matplot.0D(out)
-    plot(out[,1], out[,3], typ ="l", ylim = c(0,S0), ylab = "prop. of population infected", xlab = "time (months)")
-    lines(out[,1], out[,5], lty=2, col = "red")
+    par(mfrow=c(3,1))
+    plot(out[,1], 100*out[,3], typ ="l", ylim = c(0,max(100*out[,3])), ylab = "% of population infected", xlab = "time (months)")
+    lines(out[,1], 100*out[,7], lty=2, col = "red")
     lines(c(0,12), c(H,H))
     text(12,0.8, "Final size: print")
+
     # Alec #1: can you make the plot a bit prettier.
     # Alec #2: I would also like to print out R_0 1, R_2,
     # doubling time 1, doubling time 2, and final size. I can put the formulas for
     # these in later, if you can make some dummy outputs appear.
+    
+    plot(out[,1], 100*out[,4], typ="l", ylab = "Cumulative fatalities (% of population)", xlab = "time (months)",ylim = c(0,max(100*out[,4])))
+    lines(out[,1], 100*out[,8], lty=2, col = "red")
+    
+    plot(out[,1], 100*out[,5], typ="l", ylab = "% population infected while capacity exceeded", xlab = "time (months)",ylim = c(0,max(100*out[,5])))
+    lines(out[,1], 100*out[,9], lty=2, col = "red")
+    
   })
 } # End server function
 
@@ -60,7 +82,7 @@ ui <- fluidPage(
         we'll never know how many lives were saved?"
         ),
       
-      p("But, while we can never know for sure, we can get some idea using mathematical
+      p("We can never answer this question with absolute certainty, but we can get some idea using mathematical
         models.
         "),
       
@@ -79,7 +101,7 @@ ui <- fluidPage(
         
         "),
       
-      p("In my CBC talk, I discussed exponential growth"),
+      p("In my CBC St. John's Morning Show talk, I discussed exponential growth"),
       
       p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca")
       
