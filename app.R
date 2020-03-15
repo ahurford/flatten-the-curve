@@ -2,6 +2,7 @@ library("deSolve")
 library("shiny")
 library(ggplot2)
 library(patchwork)
+library(gridExtra)
 
 theme_set(theme_light())
 
@@ -63,13 +64,17 @@ server <- function(input, output) {
       geom_line(aes(y = HS * 100), color = 'red', linetype = 'dashed') +
       labs(xlab = "time (months)", ylab = "% population infected while capacity exceeded")
 
-    g1 / g2 / g3
+
+    # xTODO (Alec #2): I would also like to print out R_0 1, R_2,
+    # doubling time 1, doubling time 2, and final size....
+    # TODO (AH): update this placeholder
+    R_0 <- 10
+    R_2 <- 12
+    toprint <- data.frame(R_0, R_2)
 
 
+    g1 / g2 / g3 / tableGrob(toprint, rows = NULL)
 
-    # Alec #2: I would also like to print out R_0 1, R_2,
-    # doubling time 1, doubling time 2, and final size. I can put the formulas for
-    # these in later, if you can make some dummy outputs appear.
 
   })
 } # End server function
