@@ -77,9 +77,7 @@ server <- function(input, output) {
       geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = areaAlpha) +
       labs(x = "time (months)", y = NULL, title = "Cumulative fatalities")
 
-    # xTODO (Alec #2): I would also like to print out R_0 1, R_2
-    # doubling time 1, doubling time 2, and final size....
-    # TODO (AH): update this placeholder
+    # TODO (AH): update these placeholders
     R_0 <- 10
     R_2 <- 12
     toprint <- data.frame(R_0, R_2)
@@ -99,16 +97,26 @@ server <- function(input, output) {
     H <- input$H
     I0 <- 0.01
     S0 <- 1 - I0
-    out2 <- ode(y = c(Sx = S0, Ix = I0, S = S0, I = I0), times = seq(0, 12, .1), SIR2, parms)
-    df2 <- data.frame(out2)
+    out <- ode(y = c(Sx = S0, Ix = I0, S = S0, I = I0), times = seq(0, 12, .1), SIR2, parms)
+    df <- data.frame(out)
 
     areaAlpha <- 0.6
-    ggplot(df2, aes(x = time)) +
+
+
+    g1 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
       geom_hline(aes(yintercept = H), alpha = 0.2) +
       labs(x = NULL, y = NULL, title = "Percent of population infected") + scale_y_continuous(expand = expand_scale(c(0, 0.1)), labels = function(x) paste0(x,"%")) +
       scale_x_continuous(expand = c(0, 0))
+
+
+    # TODO (AH): update these placeholders
+    R_0 <- 10
+    R_2 <- 12
+    toprint <- data.frame(R_0, R_2)
+
+    g1 / tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
   })
 } # End server function
 
