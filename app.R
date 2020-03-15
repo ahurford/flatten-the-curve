@@ -78,12 +78,6 @@ server <- function(input, output) {
       geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = areaAlpha) +
       labs(x = "time (months)", y = NULL, title = "Cumulative fatalities")
 
-    # g3 <- ggplot(df, aes(x = time)) +
-    #   geom_line(aes(y = Hx * 100)) +
-    #   geom_line(aes(y = HS * 100), color = 'red', linetype = 'dashed') +
-    #   labs(x = "time (months)", y = NULL, title = "% population infected while capacity exceeded")
-
-
     # xTODO (Alec #2): I would also like to print out R_0 1, R_2
     # doubling time 1, doubling time 2, and final size....
     # TODO (AH): update this placeholder
@@ -96,7 +90,6 @@ server <- function(input, output) {
       g2 &
       scale_y_continuous(expand = expand_scale(c(0, 0.1)), labels = function(x) paste0(x,"%")) &
         scale_x_continuous(expand = c(0, 0)) ) /
-      # g3 /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
 
 
