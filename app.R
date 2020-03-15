@@ -52,12 +52,12 @@ server <- function(input, output) {
       geom_line(aes(y = Ix * 100)) +
       geom_line(aes(y = I * 100), color = 'red', linetype = 'dashed') +
       geom_hline(aes(yintercept = H)) +
-      labs(x = "time (months)", y = NULL, title = "% of population infected")
+      labs(x = NULL, y = NULL, title = "% of population infected")
 
     g2 <- ggplot(df, aes(x = time)) +
       geom_line(aes(y = Fx * 100)) +
       geom_line(aes(y = FS * 100), color = 'red', linetype = 'dashed') +
-      labs(x = "time (months)", y = NULL, title = "Cumulative fatalities (% of population)")
+      labs(x = NULL, y = NULL, title = "Cumulative fatalities (% of population)")
 
     g3 <- ggplot(df, aes(x = time)) +
       geom_line(aes(y = Hx * 100)) +
