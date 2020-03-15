@@ -98,7 +98,9 @@ server <- function(input, output) {
   output$more <- renderPlot({
     gamma = 0.5
     v <- gamma * input$chi / (1 - input$chi / 100) / 100
+    # TODO: input$m1 is never used
     parms <- c(a = input$a, m1 = input$m1, c = input$c, m2 = input$m2, gamma = gamma, v = v)
+    # TODO: input$H is never used
     H <- input$H
     I0 <- 0.01
     S0 <- 1 - I0
@@ -150,7 +152,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
 p(tags$a(href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "The SIR equations")),
         p("The 'flatten the curve' graphic is not simply a drawing of an idea,
-        rather, rather it is based on epidemiological characteristics such the duration of infectivity,
+        rather, it is based on epidemiological characteristics such the duration of infectivity,
         and the disease mortality rate. The SIR equations have been used for decades,
 and today, these equations remain a good start for understanding the time course of epidemics. The graphics below
 are the computational output due to solving the SIR equation.
@@ -185,6 +187,7 @@ are the computational output due to solving the SIR equation.
            column(9,
                   column(4,
                          # Input: Slider for the number of bins ----
+                         # TODO: input$H is never used
                          sliderInput("H", "hospital capacity:", min = 0, max = 1, value = 0.4),
                          sliderInput("a", "hygiene:", min = 0, max = 1, step = 0.01, value = .5)),
                   column(4,
