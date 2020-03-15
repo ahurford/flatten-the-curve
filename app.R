@@ -87,8 +87,6 @@ server <- function(input, output) {
 } # End server function
 
 # Define UI for app that draws a histogram ----
-borderstyle <- 'outline: 1px solid black; outline-offset: -3px; padding: 10px 10px'
-
 ui <- fluidPage(title = "The math behind flatten the curve",
   fluidRow(
     column(6,
@@ -106,7 +104,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            )
     ),
   tabsetPanel(
-    tabPanel("Social distancing",#5, offset = 1, style = borderstyle,
+    tabPanel("Social distancing",
              column(4,
            p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
         The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
@@ -124,7 +122,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            plotOutput("SIR"))
            # Alec do you know how to make a slider note?
     ),
-    tabPanel("Characeristics of the disease",#5, style = borderstyle,
+    tabPanel("Characeristics of the disease",
 
            # TODO (AH): update this p with "to the left" etc
            column(4,
@@ -138,10 +136,10 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
            # Input: Slider for the number of bins ----
            sliderInput("H", "hospital capacity:", min = 0, max = 1, value = 0.4),
-           sliderInput("a", "hygiene:", min = 0, max = 1,step=0.01, value = .5),
-           sliderInput("m1", "hygiene improvement factor:", min = 0, max = 1,step=0.01, value = .2),
-           sliderInput("c", "contact rate:", min = 0, max = 10,step=0.1, value = 10),
-           sliderInput("m2", "social distancing improvement factor:", min = 0, max = 1,step=0.01, value = .2),
+           sliderInput("a", "hygiene:", min = 0, max = 1, step = 0.01, value = .5),
+           sliderInput("m1", "hygiene improvement factor:", min = 0, max = 1, step = 0.01, value = .2),
+           sliderInput("c", "contact rate:", min = 0, max = 10, step = 0.1, value = 10),
+           sliderInput("m2", "social distancing improvement factor:", min = 0, max = 1, step = 0.01, value = .2),
            sliderInput("chi", "case fatality (%):", min = 0, max = 10, step = 0.1, value = 3)),
            column(8,
 
@@ -149,7 +147,21 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
 
        )
-  )
+  ),
+  tabPanel("Newfoundland",
+
+           column(4,
+
+                  # TODO: sidebar content
+
+                  ),
+
+           column(8,
+
+                  # TODO: main content
+                  )
+
+           )
 ))
 
 
