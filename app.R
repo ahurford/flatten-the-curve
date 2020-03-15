@@ -86,7 +86,7 @@ server <- function(input, output) {
 } # End server function
 
 # Define UI for app that draws a histogram ----
-ui <- fluidPage(
+ui <- fluidPage(title = "The math behind flatten the curve",
 
   # App title ----
   # titlePanel("The math behind flatten the curve"),
