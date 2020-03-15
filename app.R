@@ -127,6 +127,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
         model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
         the characteristics of the disease.
         "),
+             p("Similar resources: https://alhill.shinyapps.io/COVID19seir/"),
              # TODO (AH): where does this go?
              p("In my CBC St. John's Morning Show talk, I discussed exponential growth"),
 
