@@ -128,6 +128,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            p("by Amy Hurford, Alec Robitialle, and Joseph Baafi (Memorial University)"),
            p("Anyone interested in contributing should contact ahurford-at-mun-dot-ca.")),
     column(6,
+             p(""),
              p("Have you heard the remark:"),
              p("\"We'll never know the effect that social distancing has had;
                 we'll never know how many lives were saved\""
