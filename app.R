@@ -48,21 +48,41 @@ ui <- fluidPage(
     sidebarPanel(
       
       # Input: Slider for the number of bins ----
-      sliderInput("m1", "social distancing:", min = 0, max = 1,step=0.01, value = .2)
+      sliderInput("m1", "social distancing (0=none ---> 1=complete isolation):", min = 0, max = 1,step=0.01, value = .2)
+      # Alec do you know how to make a slider note?
     ),
     
     # Main panel for displaying outputs ----
     mainPanel(
+      p("Have you heard the remark:"),
       
-      p("Below we show that the 'flatten the curve' graphic can be
-        produced from classic mathematical equations that describe epidemics: the SIR equations (link to wikipedia).
+      p("We'll never know the effect that social distancing has had;
+        we'll never know how many lives were saved?"
+        ),
+      
+      p("But, while we can never know for sure, we can get some idea using mathematical
+        models.
+        "),
+      
+      p("Below we show that the 'flatten the curve' graphic arises from a mathematical model: the SIR equations (link to wikipedia).
         The lines in the 'flatten the curve' graphic are not simply a drawing of an idea;
-        rather, they are based on epidemiological characteristics such as the time to recovery,
+        rather, they are based on epidemiological characteristics such the duration of infectivity,
         and the disease mortality rate.
         "),
       
       # Output:
-      plotOutput("SIR")
+      plotOutput("SIR"),
+      
+      p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
+        model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
+        the characteristics of the disease.
+        
+        "),
+      
+      p("In my CBC talk, I discussed exponential growth"),
+      
+      p("This app was made by XXX, and anyone interested in contributing should contact ahurford-at-mun-dot-ca")
+      
       )# end main panel
     )# end layout
   )# end ui
