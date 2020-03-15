@@ -60,10 +60,10 @@ server <- function(input, output) {
                v = v, H = H)
     H = 40
     I0 = 0.01
-    S0 = 1-I0
+    S0 = 1 - I0
     mintime <- 0
     maxtime <- 6
-    out <- ode(y = c(Sx=S0, Ix=I0,Fx=0,Hx=0, S=S0, I=I0, FS=0, HS=0), times=seq(mintime, maxtime, .1), SIR, parms)
+    out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Hx = 0, S = S0, I = I0, FS = 0, HS = 0), times = seq(mintime, maxtime, .1), SIR, parms)
     df <- data.frame(out)
 
     areaAlpha <- 0.6
@@ -104,12 +104,13 @@ server <- function(input, output) {
 
   output$more <- renderPlot({
     gamma = 0.5
-    v = gamma*input$chi/(1-input$chi/100)/100
-    parms <- c(a=input$a,m1=input$m1,c=input$c, m2=input$m2, gamma=gamma, v=v)
+    v = gamma * input$chi / (1 - input$chi / 100) / 100
+    parms <- c(a = input$a, m1 = input$m1, c = input$c, m2 = input$m2, gamma = gamma, v =
+                 v)
     H=input$H
     I0 = 0.01
     S0 = 1-I0
-    out <- ode(y = c(Sx=S0, Ix=I0, S=S0, I=I0), times=seq(0, 12, .1), SIR2, parms)
+    out <- ode(y = c(Sx = S0, Ix = I0, S = S0, I = I0), times = seq(0, 12, .1), SIR2, parms)
     df <- data.frame(out)
 
     areaAlpha <- 0.6
@@ -144,7 +145,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              column(4,
            p("Below we show that the 'flatten the curve' graphic arises from a mathematical model:"),
 
-p(tags$a(href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "The SIR equations")),
+p(tags$a(href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "The SIR equations")),
         p("The 'flatten the curve' graphic is not simply a drawing of an idea,
         rather, rather it is based on epidemiological characteristics such the duration of infectivity,
         and the disease mortality rate. The SIR equations have been used for decades,
