@@ -91,8 +91,6 @@ server <- function(input, output) {
       scale_y_continuous(expand = expand_scale(c(0, 0.1)), labels = function(x) paste0(x,"%")) &
         scale_x_continuous(expand = c(0, 0)) ) /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
-
-
   })
 
   output$more <- renderPlot({
@@ -100,14 +98,14 @@ server <- function(input, output) {
     v = gamma * input$chi / (1 - input$chi / 100) / 100
     parms <- c(a = input$a, m1 = input$m1, c = input$c, m2 = input$m2, gamma = gamma, v =
                  v)
-    H=input$H
+    H = input$H
     I0 = 0.01
-    S0 = 1-I0
-    out <- ode(y = c(Sx = S0, Ix = I0, S = S0, I = I0), times = seq(0, 12, .1), SIR2, parms)
-    df <- data.frame(out)
+    S0 = 1 - I0
+    out2 <- ode(y = c(Sx = S0, Ix = I0, S = S0, I = I0), times = seq(0, 12, .1), SIR2, parms)
+    df2 <- data.frame(out2)
 
     areaAlpha <- 0.6
-    ggplot(df, aes(x = time)) +
+    ggplot(df2, aes(x = time)) +
       geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
       geom_hline(aes(yintercept = H), alpha = 0.2) +
@@ -128,9 +126,8 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              p("\"We'll never know the effect that social distancing has had;
                 we'll never know how many lives were saved\""
              ),
-             p("We can never know this with absolute certainty, but we can get some idea using mathematical
-        models.
-        ")
+             p("We can never know this with absolute certainty,
+                but we can get some idea using mathematical models. ")
            )
     ),
   tabsetPanel(
@@ -157,8 +154,6 @@ are the computational output due to solving the SIR equation.
            helpText("Cumulative fatalities does not account for increased death rate when health resourses are exceeded")
 
            )
-
-
     ),
     tabPanel("More models",
 
@@ -180,10 +175,8 @@ are the computational output due to solving the SIR equation.
            sliderInput("m2", "social distancing improvement factor:", min = 0, max = 1, step = 0.01, value = .2),
            sliderInput("chi", "case fatality (%):", min = 0, max = 10, step = 0.1, value = 3)),
            column(8,
-
+                  plotOutput("more")
                   # TODO (AH): include second plot here
-
-
        )
   ),
   tabPanel("Newfoundland",
