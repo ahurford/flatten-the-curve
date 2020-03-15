@@ -101,6 +101,30 @@ server <- function(input, output) {
 
 
   })
+
+  output$more <- renderPlot({
+    gamma = 0.5
+    v = gamma*input$chi/(1-input$chi/100)/100
+    parms <- c(a=input$a,m1=input$m1,c=input$c, m2=input$m2, gamma=gamma, v=v)
+    H=input$H
+    I0 = 0.01
+    S0 = 1-I0
+    out <- ode(y = c(Sx=S0, Ix=I0, S=S0, I=I0), times=seq(0, 12, .1), SIR2, parms)
+    df <- data.frame(out)
+
+    areaAlpha <- 0.6
+    g1 <- ggplot(df, aes(x = time)) +
+      geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
+      geom_hline(aes(yintercept = H), alpha = 0.2) +
+      labs(x = NULL, y = NULL, title = "Percent of population infected")
+
+    #matplot.0D(out)
+    plot(out[,1], out[,3], typ ="l", ylim = c(0,S0), ylab = "prop. of population infected", xlab = "time (months)")
+    lines(out[,1], out[,5], lty=2, col = "red")
+    lines(c(0,12), c(H,H))
+    text(12,0.8, "Final size: print")
+  })
 } # End server function
 
 # Define UI for app that draws a histogram ----
