@@ -125,7 +125,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
   fluidRow(
     column(6,
            h1("The math behind flatten the curve"),
-           p("by Amy Hurford, Alec Robitialle, and Joseph Baafi (Memorial University)"),
+           p("by Amy Hurford, Alec Robitaille, and Joseph Baafi (Memorial University)"),
            p("Anyone interested in contributing should contact ahurford-at-mun-dot-ca.")),
     column(6,
              p(""),
