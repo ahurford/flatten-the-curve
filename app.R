@@ -49,19 +49,17 @@ server <- function(input, output) {
     out <- ode(y = c(Sx=S0, Ix=I0,Fx=0,Hx=0, S=S0, I=I0, FS=0, HS=0), times=seq(mintime, maxtime, .1), SIR, parms)
     df <- data.frame(out)
 
-
+    areaAlpha <- 0.6
     g1 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = 0.5) +
-      geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = 0.5) +
-      geom_hline(aes(yintercept = H), alpha = 0.4) +
-      labs(x = NULL, y = NULL, title = "Percent of population infected") +
-      scale_y_continuous(labels = function(x) paste0(x,"%"))
+      geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha) +
+      geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
+      geom_hline(aes(yintercept = H), alpha = 0.3) +
+      labs(x = NULL, y = NULL, title = "Percent of population infected")
 
     g2 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = 0.5) +
-      geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = 0.5) +
-      labs(x = NULL, y = NULL, title = "Cumulative fatalities") +
-      scale_y_continuous(labels = function(x) paste0(x,"%"))
+      geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = areaAlpha) +
+      geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = areaAlpha) +
+      labs(x = NULL, y = NULL, title = "Cumulative fatalities")
 
     # g3 <- ggplot(df, aes(x = time)) +
     #   geom_line(aes(y = Hx * 100)) +
