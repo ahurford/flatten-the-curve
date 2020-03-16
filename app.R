@@ -65,7 +65,6 @@ server <- function(input, output) {
       labs(x = "time (days)", y = NULL, title = "Cumulative fatalities (% of the population)")
 
     # Generate data.frame to print
-    label <- ""
     R_0 <- round(a * c / (v + gamma), 1)
     R_2 <- round((1 - input$m1) * R_0, 1)
     DT <- round(log(2) / (a * c - v - gamma), 1)
@@ -74,17 +73,14 @@ server <- function(input, output) {
     fat_2 <- round(100 * out[length(out[, 1]), 7], 1)
     toprint <-
       data.frame(
-        "no distancing" = label,
-        "doubling time" = DT,
-        "R0" = R_0,
-        "fatalities" = fat,
-        "with distancing" = label,
-        "R0" = R_2,
-        "doubling time" = DT_2,
-        "fatalities" = fat_2
-      )
+        " " = c("no distancing", "with distancing"),
+        "doubling time" = c(DT, DT_2),
+        "R0" = c(R_0, R_2),
+        "fatalities" = c(fat, fat_2),
+        check.names = FALSE
+    )
 
-
+    # Combine plots and table with patchwork
     (g1 /
       g2 &
       scale_y_continuous(expand = expand_scale(c(0, 0.1)), labels = function(x) paste0(x,"%")) &
