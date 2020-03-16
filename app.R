@@ -179,11 +179,8 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     p("Many of the world's top experts are working on answering your questions above, but these answers require
                       more than a simple SIR model. For example, the SIR model fails to consider people that can infected others,
                       but are not showing symptoms. For one approach to improving the consistency of the epidemic model with characteristics
-                      of COVID-19 see:"),
-
-                    p(tags$a(href = "https://alhill.shinyapps.io/COVID19seir/", "Hill (2020)"))
-
-                    )
+                      of COVID-19 see:",
+                      tags$a(href = "https://alhill.shinyapps.io/COVID19seir/", "Hill (2020)")))
 
        ),
     # Newfoundland tab
