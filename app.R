@@ -92,55 +92,52 @@ server <- function(input, output) {
 
 ### UI ----
 ui <- fluidPage(title = "The math behind flatten the curve",
-  fluidRow(
-    column(6,
-           h1("The math behind flatten the curve"),
-           p("by Amy Hurford, Alec Robitaille, and Joseph Baafi (Memorial University)"),
-           p("Anyone interested in contributing should contact ahurford-at-mun-dot-ca.")),
-    column(6,
+  # Title row
+  fluidRow(column(
+    6,
+    h1("The math behind flatten the curve"),
+    p("by Amy Hurford, Alec Robitaille, and Joseph Baafi (Memorial University)"),
+    p("Anyone interested in contributing should contact ahurford-at-mun-dot-ca."))),
 
-           )
-    ),
+  # Tabsets
   tabsetPanel(
+
+    # Left column
     tabPanel("Social distancing",
              column(5,
-                    p(""),
-
-                    # Input: Slider for the number of bins ----
+                    # Slider input: social distancing
                     sliderInput("m1", "social distancing:",
                                 min = 0, max = 1, step = 0.01, value = .2,
-                                width = '100%'),helpText("0: no efforts to enact social distancing"),helpText("1: fully effective isolation"),
+                                width = '100%'),
+                    helpText("0: no efforts to enact social distancing"),
+                    helpText("1: fully effective isolation"),
 
+                    # Text in sidebar
                     p("Have you heard the remark:"),
                     p(tags$b(" 'We'll never know the effect that social distancing has had;
-                      we'll never know how many lives were saved' ")
-                    ),
+                      we'll never know how many lives were saved' ")),
                     p("But while we can never know with certainty,
                       we can get some idea using epidemic models. 'Flatten the curve'
                       argues that effective social distancing (blue curves) will lessen the maximum number of infected people during an
                       epidemic, so that hospital resources are not overwhelmed (grey line).
                       On the right, we show that 'flatten the curve' arises from a mathematical model that describes the dynamics of an
                       epidemic, specifically:"),
-
-p(tags$a(href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "The SIR equations")),
-
-        p("The 'flatten the curve' graphic is not simply a drawing of an idea;
-        rather it can arise based on disease characteristics and the interactions between
-susceptible and infected people. The SIR equations have been used for decades,
-and today these equations remain a good start for understanding how the number of infected people changes over time. The graphs on the right
-are the computational output due to solving the SIR equations.  To make these graphs, we needed to define disease
-characterisitcs such as the duration of infectivity (assumed to be 13 days),
-        and the percentage of infections that lead to fatalities (assumed to be 3%).
-        "),
-
-p("Not all the 'flatten the curve' graphs that have appeared in the media arise from SIR or related
-  epidemic models, but none-the-less, as we have shown in the graphs on the right, the 'flatten the curve' idea is consistent with
-  the epidemic models commonly found in textbooks."),
-
-p(tags$a(href = "http://ms.mcmaster.ca/~bolker/misc/peak_I_simple.html", "Bolker and Dushoff (2020)")),
-
-),
-           column(7,
+                    p(tags$a(href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "The SIR equations")),
+                    p("The 'flatten the curve' graphic is not simply a drawing of an idea;
+                       rather it can arise based on disease characteristics and the interactions between
+                       susceptible and infected people. The SIR equations have been used for decades,
+                       and today these equations remain a good start for understanding how the
+                       number of infected people changes over time. The graphs on the right
+                       are the computational output due to solving the SIR equations.
+                       To make these graphs, we needed to define disease
+                       characterisitcs such as the duration of infectivity (assumed to be 13 days),
+                       and the percentage of infections that lead to fatalities (assumed to be 3%)."),
+                    p("Not all the 'flatten the curve' graphs that have appeared in the media arise from
+                       SIR or related epidemic models, but none-the-less, as we have shown in the
+                       graphs on the right, the 'flatten the curve' idea is consistent with
+                       the epidemic models commonly found in textbooks."),
+                    p(tags$a(href = "http://ms.mcmaster.ca/~bolker/misc/peak_I_simple.html", "Bolker and Dushoff (2020)"))),
+             column(7,
 
            # Output:
            plotOutput("SIR"),
