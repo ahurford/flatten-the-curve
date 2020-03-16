@@ -1,15 +1,22 @@
+### The math behind flatten the curve ===
+# by Amy Hurford, Alec Robitaille, and Joseph Baafi (Memorial University)
+
+### Packages ----
 library(deSolve)
 library(shiny)
 library(ggplot2)
 library(patchwork)
 library(gridExtra)
 
-# To deploy
+### To deploy ----
 #rsconnect::deployApp("/Users/amyhurford/Desktop/flatten-the-curve")
 # in R Console
 
+
+### Theme ----
 theme_set(theme_light())
 
+### Functions ----
 SIR <- function(t, y, p) {
   with(as.list(c(y, p)), {
     dSx <- -a * c * Sx * Ix
@@ -24,6 +31,7 @@ SIR <- function(t, y, p) {
   })
 }
 
+### Server ----
 server <- function(input, output) {
   output$SIR <- renderPlot({
     # Parameters are taken from Bolker & Dushoff model
@@ -31,8 +39,8 @@ server <- function(input, output) {
     chi <- 0.03
     v <- gamma * chi / (1 - chi)
     H <- 15
-    c <-0.4
-    a<-0.5
+    c <- 0.4
+    a <- 0.5
     parms <- c(a = a, m1 = input$m1, c = c, gamma = gamma,
                v = v, H = H)
     I0 <- 0.005
@@ -42,26 +50,39 @@ server <- function(input, output) {
     out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, S = S0, I = I0, FS = 0), times = seq(mintime, maxtime, 1), SIR, parms)
     df <- data.frame(out)
 
+    # Plot percent population infected
     areaAlpha <- 0.6
     g1 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
-      geom_hline(aes(yintercept = H), alpha = 0.2, size=3)+
+      geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
       labs(x = NULL, y = NULL, title = "Percent of the population currently infected")
 
+    # Plot cumulative fatalities
     g2 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = areaAlpha) +
       labs(x = "time (days)", y = NULL, title = "Cumulative fatalities (% of the population)")
-    
-    label<-""
-    R_0 <- round(a*c/(v+gamma),1)
-    R_2 <- round((1-input$m1)*R_0,1)
-    DT <- round(log(2)/(a*c - v - gamma),1)
-    DT_2 <- max(round(log(2)/((1-input$m1)*a*c - v - gamma),1),0)
-    fat <- round(100*out[length(out[,1]),4],1)
-    fat_2 <- round(100*out[length(out[,1]),7],1)
-    toprint <- data.frame("no distancing"=label,"doubling time" = DT,"R0"=R_0,"fatalities" = fat, "with distancing"=label, "R0"=R_2, "doubling time" = DT_2, "fatalities"=fat_2)
+
+    # Generate data.frame to print
+    label <- ""
+    R_0 <- round(a * c / (v + gamma), 1)
+    R_2 <- round((1 - input$m1) * R_0, 1)
+    DT <- round(log(2) / (a * c - v - gamma), 1)
+    DT_2 <- max(round(log(2) / ((1 - input$m1) * a * c - v - gamma), 1), 0)
+    fat <- round(100 * out[length(out[, 1]), 4], 1)
+    fat_2 <- round(100 * out[length(out[, 1]), 7], 1)
+    toprint <-
+      data.frame(
+        "no distancing" = label,
+        "doubling time" = DT,
+        "R0" = R_0,
+        "fatalities" = fat,
+        "with distancing" = label,
+        "R0" = R_2,
+        "doubling time" = DT_2,
+        "fatalities" = fat_2
+      )
 
 
     (g1 /
@@ -70,9 +91,10 @@ server <- function(input, output) {
         scale_x_continuous(expand = c(0, 0)) ) /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
   })
-} # End server function
+}
 
-# Define UI for app that draws a histogram ----
+
+### UI ----
 ui <- fluidPage(title = "The math behind flatten the curve",
   fluidRow(
     column(6,
@@ -87,7 +109,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     tabPanel("Social distancing",
              column(5,
                     p(""),
-                    
+
                     # Input: Slider for the number of bins ----
                     sliderInput("m1", "social distancing:",
                                 min = 0, max = 1, step = 0.01, value = .2,
@@ -142,34 +164,34 @@ p(tags$a(href = "http://ms.mcmaster.ca/~bolker/misc/peak_I_simple.html", "Bolker
 
              column(10,
                     p(""),
-                    
+
                     p("The SIR model is a great starting point for describing the dynamics of an epidemic.
                       With regard to 'flatten the curve', the SIR model shows that effective social distancing
                       can prevent hospital resources from being overwhelmed. The graphs on the 'Social distancing'
                       tab help us to appreciate that a large number of lives can be saved through effective
                       social distancing."),
-                    
+
                     p("Yet, you are probably wondering:"),
-                    
+
                     p("- 'How much social distancing is enough?'"),
-                    
+
                     p("- 'How long will the social distancing need to last?' and"),
-                    
+
                     p("- 'How many infections will there be next week?'"),
-                    
+
                     p("The exact numbers that arise from an SIR model shouldn't be taken too literally. The SIR model makes
                       important points on a more general level, i.e., that social distancing can have large effect and prevent
                       overwhelming hospital resources."),
-                    
+
                     p("Many of the world's top experts are working on answering your questions above, but these answers require
                       more than a simple SIR model. For example, the SIR model fails to consider people that can infected others,
                       but are not showing symptoms. For one approach to improving the consistency of the epidemic model with characteristics
                       of COVID-19 see:"),
-                    
+
                     p(tags$a(href = "https://alhill.shinyapps.io/COVID19seir/", "Hill (2020)"))
-                    
+
                     )
-           
+
        ),
   tabPanel("Newfoundland",
 
