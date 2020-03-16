@@ -121,8 +121,8 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                       argues that effective social distancing (blue curves) will lessen the maximum number of infected people during an
                       epidemic, so that hospital resources are not overwhelmed (grey line).
                       On the right, we show that 'flatten the curve' arises from a mathematical model that describes the dynamics of an
-                      epidemic, specifically:"),
-                    p(tags$a(href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "The SIR equations")),
+                      epidemic, specifically:",
+                      tags$a(href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "the SIR equations.")),
                     p("The 'flatten the curve' graphic is not simply a drawing of an idea;
                        rather it can arise based on disease characteristics and the interactions between
                        susceptible and infected people. The SIR equations have been used for decades,
