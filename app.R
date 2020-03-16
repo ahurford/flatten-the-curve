@@ -105,6 +105,8 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     # Left column
     tabPanel("Social distancing",
              column(5,
+                    p(""),
+
                     # Slider input: social distancing
                     sliderInput("m1", "social distancing:",
                                 min = 0, max = 1, step = 0.01, value = .2,
@@ -139,7 +141,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     p(tags$a(href = "http://ms.mcmaster.ca/~bolker/misc/peak_I_simple.html", "Bolker and Dushoff (2020)"))),
              column(7,
 
-           # Output:
+           # Output SIR plot and help text below:
            plotOutput("SIR"),
            helpText("Blue curve: no changes implemented; Green curve: with social distancing; Grey line: capacity of the health care system"),
            helpText("Cumulative fatalities does not account for an increased death rate when health resourses are exceeded"),
@@ -149,12 +151,10 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     does not consider an increased death rate when health resources are overwhelmed. Epidemic models, such as SIR, suggest
                     that, even aside from preventing overwhelming the health care system, that a smaller percentage of the population
                     will die from COVID-19 under social distancing."),
-           helpText("The parameterization for this SIR model was taken from Bolker and Dushoff (2020).")
+           helpText("The parameterization for this SIR model was taken from Bolker and Dushoff (2020)."))),
 
-           )
-    ),
+    # More models tab
     tabPanel("More models",
-
              column(10,
                     p(""),
 
@@ -186,17 +186,13 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     )
 
        ),
-  tabPanel("Newfoundland",
-
-
-           column(10,
-                  p(""),
-
-                  p("We aim to make some Newfoundland-specific graphs, but this work
+    # Newfoundland tab
+    tabPanel("Newfoundland",
+             column(10,
+                    p(""),
+                    p("We aim to make some Newfoundland-specific graphs, but this work
                     is currently in progress")
-                  )
-
-           )
+                    ))
 ))
 
 shinyApp(ui = ui, server = server)
