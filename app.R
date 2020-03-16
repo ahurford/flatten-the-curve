@@ -180,9 +180,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                       more than a simple SIR model. For example, the SIR model fails to consider people that can infected others,
                       but are not showing symptoms. For one approach to improving the consistency of the epidemic model with characteristics
                       of COVID-19 see:",
-                      tags$a(href = "https://alhill.shinyapps.io/COVID19seir/", "Hill (2020)")))
-
-       ),
+                      tags$a(href = "https://alhill.shinyapps.io/COVID19seir/", "Hill (2020)")))),
     # Newfoundland tab
     tabPanel("Newfoundland",
              column(10,
@@ -192,5 +190,6 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     ))
 ))
 
+### Run app ----
 shinyApp(ui = ui, server = server)
 
