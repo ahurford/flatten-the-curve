@@ -53,15 +53,15 @@ server <- function(input, output) {
       geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = areaAlpha) +
       labs(x = "time (days)", y = NULL, title = "Cumulative fatalities")
-
-    # TODO (AH): update these placeholders
     
     label<-""
     R_0 <- round(a*c/(v+gamma),2)
     R_2 <- round((1-input$m1)*R_0,2)
-    DT <- 2
-    DT2 <- 2 
-    toprint <- data.frame("no social distancing"=label,"Doubling time" = DT,"R0"=R_0,"social distancing"=label, "R0"=R_2, "Doubling time" = DT2)
+    DT <- round(log(2)/(a*c - v - gamma),2)
+    DT_2 <- round(log(2)/((1-input$m1)*a*c - v - gamma),2)
+    fat <- 2
+    fat_2 <- 2
+    toprint <- data.frame("no distancing"=label,"doubling time" = DT,"R0"=R_0,"fatalities" = fat, "with distancing"=label, "R0"=R_2, "doubling time" = DT_2, "fatalities"=fat_2)
 
 
     (g1 /
@@ -120,45 +120,22 @@ are the computational output due to solving the SIR equation.
     ),
     tabPanel("More models",
 
-           # TODO (AH): update this p with "to the left" etc
-           column(3,
-             p("Above we showed that the flatten the curve graph arises from a well-established epidemiological
-        model. However, the shape of the curves depend characteristics of the disease. Below we let you choose
-        the characteristics of the disease.
-        "),
-             p("Similar resources: https://alhill.shinyapps.io/COVID19seir/"),
-             # TODO (AH): where does this go?
-             p("In my CBC St. John's Morning Show talk, I discussed exponential growth")
-
-
-           ),
-           column(9,
-                  column(4,
-                         # Input: Slider for the number of bins ----
-                         # TODO: input$H is never used
-                         sliderInput("H", "hospital capacity:", min = 0, max = 1, value = 0.4),
-                         sliderInput("a", "hygiene:", min = 0, max = 1, step = 0.01, value = .5)),
-                  column(4,
-                         sliderInput("m1", "hygiene improvement factor:", min = 0, max = 1, step = 0.01, value = .2),
-
-                         sliderInput("c", "contact rate:", min = 0, max = 10, step = 0.1, value = 10)),
-                 column(4,
-                         sliderInput("m2", "social distancing improvement factor:", min = 0, max = 1, step = 0.01, value = .2),
-                         sliderInput("chi", "case fatality (%):", min = 0, max = 10, step = 0.1, value = 3)),
-                  plotOutput("more")
-           )
+             column(6,
+                    p(""),
+                    
+                    p("We aim to make some Newfoundland-specific graphs, but this work
+                      is currently in progress")
+                    )
+           
        ),
   tabPanel("Newfoundland",
 
-           column(4,
 
-                  # TODO: sidebar content
+           column(6,
+                  p(""),
 
-                  ),
-
-           column(8,
-
-                  # TODO: main content
+                  p("We aim to make some Newfoundland-specific graphs, but this work
+                    is currently in progress")
                   )
 
            )
