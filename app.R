@@ -118,12 +118,12 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     p("Have you heard the remark:"),
                     p(tags$b(" 'We'll never know the effect that social distancing has had;
                       we'll never know how many lives were saved' ")),
-                    p("But while we can never know with certainty,
+                    p("While we can never know with certainty,
                       we can get some idea using epidemic models. 'Flatten the curve'
-                      argues that effective social distancing (blue curves) will lessen the maximum number of infected people during an
+                      argues that effective social distancing (green curves) will lessen the maximum number of infected people during an
                       epidemic, so that hospital resources are not overwhelmed (grey line).
                       On the right, we show that 'flatten the curve' arises from a mathematical model that describes the dynamics of an
-                      epidemic, specifically:",
+                      epidemic, specifically ",
                       tags$a(href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "the SIR equations.")),
                     p("The 'flatten the curve' graphic is not simply a drawing of an idea;
                        rather it can arise based on disease characteristics and the interactions between
@@ -134,22 +134,21 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                        To make these graphs, we needed to define disease
                        characterisitcs such as the duration of infectivity (assumed to be 13 days),
                        and the percentage of infections that lead to fatalities (assumed to be 3%)."),
-                    p("Not all the 'flatten the curve' graphs that have appeared in the media arise from
-                       SIR or related epidemic models, but none-the-less, as we have shown in the
+                    p("Not all the 'flatten the curve' graphs that have appeared in the media arise from SIR or related epidemic models",
+                      tags$a(href = "http://ms.mcmaster.ca/~bolker/misc/peak_I_simple.html", "(Bolker and Dushoff 2020)")), "but none-the-less, as we have shown in the
                        graphs on the right, the 'flatten the curve' idea is consistent with
                        the epidemic models commonly found in textbooks."),
-                    p(tags$a(href = "http://ms.mcmaster.ca/~bolker/misc/peak_I_simple.html", "Bolker and Dushoff (2020)"))),
              column(7,
 
            # Output SIR plot and help text below:
            plotOutput("SIR"),
-           helpText("Blue curve: no changes implemented; Green curve: with social distancing; Grey line: capacity of the health care system"),
-           helpText("Cumulative fatalities does not account for an increased death rate when health resourses are exceeded"),
-           helpText("Doubling time: the time for the number of infected people to double, early on in the epidemic"),
-           helpText("R0: the average number of people subsequently infected by an infected person, early on in the epidemic"),
+           helpText("Blue curve: no changes implemented; Green curve: with social distancing; Grey line: capacity of the health care system."),
+           helpText("Cumulative fatalities does not account for an increased death rate when health resourses are exceeded."),
+           helpText("Doubling time: Early on in the epidemic, the time for the number of infected people to double."),
+           helpText("R0: Early on in the epidemic, the average number of people subsequently infected by an infected person."),
            helpText("Fatalities: The percentage of the population that has died from COVID-19 after 250 days, however this
                     does not consider an increased death rate when health resources are overwhelmed. Epidemic models, such as SIR, suggest
-                    that, even aside from preventing overwhelming the health care system, that a smaller percentage of the population
+                    that, even aside from preventing overwhelming the health care system, a smaller percentage of the population
                     will die from COVID-19 under social distancing."),
            helpText("The parameterization for this SIR model was taken from Bolker and Dushoff (2020)."))),
 
@@ -158,13 +157,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              column(10,
                     p(""),
 
-                    p("The SIR model is a great starting point for describing the dynamics of an epidemic.
-                      With regard to 'flatten the curve', the SIR model shows that effective social distancing
-                      can prevent hospital resources from being overwhelmed. The graphs on the 'Social distancing'
-                      tab help us to appreciate that a large number of lives can be saved through effective
-                      social distancing."),
-
-                    p("Yet, you are probably wondering:"),
+                    p("The SIR model is a great starting point for describing the dynamics of an epidemic. Yet, you are probably wondering:"),
 
                     p("- 'How much social distancing is enough?'"),
 
@@ -173,14 +166,13 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     p("- 'How many infections will there be next week?'"),
 
                     p("The exact numbers that arise from an SIR model shouldn't be taken too literally. The SIR model makes
-                      important points on a more general level, i.e., that social distancing can have large effect and prevent
+                      important points on a more general level, i.e., that social distancing can have a large effect and prevent
                       overwhelming hospital resources."),
 
                     p("Many of the world's top experts are working on answering your questions above, but these answers require
-                      more than a simple SIR model. For example, the SIR model fails to consider people that can infected others,
-                      but are not showing symptoms. For one approach to improving the consistency of the epidemic model with characteristics
-                      of COVID-19 see:",
-                      tags$a(href = "https://alhill.shinyapps.io/COVID19seir/", "Hill (2020)")))),
+                      more than a simple SIR model. For example, the SIR model fails to consider people who are not showing symptoms, but can infected others. For one approach to improving the consistency of the epidemic model with characteristics
+                      of COVID-19, see",
+                      tags$a(href = "https://alhill.shinyapps.io/COVID19seir/", "Hill (2020).")))),
     # Newfoundland tab
     tabPanel("Newfoundland",
              column(10,
