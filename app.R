@@ -97,7 +97,9 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     6,
     h1("The math behind flatten the curve"),
     p("by Amy Hurford, Alec Robitaille, and Joseph Baafi (Memorial University)"),
-    p("Anyone interested in contributing should contact ahurford-at-mun-dot-ca."))),
+    p(""),
+  p("Github:", tags$a(href = "https://github.com/ahurford/flatten-the-curve", "https://github.com/ahurford/flatten-the-curve")),
+  p("Anyone interested in contributing should contact ahurford-at-mun-dot-ca."))),
 
   # Tabsets
   tabsetPanel(
