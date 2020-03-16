@@ -38,7 +38,7 @@ server <- function(input, output) {
     I0 <- 0.005
     S0 <- 1 - I0
     mintime <- 0
-    maxtime <- 150
+    maxtime <- 250
     out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, S = S0, I = I0, FS = 0), times = seq(mintime, maxtime, 1), SIR, parms)
     df <- data.frame(out)
 
@@ -47,20 +47,20 @@ server <- function(input, output) {
       geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
       geom_hline(aes(yintercept = H), alpha = 0.2, size=3)+
-      labs(x = NULL, y = NULL, title = "Percent of population infected")
+      labs(x = NULL, y = NULL, title = "Percent of population currently infected")
 
     g2 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = areaAlpha) +
-      labs(x = "time (days)", y = NULL, title = "Cumulative fatalities")
+      labs(x = "time (days)", y = NULL, title = "Cumulative fatalities (% of population)")
     
     label<-""
-    R_0 <- round(a*c/(v+gamma),2)
-    R_2 <- round((1-input$m1)*R_0,2)
-    DT <- round(log(2)/(a*c - v - gamma),2)
-    DT_2 <- round(log(2)/((1-input$m1)*a*c - v - gamma),2)
-    fat <- 2
-    fat_2 <- 2
+    R_0 <- round(a*c/(v+gamma),1)
+    R_2 <- round((1-input$m1)*R_0,1)
+    DT <- round(log(2)/(a*c - v - gamma),1)
+    DT_2 <- max(round(log(2)/((1-input$m1)*a*c - v - gamma),1),0)
+    fat <- round(100*out[length(out[,1]),4],1)
+    fat_2 <- round(100*out[length(out[,1]),7],1)
     toprint <- data.frame("no distancing"=label,"doubling time" = DT,"R0"=R_0,"fatalities" = fat, "with distancing"=label, "R0"=R_2, "doubling time" = DT_2, "fatalities"=fat_2)
 
 
@@ -92,46 +92,87 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     sliderInput("m1", "social distancing:",
                                 min = 0, max = 1, step = 0.01, value = .2,
                                 width = '100%'),helpText("0: no efforts to enact social distance"),helpText("1: fully effective isolation"),
-                    p(""),
+
                     p("Have you heard the remark:"),
                     p(tags$b("We'll never know the effect that social distancing has had;
                       we'll never know how many lives were saved")
                     ),
-                    p("We can never know this with absolute certainty,
-                      but we can get some idea using mathematical models. "),
-           p("Below we show that the 'flatten the curve' graphic arises from a mathematical model:"),
+                    p("But while we can never know with certainty,
+                      we can get some idea using mathematical models. 'Flatten the curve'
+                      argues that effective social distancing (blue curve) will lessen the maximum number of infected people during an
+                      outbreak so that hospital resources are not overwhelmed (grey line).
+                      On the right, we show that the 'flatten the curve' graphic arises from a mathematical model that describes the dynamics of an
+                      epidemic, specifically:"),
 
 p(tags$a(href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "The SIR equations")),
-        p("The 'flatten the curve' graphic is not simply a drawing of an idea,
-        rather, it is based on epidemiological characteristics such the duration of infectivity,
-        and the disease mortality rate. The SIR equations have been used for decades,
+
+        p("The 'flatten the curve' graphic is not simply a drawing of an idea;
+        rather it can arise based on disease characteristics. The SIR equations have been used for decades,
 and today, these equations remain a good start for understanding the time course of epidemics. The graphics below
-are the computational output due to solving the SIR equation.
+are the computational output due to solving the SIR equation.  To make this graph, we needed to define disease
+characterisitcs such as the duration of infectivity (assumed to be 13 days),
+        and the percentage of infections that lead to fatalities (assumed to be 3%).
         "),
+
+p("Not all the 'flatten the curve' graphs that have appeared in the literature arise from SIR or related
+  epidemic models, none-the-less, as we have shown in the graph on the right, the idea is consistent with
+  the epidemic models found in textbooks."),
+
+p(tags$a(href = "http://ms.mcmaster.ca/~bolker/misc/peak_I_simple.html", "Bolker and Dushoff (2020)")),
 
 ),
            column(7,
 
            # Output:
            plotOutput("SIR"),
-           helpText("Cumulative fatalities does not account for increased death rate when health resourses are exceeded")
+           helpText("Blue curve: no changes implemented; Green curve: with social distancing; Grey line: capacity of the health care system"),
+           helpText("Cumulative fatalities does not account for increased death rate when health resourses are exceeded"),
+           helpText("Doubling time: the time for the number of infected people to double early on in the epidemic"),
+           helpText("R0: the average number of people subsequently infected by an infected person early on in the epidemic"),
+           helpText("Fatalities: The percentage of the population that has died from COVID-19 after 250 days, however this
+                    does not consider an increased death rate when health resources are overwhelmed. Epidemic models, such as SIR, suggest
+                    that, even aside from preventing overwhelming the health care system, that a smaller percentage of the population
+                    will die from COVID-19."),
+           helpText("The parameterization for this SIR model was taken from Bolker and Dushoff (2020).")
 
            )
     ),
     tabPanel("More models",
 
-             column(6,
+             column(10,
                     p(""),
                     
-                    p("We aim to make some Newfoundland-specific graphs, but this work
-                      is currently in progress")
+                    p("The SIR model is a great starting point for describing disease dynamics.
+                      With regard to 'flatten the curve', the SIR model shows us that effective social distancing
+                      can prevent hospital resources from being overwhelmed. The graph on the 'Social distancing'
+                      tab helps us to appreciate that a large number of lives can be saved through effective
+                      social distancing."),
+                    
+                    p("Yet, you are probably wondering:"),
+                    
+                    p("'How much social distancing is enough?'"),
+                    
+                    p("'How long will the social distancing need to last?' and"),
+                    
+                    p("'How many infections will there be next week?'"),
+                    
+                    p("The exact numbers that arise from an SIR model shouldn't be taken too literally. The SIR model makes
+                      important points on a more general level, i.e., that social distancing can have large effect."),
+                    
+                    p("Many of the world's top experts are working on answering your questions above, but these answers require
+                      more than a simple SIR model. For example, the SIR model fails to consider people that can infected others,
+                      but are not showing symptoms. For one approach to improving the consistency of the model with characteristics
+                      of COVID-19 see:"),
+                    
+                    p(tags$a(href = "https://alhill.shinyapps.io/COVID19seir/", "Hill (2020)"))
+                    
                     )
            
        ),
   tabPanel("Newfoundland",
 
 
-           column(6,
+           column(10,
                   p(""),
 
                   p("We aim to make some Newfoundland-specific graphs, but this work
