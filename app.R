@@ -205,7 +205,11 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     is currently in progress")
                     ),
 
-             tableOutput("scrape"))
+             plotOutput("scrapePlot"),
+             tags$br(),
+             tags$br(),
+             tags$br(),
+             tableOutput("scrapeTab"))
 ))
 
 ### Run app ----
