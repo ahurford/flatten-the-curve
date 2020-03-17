@@ -88,6 +88,10 @@ server <- function(input, output) {
         scale_x_continuous(expand = c(0, 0)) ) /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
   })
+
+  output$scrape <- renderTable({
+    data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
+  })
 }
 
 
