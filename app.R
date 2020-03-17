@@ -7,6 +7,7 @@ library(shiny)
 library(ggplot2)
 library(patchwork)
 library(gridExtra)
+library(data.table)
 
 ### To deploy ----
 #rsconnect::deployApp("/Users/amyhurford/Desktop/flatten-the-curve")
