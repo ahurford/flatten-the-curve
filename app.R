@@ -94,9 +94,21 @@ server <- function(input, output) {
     data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
   })
 
-  output$scrapePlot <- renderTable({
+  output$scrapePlot <- renderPlot({
     invalidateLater(24 * 60 * 60 * 1000)
-    data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
+    NL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
+
+    # Plot cases in NL
+    areaAlpha <- 0.6
+    g1 <- ggplot(df, aes(x = Date)) +
+      geom_area(aes(y = log(presumptive_positive)), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = log(confirmed_positive)), fill = '#b2df8a', alpha = areaAlpha) +
+      # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
+      labs(x = "date", y = NULL, title = "log(cases in NL)")
+
+    (g1 &
+        scale_y_continuous(expand = expand_scale(c(0, 0.1))) &
+        scale_x_continuous(expand = c(0, 0)))
   })
 
 }
