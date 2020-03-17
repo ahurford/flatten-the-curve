@@ -186,7 +186,9 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     p(""),
                     p("We aim to make some Newfoundland-specific graphs, but this work
                     is currently in progress")
-                    ))
+                    ),
+
+             tableOutput("scrape"))
 ))
 
 ### Run app ----
