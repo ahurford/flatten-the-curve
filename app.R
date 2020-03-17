@@ -84,7 +84,7 @@ server <- function(input, output) {
     # Combine plots and table with patchwork
     (g1 /
       g2 &
-      scale_y_continuous(expand = expand_scale(c(0, 0.1)), labels = function(x) paste0(x,"%")) &
+      scale_y_continuous(expand = expansion(c(0, 0.1)), labels = function(x) paste0(x,"%")) &
         scale_x_continuous(expand = c(0, 0)) ) /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
   })
