@@ -89,10 +89,16 @@ server <- function(input, output) {
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
   })
 
-  output$scrape <- renderTable({
+  output$scrapeTab <- renderTable({
     invalidateLater(24 * 60 * 60 * 1000)
     data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
   })
+
+  output$scrapePlot <- renderTable({
+    invalidateLater(24 * 60 * 60 * 1000)
+    data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
+  })
+
 }
 
 
