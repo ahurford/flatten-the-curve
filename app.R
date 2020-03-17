@@ -7,6 +7,7 @@ library(shiny)
 library(ggplot2)
 library(patchwork)
 library(gridExtra)
+library(data.table)
 
 ### To deploy ----
 #rsconnect::deployApp("/Users/amyhurford/Desktop/flatten-the-curve")
@@ -86,6 +87,11 @@ server <- function(input, output) {
       scale_y_continuous(expand = expand_scale(c(0, 0.1)), labels = function(x) paste0(x,"%")) &
         scale_x_continuous(expand = c(0, 0)) ) /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
+  })
+
+  output$scrape <- renderTable({
+    invalidateLater(24 * 60 * 60 * 1000)
+    data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
   })
 }
 
@@ -181,7 +187,9 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     p(""),
                     p("We aim to make some Newfoundland-specific graphs, but this work
                     is currently in progress")
-                    ))
+                    ),
+
+             tableOutput("scrape"))
 ))
 
 ### Run app ----
