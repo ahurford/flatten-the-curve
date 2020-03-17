@@ -99,9 +99,9 @@ server <- function(input, output) {
     NL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
 
     # Plot cases in NL
-    ggplot(NL, aes(x = Date)) +
-      geom_point(aes(y = log(presumptive_positive)), color = 'grey') +
-      geom_point(aes(y = log(confirmed_positive)), color = 'black') +
+    ggplot(NL, aes(x = Date, group = 1)) +
+      geom_area(aes(y = log(presumptive_positive)), color = 'grey', alpha = 0.5) +
+      geom_area(aes(y = log(confirmed_positive)), color = 'black', alpha = 0.6) +
       # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
       labs(x = "date", y = NULL, title = "log(cases in NL)") +
       scale_y_continuous(expand = expansion(c(0, 0.1)))
