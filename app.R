@@ -90,6 +90,7 @@ server <- function(input, output) {
   })
 
   output$scrape <- renderTable({
+    invalidateLater(24 * 60 * 60 * 1000)
     data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
   })
 }
