@@ -98,7 +98,7 @@ server <- function(input, output) {
     (g1 /
       g2 /
         g3 &
-      scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
+        scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
                          labels = function(x) paste0(x, "%")) &
         scale_x_continuous(expand = expand_scale(mult = c(0, 0)))) /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
@@ -118,9 +118,9 @@ server <- function(input, output) {
       geom_area(aes(y = log(presumptive_positive)), color = 'grey', alpha = 0.5) +
       geom_area(aes(y = log(confirmed_positive)), color = 'black', alpha = 0.6) +
       # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
-      labs(x = "date", y = NULL, title = "log(cases in NL)")
-    # Alec - I don't have teh
-    #+ scale_y_continuous(expand = expansion(c(0, 0.1)))
+      labs(x = "date", y = NULL, title = "log(cases in NL)") +
+      scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
+                         labels = function(x) paste0(x, "%"))
   })
 
 }
