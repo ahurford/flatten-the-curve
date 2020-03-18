@@ -51,12 +51,11 @@ server <- function(input, output) {
     mintime <- 0
     maxtime <- 250
     out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx=0, S = S0, I = I0, FS = 0, C=0), times = seq(mintime, maxtime, 1), SIR, parms)
-    df <- data.frame(out)
-  
-   ## ALEC - this is what I want to plot but with ggplot         
-   plot(seq(mintime, maxtime-1, 1), diff(df$C))
-   plot(seq(mintime, maxtime-1, 1), diff(df$Cx))
-    
+    df <- data.table(out)
+
+    df[, diffC := c(diff(C), NA)]
+    df[, diffCx := c(diff(Cx), NA)]
+
     # Plot percent population infected
     areaAlpha <- 0.6
     g1 <- ggplot(df, aes(x = time)) +
@@ -70,6 +69,14 @@ server <- function(input, output) {
       geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = areaAlpha) +
       labs(x = "time (days)", y = NULL, title = "Cumulative fatalities (% of the population)")
+
+    # xTODO (Alec): this is what I want to plot but with ggplot
+    # TODO (Amy): update labs
+    g3 <- ggplot(df, aes(x = time)) +
+      geom_area(aes(y = diffC), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = diffCx), fill = '#b2df8a', alpha = areaAlpha) +
+      # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
+      labs(x = NULL, y = NULL, title = "Percent of the population currently infected")
 
     # Generate data.frame to print
     R_0 <- round(a * c / (v + gamma), 1)
@@ -111,7 +118,7 @@ server <- function(input, output) {
       geom_area(aes(y = log(confirmed_positive)), color = 'black', alpha = 0.6) +
       # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
       labs(x = "date", y = NULL, title = "log(cases in NL)")
-    # Alec - I don't have teh 
+    # Alec - I don't have teh
     #+ scale_y_continuous(expand = expansion(c(0, 0.1)))
   })
 
