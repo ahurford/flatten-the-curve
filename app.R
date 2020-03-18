@@ -23,12 +23,14 @@ SIR <- function(t, y, p) {
     dSx <- -a * c * Sx * Ix
     dIx <- a * c * Sx * Ix - gamma * Ix - v * Ix
     dFx <- v * Ix
+    dCx <- a*c*Sx*Ix
     dS <- -a * (1 - m1) * c * S * I
     dI <-  a * (1 - m1) * c * S * I - gamma * I - v * I
     dF <- v * I
+    dC <- a*c*(1-m1)*S*I
 
-    list(c(Sx = dSx, Ix = dIx, Fx = dFx, S = dS,
-           I = dI, Fs = dF))
+    list(c(Sx = dSx, Ix = dIx, Fx = dFx, Cx = dCx, S = dS,
+           I = dI, Fs = dF, C=dC))
   })
 }
 
@@ -48,14 +50,18 @@ server <- function(input, output) {
     S0 <- 1 - I0
     mintime <- 0
     maxtime <- 250
-    out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, S = S0, I = I0, FS = 0), times = seq(mintime, maxtime, 1), SIR, parms)
+    out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx=0, S = S0, I = I0, FS = 0, C=0), times = seq(mintime, maxtime, 1), SIR, parms)
     df <- data.frame(out)
-
+  
+   ## ALEC - this is what I want to plot but with ggplot         
+   plot(seq(mintime, maxtime-1, 1), diff(df$C))
+   plot(seq(mintime, maxtime-1, 1), diff(df$Cx))
+    
     # Plot percent population infected
     areaAlpha <- 0.6
     g1 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
-      geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
+      geom_area(aes(y = Cx * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = C * 100), fill = '#b2df8a', alpha = areaAlpha) +
       geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
       labs(x = NULL, y = NULL, title = "Percent of the population currently infected")
 
@@ -84,7 +90,8 @@ server <- function(input, output) {
     # Combine plots and table with patchwork
     (g1 /
       g2 &
-      scale_y_continuous(expand = expansion(c(0, 0.1)), labels = function(x) paste0(x,"%")) &
+        # Alec I don't have the package for the expansion() function
+      #scale_y_continuous(expand = expansion(c(0, 0.1), labels = function(x) paste0(x,"%")) &
         scale_x_continuous(expand = c(0, 0)) ) /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
   })
@@ -103,8 +110,9 @@ server <- function(input, output) {
       geom_area(aes(y = log(presumptive_positive)), color = 'grey', alpha = 0.5) +
       geom_area(aes(y = log(confirmed_positive)), color = 'black', alpha = 0.6) +
       # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
-      labs(x = "date", y = NULL, title = "log(cases in NL)") +
-      scale_y_continuous(expand = expansion(c(0, 0.1)))
+      labs(x = "date", y = NULL, title = "log(cases in NL)")
+    # Alec - I don't have teh 
+    #+ scale_y_continuous(expand = expansion(c(0, 0.1)))
   })
 
 }
@@ -116,7 +124,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
   fluidRow(column(
     6,
     h1("The math behind flatten the curve"),
-    p("by Amy Hurford, Alec Robitaille, and Joseph Baafi (Memorial University)"),
+    p("by Amy Hurford and Alec Robitaille (Memorial University)"),
     p(""),
   p("Github:", tags$a(href = "https://github.com/ahurford/flatten-the-curve", "https://github.com/ahurford/flatten-the-curve")),
   p("Anyone interested in contributing should contact ahurford-at-mun-dot-ca."))),
