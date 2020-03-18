@@ -84,15 +84,29 @@ server <- function(input, output) {
     # Combine plots and table with patchwork
     (g1 /
       g2 &
-      scale_y_continuous(expand = expand_scale(c(0, 0.1)), labels = function(x) paste0(x,"%")) &
+      scale_y_continuous(expand = expansion(c(0, 0.1)), labels = function(x) paste0(x,"%")) &
         scale_x_continuous(expand = c(0, 0)) ) /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
   })
 
-  output$scrape <- renderTable({
+  output$scrapeTab <- renderTable({
     invalidateLater(24 * 60 * 60 * 1000)
     data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
   })
+
+  output$scrapePlot <- renderPlot({
+    invalidateLater(24 * 60 * 60 * 1000)
+    NL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
+
+    # Plot cases in NL
+    ggplot(NL, aes(x = Date, group = 1)) +
+      geom_area(aes(y = log(presumptive_positive)), color = 'grey', alpha = 0.5) +
+      geom_area(aes(y = log(confirmed_positive)), color = 'black', alpha = 0.6) +
+      # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
+      labs(x = "date", y = NULL, title = "log(cases in NL)") +
+      scale_y_continuous(expand = expansion(c(0, 0.1)))
+  })
+
 }
 
 
@@ -189,7 +203,11 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     is currently in progress")
                     ),
 
-             tableOutput("scrape"))
+             plotOutput("scrapePlot"),
+             tags$br(),
+             tags$br(),
+             tags$br(),
+             tableOutput("scrapeTab"))
 ))
 
 ### Run app ----
