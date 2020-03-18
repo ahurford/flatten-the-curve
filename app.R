@@ -1,5 +1,5 @@
 ### The math behind flatten the curve ===
-# by Amy Hurford, Alec Robitaille, and Joseph Baafi (Memorial University)
+# by Amy Hurford and Alec Robitaille (Memorial University)
 
 ### Packages ----
 library(deSolve)
