@@ -76,7 +76,7 @@ server <- function(input, output) {
       geom_area(aes(y = diffC), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = diffCx), fill = '#b2df8a', alpha = areaAlpha) +
       # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
-      labs(x = NULL, y = NULL, title = "Percent of the population currently infected")
+      labs(x = NULL, y = NULL, title = "TODO: C, Cx")
 
     # Generate data.frame to print
     R_0 <- round(a * c / (v + gamma), 1)
