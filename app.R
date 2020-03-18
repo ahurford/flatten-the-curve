@@ -175,9 +175,9 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                        characterisitcs such as the duration of infectivity (assumed to be 13 days),
                        and the percentage of infections that lead to fatalities (assumed to be 3%)."),
                     p("Not all the 'flatten the curve' graphs that have appeared in the media arise from SIR or related epidemic models",
-                      tags$a(href = "http://ms.mcmaster.ca/~bolker/misc/peak_I_simple.html", "(Bolker and Dushoff 2020)")), "but none-the-less, as we have shown in the
+                      tags$a(href = "http://ms.mcmaster.ca/~bolker/misc/peak_I_simple.html", "(Bolker and Dushoff 2020)"), "but none-the-less, as we have shown in the
                        graphs on the right, the 'flatten the curve' idea is consistent with
-                       the epidemic models commonly found in textbooks."),
+                       the epidemic models commonly found in textbooks.")),
              column(7,
 
            # Output SIR plot and help text below:
