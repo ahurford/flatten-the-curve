@@ -1,5 +1,6 @@
 rm(list=ls()) 
 # Code to be embedded in the app
+# Opps need to fit to cumulative cases
 library(deSolve)
 library(bbmle)
 
