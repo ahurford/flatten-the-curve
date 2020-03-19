@@ -13,7 +13,6 @@ library(data.table)
 #rsconnect::deployApp("/Users/amyhurford/Desktop/flatten-the-curve")
 # in R Console
 
-
 ### Theme ----
 theme_set(theme_light())
 
@@ -181,6 +180,10 @@ print(head(df))
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
     
   })
+  
+  output$selected_var <- renderText({ 
+    "You have selected this"
+  })
 
   output$scrapeTab <- renderTable({
     invalidateLater(24 * 60 * 60 * 1000)
@@ -260,6 +263,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
            # Output SIR plot and help text below:
            plotOutput("SIR"),
+           
            helpText("Blue curve: no changes implemented; Green curve: with social distancing; Grey line: capacity of the health care system."),
            helpText("Cumulative fatalities does not account for an increased death rate when health resourses are exceeded."),
            helpText("Doubling time: Early on in the epidemic, the time for the number of infected people to double."),
@@ -311,7 +315,8 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                                graphs on the right, the 'flatten the curve' idea is consistent with
                                the epidemic models commonly found in textbooks.")),
                       column(7,
-             plotOutput("AreaUnder")
+             plotOutput("AreaUnder"),
+             textOutput("selected_var")
     ))),
     # More models tab
     tabPanel("More models",
