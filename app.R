@@ -37,26 +37,27 @@ SIR <- function(t, y, p) {
 SIR2 <- function(t, y, p) {
   with(as.list(c(y, p)), {
     dSx <- -a * c * Sx * Ix
-    dIx <- a * c * Sx * Ix - gamma * Ix - v * Ix
-    dFx <- v * Ix
-    dCx <- a*c*Sx*Ix
-    if(Ix > H2/100) {
-      dHx <- a*c*Sx*Ix
-      } else {
-      dHx<-0
-      }
-    dS <- -a * (1 - m2) * c * S * I
-    dI <-  a * (1 - m2) * c * S * I - gamma * I - v * I
-    dF <- v * I
-    dC <- a*c*(1-m2)*S*I
-    if(I > H/100) {
-      dH <- (1-m2)*a*c*S*I
-      } else {
-      dH <-0
+    dIx <- a * c * Sx * Ix - gamma * Ix - sigma*Ix - v*Ix
+    dHx1 <- sigma*Ix - vH*Hx1 - rho*Hx1
+    if(Hx < H2/100){
+      dHx <- sigma*Ix - vH*Hx - rho*Hx
+      dUx <- 0
+    } else {
+      dHx <- 0
+      dUx <- sigma*Ix
     }
-    
-    list(c(Sx = dSx, Ix = dIx, Fx = dFx, Hx = dHx, Cx = dCx, S = dS,
-           I = dI, Fs = dF, C=dC, HS = dH))
+
+    dS <- -a * (1 - m2) * c * S * I
+    dI <-  a * (1 - m2) * c * S * I - gamma * I - v * I - sigma*I
+    dH1 <- sigma*I - vH*H1 - rho*H1
+    if(Hx < H2/100){
+      dH0 <- sigma*I - vH*H0 - rho*H0
+      dU <- 0
+    } else {
+      dH0 <- 0
+      dU <- sigma*I
+    }
+    list(c(Sx = dSx, Ix = dIx, Hx1 = dHx1, Hx=dHx, Ux=dUx, S = dS, I = dI, H1 = dH1, H0 = dH0, U=dU))
   })
 }
 
@@ -78,9 +79,6 @@ server <- function(input, output) {
     maxtime <- 250
     out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx=0, S = S0, I = I0, FS = 0, C=0), times = seq(mintime, maxtime, 1), SIR, parms)
     df <- data.table(out)
-
-    df[, diffC := c(diff(C), NA)]
-    df[, diffCx := c(diff(Cx), NA)]
 
     # Plot percent population infected
     areaAlpha <- 0.6
@@ -128,51 +126,48 @@ server <- function(input, output) {
     v <- gamma * chi / (1 - chi)
     c <- 0.4
     a <- 0.5
-    parms <- c(a = a, m2 = input$m2, c = c, gamma = gamma,
-               v = v, H2 = input$H2)
+    # Yang: Lancet Respiratory Medicine - Clinical course and outcomes
+    # Survial of non-survivors 1-2 weeks. Median ICU to death 7 days
+    # 61.5% died before 28 days.
+    # 52/201 with pneumonia included.
+    # Assume 20% infections are severe.
+    rho <- 1/7
+    # 0.62 = vH/(vH + rho)
+    # <=> 0.62*(1/7) = vH*(1-0.62)
+    vH <- 0.62*(1/7)/(1-0.62)
+    # 0.2*(52/201) = sigma/(v + gamma + sigma)
+    # 0.2*(52/201)*(v + gamma) = sigma*(1 - 0.2*(52/201)) 
+    sigma <- 0.2*(52/201)*(0.00238 + 1/13)/(1 - 0.2*(52/201)) 
+    
+    parms <- c(a = a, m2 =input$m2, c = c, gamma = gamma,
+               v = v, H2 = input$H2, rho = rho, vH = vH, sigma = sigma)
     I0 <- 0.005
     S0 <- 1 - I0
     mintime <- 0
     maxtime <- 250
-    out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Hx=0, Cx=0, S = S0, I = I0, FS = 0, C=0, HS=0), times = seq(mintime, maxtime, 1), SIR2, parms)
+    out <- ode(y = c(Sx = S0, Ix = I0, Hx1 = 0, Hx=0, Ux=0, S = S0, I = I0, H1 = 0, H0 = 0, U = 0), times = seq(mintime, maxtime, 1), SIR2, parms)
     df <- data.table(out)
-    
-    df[, diffC := c(diff(C), NA)]
-    df[, diffCx := c(diff(Cx), NA)]
-    #df$Hx =  max(df$Hx-H,0)
-    #df$HS = max(df$HS-H,0)
-    print(df$Hx)
+print(head(df))
     
     # Plot percent population infected
     areaAlpha <- 0.6
     g1 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
-      geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
-      geom_hline(aes(yintercept = input$H2), alpha = 0.2, size = 3) +
-      labs(x = NULL, y = NULL, title = "Percent of the population currently infected")
+      geom_area(aes(y = Ux * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = U * 100), fill = '#b2df8a', alpha = areaAlpha) +
+      #geom_hline(aes(yintercept = input$H2/100), alpha = 0.2, size = 3) +
+      labs(x = NULL, y = NULL, title = "Unmet need")
 
     g3 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = 100*diffCx), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
-      geom_area(aes(y = 100*diffC), fill = '#b2df8a', alpha = areaAlpha) +
+      geom_area(aes(y = 100*Hx), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = 100*H0), fill = '#b2df8a', alpha = areaAlpha) +
       # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
-      labs(x = "time (days)", title = "Percent of the population newly infected", y= NULL)
-    
-    # g2 <- ggplot(df, aes(x = time)) +
-    #   geom_area(aes(y = 100*Hx), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
-    #   geom_area(aes(y = 100*HS), fill = '#b2df8a', alpha = areaAlpha) +
-    #   # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
-    #   labs(x = "time (days)", title = "Percent of the population newly infected", y= NULL)
-    
-    infect.days.x = round(100*sum(df$Ix),0)
-    infect.days = round(100*sum(df$I),0)
-    num.infect = round(100*sum(diff(df$C)),1)
-    num.infect.x = round(100*sum(diff(df$Cx)),1)
-    
+      labs(x = "time (days)", title = "Hospitalized", y= NULL)
     toprint <-
       data.frame(
         " " = c("no distancing", "with distancing"),
-        "infection x days" = c(infect.days.x, infect.days),
-        "total infected (%)" = c(num.infect.x, num.infect),
+        "doubling time" = c(1, 1),
+        "R0" = c(1, 1),
+        "fatalities" = c(1, 1),
         check.names = FALSE
       )
     
