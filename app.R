@@ -35,28 +35,40 @@ SIR <- function(t, y, p) {
 
 SIR2 <- function(t, y, p) {
   with(as.list(c(y, p)), {
+  	# The x subscript indicates "no social distancing".
     dSx <- -a * c * Sx * Ix
     dIx <- a * c * Sx * Ix - gamma * Ix - sigma*Ix - v*Ix
+    # Hospitalized without a capacity cap for reference
     dHx1 <- sigma*Ix - vH*Hx1 - rho*Hx1
+    dCx <- a * c * Sx * Ix
+    dHcumx <- sigma*Ix
     if(Hx < H2/100){
+    	# Hospitalized with a capacity cap
       dHx <- sigma*Ix - vH*Hx - rho*Hx
+      # Unmet need
       dUx <- 0
     } else {
-      dHx <- 0
-      dUx <- sigma*Ix
+      dHx <- sigma*H2/100 - vH*Hx - rho*Hx
+      # Cumulative unmet need
+      dUx <- sigma*(Ix-H2/100)
     }
 
+    # with social distancing
     dS <- -a * (1 - m2) * c * S * I
     dI <-  a * (1 - m2) * c * S * I - gamma * I - v * I - sigma*I
+    dHcum <- sigma*I
+    # without a cap on hospital resources
     dH1 <- sigma*I - vH*H1 - rho*H1
-    if(Hx < H2/100){
+    dC <- a * (1 - m2) * c * S * I
+
+    if(H0 < H2/100){
       dH0 <- sigma*I - vH*H0 - rho*H0
       dU <- 0
     } else {
-      dH0 <- 0
-      dU <- sigma*I
+      dH0 <- sigma*H2/100 - vH*H0 - rho*H0
+      dU <- sigma*(I-H2/100)
     }
-    list(c(Sx = dSx, Ix = dIx, Hx1 = dHx1, Hx=dHx, Ux=dUx, S = dS, I = dI, H1 = dH1, H0 = dH0, U=dU))
+    list(c(Sx = dSx, Ix = dIx, Hx1 = dHx1, Hx=dHx, Ux=dUx,Cx=dCx, S = dS, I = dI, H1 = dH1, H0 = dH0, U=dU,C=dC, Hcum=dHcum, Hcumx=dHcumx))
   })
 }
 
@@ -117,7 +129,7 @@ server <- function(input, output) {
         scale_x_continuous(expand = expand_scale(mult = c(0, 0)))) /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
   })
-  
+
   output$AreaUnder <- renderPlot({
     # Parameters are taken from Bolker & Dushoff model
     gamma <- 1/13
@@ -135,53 +147,71 @@ server <- function(input, output) {
     # <=> 0.62*(1/7) = vH*(1-0.62)
     vH <- 0.62*(1/7)/(1-0.62)
     # 0.2*(52/201) = sigma/(v + gamma + sigma)
-    # 0.2*(52/201)*(v + gamma) = sigma*(1 - 0.2*(52/201)) 
-    sigma <- 0.2*(52/201)*(0.00238 + 1/13)/(1 - 0.2*(52/201)) 
-    
+    # 0.2*(52/201)*(v + gamma) = sigma*(1 - 0.2*(52/201))
+    sigma <- 0.2*(52/201)*(0.00238 + 1/13)/(1 - 0.2*(52/201))
+
     parms <- c(a = a, m2 =input$m2, c = c, gamma = gamma,
                v = v, H2 = input$H2, rho = rho, vH = vH, sigma = sigma)
     I0 <- 0.005
     S0 <- 1 - I0
     mintime <- 0
     maxtime <- 250
-    out <- ode(y = c(Sx = S0, Ix = I0, Hx1 = 0, Hx=0, Ux=0, S = S0, I = I0, H1 = 0, H0 = 0, U = 0), times = seq(mintime, maxtime, 1), SIR2, parms)
+    out <- ode(y = c(Sx = S0, Ix = I0, Hx1 = 0, Hx=0, Ux=0, Cx=0, S = S0, I = I0, H1 = 0, H0 = 0, U = 0, C=0, Hcum=0, Hcumx=0), times = seq(mintime, maxtime, 1), SIR2, parms)
     df <- data.table(out)
-print(head(df))
-    
-    # Plot percent population infected
-    areaAlpha <- 0.6
-    g1 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = Ux * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
-      geom_area(aes(y = U * 100), fill = '#b2df8a', alpha = areaAlpha) +
-      #geom_hline(aes(yintercept = input$H2/100), alpha = 0.2, size = 3) +
-      labs(x = NULL, y = NULL, title = "Unmet need")
+		print(tail(df))
 
-    g3 <- ggplot(df, aes(x = time)) +
+    areaAlpha <- 0.6
+
+    g1 <- ggplot(df, aes(x = time)) +
+    	geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
+    	geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
+    	#geom_hline(aes(yintercept = input$H2/100), alpha = 0.2, size = 3) +
+    	labs(x = NULL, y = NULL, title = "Infected (percentage of population)")
+
+    g2 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = 100*Hx), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = 100*H0), fill = '#b2df8a', alpha = areaAlpha) +
-      # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
-      labs(x = "time (days)", title = "Hospitalized", y= NULL)
+      geom_line(aes(y=100*Hx1), alpha = 1, size = 3, col = '#a6cee3') +
+    	geom_line(aes(y=100*H1), alpha = 1, size = 3, col = '#b2df8a') +
+    	geom_hline(aes(yintercept = input$H2), alpha = 0.2, size = 3) +
+      labs(x = NULL, title = "Requiring critical care (percentage of population)", y= NULL)
+
+    g3 <- ggplot(df, aes(x = time)) +
+    	geom_area(aes(y = Ux* 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
+    	geom_area(aes(y = U * 100), fill = '#b2df8a', alpha = areaAlpha) +
+    	#geom_hline(aes(yintercept = input$H2/100), alpha = 0.2, size = 3) +
+    	labs(x = "time (days)", y = NULL, title = "Cumulative unmet need (percentage of population)")
+
+    final.unmet.x = round(last(df$Ux)*100,2)
+    final.unmet = round(last(df$U)*100,2)
+    final.hosp.x = round(last(df$Hcumx)*100,2)
+    final.cases.x = round(last(df$Cx)*100,0)
+    final.cases = round(last(df$C)*100,0)
+    final.hosp = round(last(df$Hcum)*100,2)
+    print(tail(df))
+
     toprint <-
       data.frame(
         " " = c("no distancing", "with distancing"),
-        "doubling time" = c(1, 1),
-        "R0" = c(1, 1),
-        "fatalities" = c(1, 1),
+        "Final unmet need (%)" = c(final.unmet.x, final.unmet),
+        "Final critical care need (%):" =c(final.hosp.x, final.hosp),
+        "Final cases (%)" = c(final.cases.x, final.cases),
         check.names = FALSE
       )
-    
+
     # Combine plots and table with patchwork
     (g1 /
-        g3 
+        g2 /
+    			g3
       &
         scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
                            labels = function(x) paste0(x, "%")) &
         scale_x_continuous(expand = expand_scale(mult = c(0, 0)))) /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
-    
+
   })
-  
-  output$selected_var <- renderText({ 
+
+  output$selected_var <- renderText({
     "You have selected this"
   })
 
@@ -263,7 +293,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
            # Output SIR plot and help text below:
            plotOutput("SIR"),
-           
+
            helpText("Blue curve: no changes implemented; Green curve: with social distancing; Grey line: capacity of the health care system."),
            helpText("Cumulative fatalities does not account for an increased death rate when health resourses are exceeded."),
            helpText("Doubling time: Early on in the epidemic, the time for the number of infected people to double."),
@@ -279,17 +309,17 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              tabPanel("Social distancing",
                       column(5,
                              p(""),
-                             
+
                              # Slider input: social distancing
                              sliderInput("m2", "social distancing:",
                                          min = 0, max = 1, step = 0.01, value = .2,
                                          width = '100%'),
                              helpText("0: no efforts to enact social distancing"),
                              helpText("1: fully effective isolation"),
-                             sliderInput("H2", "Hospital capacity:",
-                                         min = 0, max = 100, step = 1, value = 15,
+                             sliderInput("H2", "Hospital capacity (%):",
+                                         min = 0, max = 0.3, step = .01, value = 0.2,
                                          width = '100%'),
-                             
+
                              # Text in sidebar
                              p("Have you heard the remark:"),
                              p(tags$b(" 'We'll never know the effect that social distancing has had;
