@@ -176,36 +176,14 @@ server <- function(input, output) {
     )
   })
 
-  output$SIHR <- renderPlot({
-    # Parameters are taken from Bolker & Dushoff model
-    gamma <- 1/13
-    chi <- 0.03
-    v <- gamma * chi / (1 - chi)
-    c <- 0.4
-    a <- 0.5
-    # Yang: Lancet Respiratory Medicine - Clinical course and outcomes
-    # Survial of non-survivors 1-2 weeks. Median ICU to death 7 days
-    # 61.5% died before 28 days.
-    # 52/201 with pneumonia included.
-    # Assume 20% infections are severe.
-    rho <- 1/7
-    # 0.62 = vH/(vH + rho)
-    # <=> 0.62*(1/7) = vH*(1-0.62)
-    vH <- 0.62*(1/7)/(1-0.62)
-    # 0.2*(52/201) = sigma/(v + gamma + sigma)
-    # 0.2*(52/201)*(v + gamma) = sigma*(1 - 0.2*(52/201))
-    sigma <- 0.2*(52/201)*(0.00238 + 1/13)/(1 - 0.2*(52/201))
-
+  dataSIHR <- reactive({
     parms <- c(a = a, m2 = input$m2/100, c = c, gamma = gamma,
                v = v, H2 = input$H2, rho = rho, vH = vH, sigma = sigma)
-    I0 <- 0.005
-    S0 <- 1 - I0
-    mintime <- 0
-    maxtime <- 250
     out <- ode(y = c(Sx = S0, Ix = I0, Hx1 = 0, Hx=0, Ux=0, Cx=0, S = S0, I = I0, H1 = 0, H0 = 0, U = 0, C=0, Hcum=0, Hcumx=0), times = seq(mintime, maxtime, 1), SIHR, parms)
-    df <- data.table(out)
+  })
 
-    areaAlpha <- 0.6
+  output$SIHR <- renderPlot({
+    df <- data.table(dataSIHR())
 
     g1 <- ggplot(df, aes(x = time)) +
     	geom_area(aes(y = Ix * 100, fill = 'No changes implemented'), alpha = areaAlpha - 0.2) +
