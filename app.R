@@ -295,7 +295,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              tabPanel("Your questions",
                       column(5,
                              p(""),
-                             
+
                              # Slider input: social distancing
                              sliderInput("m2", "social distancing (%):",
                                          min = 0, max = 100, step = 1, value = 20,
@@ -307,7 +307,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                                          min = 0, max = 0.3, step = .01, value = 0.2,
                                          width = '100%'),
                              helpText("Move the slider and the grey line will change"),
-                             
+
                              # Text in sidebar
                              p("Here we answer some of your questions we received by email."),
                              p(tags$b("Q1. How can we estimate the hospital capacity?")),
@@ -342,7 +342,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                               into contact with someone else for 1 minute vs. 1 hour? These details should matter, but classically
                               this component of epidemiological models has been difficult to pin down.")
                       ),
-            
+
                       column(7,
                              plotOutput("SIHR"),
                              helpText("Blue curve: no social distancing; Green curve: with social distancing; Grey line: hospital capacity."),
@@ -375,6 +375,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                       more than a simple SIR model. For example, the SIR model fails to consider people who are not showing symptoms, but can infected others. For one approach to improving the consistency of the epidemic model with characteristics
                       of COVID-19, see",
                       tags$a(href = "https://alhill.shinyapps.io/COVID19seir/", "Hill (2020).")))),
+    									# this link looks good: http://gabgoh.github.io/COVID/index.html
     # Newfoundland tab
     tabPanel("Newfoundland",
              column(10,
