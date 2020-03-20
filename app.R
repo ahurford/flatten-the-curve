@@ -230,8 +230,8 @@ server <- function(input, output) {
       geom_line(aes(y = confirmed_positive, color = 'Confirmed Positive'),
                 show.legend = TRUE) +
       geom_point(aes(y = confirmed_positive), color = '#0e288e') +
-      labs(x = "date", y = NULL, title = "Cases in NL", color  = FALSE) +
-      scale_color_manual(values = cols)
+      labs(x = NULL, y = NULL, title = "Cases in NL", color  = NULL) +
+      scale_color_manual(values = cols) +
       scale_y_continuous(#expand = expand_scale(mult = c(0, 0.1)),
                          limits = c(0, max(c(NL$presumptive_positive, NL$confirmed_positive), na.rm = TRUE) + 2))
    })
