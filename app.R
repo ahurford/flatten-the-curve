@@ -136,20 +136,22 @@ server <- function(input, output) {
   })
 
   output$SIRtab <- renderTable({
-    # Generate data.frame to print
-    R_0 <- round(a * c / (v + gamma), 1)
+    parms <- c(a = a, m1 = input$m1/100, c = c, gamma = gamma,
+               v = v, H = H)
+    out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx=0, S = S0, I = I0, FS = 0, C=0), times = seq(mintime, maxtime, 1), SIR, parms)
+
     R_2 <- round((1 - input$m1/100) * R_0, 1)
-    DT <- round(log(2) / (a * c - v - gamma), 1)
     DT_2 <- max(round(log(2) / ((1 - input$m1) * a * c - v - gamma), 1), 0)
     fat <- round(100 * out[length(out[, 1]), 4], 1)
     fat_2 <- round(100 * out[length(out[, 1]), 7], 1)
+
     data.frame(
-        " " = c("no distancing", "with distancing"),
-        "doubling time" = c(DT, DT_2),
-        "R0" = c(R_0, R_2),
-        "fatalities" = c(fat, fat_2),
-        check.names = FALSE
-      )
+      " " = c("no distancing", "with distancing"),
+      "doubling time" = c(DT, DT_2),
+      "R0" = c(R_0, R_2),
+      "fatalities" = c(fat, fat_2),
+      check.names = FALSE
+    )
   })
 
   output$SIHR <- renderPlot({
