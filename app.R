@@ -93,20 +93,21 @@ server <- function(input, output) {
 
     # Plot percent population infected
     areaAlpha <- 0.6
-    cols <- c('No changes implemented' = '#a6cee3',
-              'With social distancing' = '#b2df8a',
-              'Hospital capacity' = 'grey')
     g1 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = Ix * 100, fill = 'No changes implemented'), show.legend = TRUE, alpha = areaAlpha - 0.2) +
       geom_area(aes(y = I * 100, fill = 'With social distancing'), show.legend = TRUE, alpha = areaAlpha) +
       geom_hline(aes(yintercept = H, color = 'Hospital capacity'), show.legend = TRUE, alpha = 0.8, size = 2.5) +
-      labs(x = NULL, y = NULL, title = "Percent of the population currently infected", fill = NULL, color = NULL)
+      labs(x = NULL, y = NULL, title = "Percent of the population currently infected", fill = NULL, color = NULL) +
+      guides(fill = guide_legend(override.aes = list(linetype = 0),
+                                 nrow = 1),
+             color = guide_legend(override.aes = list(fill = 'white')))
 
     # Plot cumulative fatalities
     g2 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = Fx * 100, fill = 'No changes implemented'), show.legend = TRUE, alpha = areaAlpha - 0.2) +
-      geom_area(aes(y = FS * 100, fill = 'With social distancing'), show.legend = TRUE, alpha = areaAlpha) +
-      labs(x = "time (days)", y = NULL, title = "Cumulative fatalities (% of the population)", fill = NULL)
+      geom_area(aes(y = Fx * 100, fill = 'No changes implemented'), alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = FS * 100, fill = 'With social distancing'), alpha = areaAlpha) +
+      labs(x = "time (days)", y = NULL, title = "Cumulative fatalities (% of the population)", fill = NULL) +
+      guides(fill = FALSE, color = FALSE)
 
     # Combine plots and table with patchwork
     (g1 /
