@@ -119,7 +119,7 @@ server <- function(input, output) {
     (g1 /
       g2 &
         scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
-                         labels = function(x) paste0(x, "%")) &
+                           labels = function(x) paste0(x, "%")) &
         scale_x_continuous(expand = expand_scale(mult = c(0, 0)))) /
       tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
   })
@@ -204,7 +204,8 @@ server <- function(input, output) {
 
   output$scrapeTab <- renderTable({
     invalidateLater(24 * 60 * 60 * 1000)
-    data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
+    data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[
+      Province == 'NL'][, .(Province, Date, negative, presumptive_negative, presumptive_positive, confirmed_positive)]
   })
 
   output$scrapePlot <- renderPlot({
