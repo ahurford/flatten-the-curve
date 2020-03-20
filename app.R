@@ -152,7 +152,6 @@ server <- function(input, output) {
     maxtime <- 250
     out <- ode(y = c(Sx = S0, Ix = I0, Hx1 = 0, Hx=0, Ux=0, Cx=0, S = S0, I = I0, H1 = 0, H0 = 0, U = 0, C=0, Hcum=0, Hcumx=0), times = seq(mintime, maxtime, 1), SIHR, parms)
     df <- data.table(out)
-    print(tail(df))
 
     areaAlpha <- 0.6
 
@@ -160,19 +159,19 @@ server <- function(input, output) {
     	geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
     	geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
     	#geom_hline(aes(yintercept = input$H2/100), alpha = 0.2, size = 3) +
-    	labs(x = NULL, y = NULL, title = "Infected (percentage of population)")
+    	labs(x = NULL, y = NULL, title = "Infected (% of population)")
 
     g2 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = 100*Hx1), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
       geom_area(aes(y = 100*H1), fill = '#b2df8a', alpha = areaAlpha) +
     	geom_hline(aes(yintercept = input$H2), alpha = 0.2, size = 3) +
-      labs(x = NULL, title = "Requiring critical care (percentage of population)", y= NULL)
+      labs(x = NULL, title = "Requiring critical care (% of population)", y= NULL)
 
     g3 <- ggplot(df, aes(x = time)) +
     	geom_area(aes(y = Ux* 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
     	geom_area(aes(y = U * 100), fill = '#b2df8a', alpha = areaAlpha) +
     	#geom_hline(aes(yintercept = input$H2/100), alpha = 0.2, size = 3) +
-    	labs(x = "time (days)", y = NULL, title = "Cumulative unmet need (percentage of population)")
+    	labs(x = "time (days)", y = NULL, title = "Cumulative unmet need (% of population)")
 
     final.unmet.x = round(last(df$Ux)*100,2)
     final.unmet = round(last(df$U)*100,2)
@@ -186,7 +185,7 @@ server <- function(input, output) {
         " " = c("no distancing", "with distancing"),
         "Final unmet need (%)" = c(final.unmet.x, final.unmet),
         "Final critical care need (%):" =c(final.hosp.x, final.hosp),
-        "Final cases (%)" = c(final.cases.x, final.cases),
+        "Final infected (%)" = c(final.cases.x, final.cases),
         check.names = FALSE
       )
 
@@ -202,9 +201,6 @@ server <- function(input, output) {
 
   })
 
-  output$selected_var <- renderText({
-    "You have selected this"
-  })
 
   output$scrapeTab <- renderTable({
     invalidateLater(24 * 60 * 60 * 1000)
@@ -250,9 +246,10 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     p(""),
 
                     # Slider input: social distancing
-                    sliderInput("m1", "social distancing:",
+                    sliderInput("m1", "social distancing (%):",
                                 min = 0, max = 100, step = 1, value = 20,
                                 width = '100%'),
+                    helpText("The green curve shows the effect of social distancing"),
                     helpText("0%: no efforts to enact social distancing"),
                     helpText("100%: complete isolation"),
 
@@ -285,45 +282,77 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            # Output SIR plot and help text below:
            plotOutput("SIR"),
 
-           helpText("Blue curve: no changes implemented; Green curve: with social distancing; Grey line: capacity of the health care system."),
+           helpText("Blue curve: no changes implemented; Green curve: with social distancing; Grey line: hospital capacity."),
            helpText("Cumulative fatalities does not account for an increased death rate when health resourses are exceeded."),
            helpText("Doubling time: Early on in the epidemic, the time for the number of infected people to double."),
            helpText("R0: Early on in the epidemic, the average number of people subsequently infected by an infected person."),
            helpText("Fatalities: The percentage of the population that has died from COVID-19 after 250 days, however this
-                    does not consider an increased death rate when health resources are overwhelmed. Epidemic models, such as SIR, suggest
-                    that, even aside from preventing overwhelming the health care system, a smaller percentage of the population
+                    does not consider an increased death rate when the hospital capacity is exceeded. Epidemic models, such as SIR, suggest
+                    that, even aside from preventing exceeding the hospital capacity, a smaller percentage of the population
                     will die from COVID-19 under social distancing."),
            helpText("The parameterization for this SIR model was taken from Bolker and Dushoff (2020)."))),
-    # Area under the curve
     tabPanel("Your questions",
-             # Left column
-             tabPanel("Social distancing",
+             tabPanel("Your questions",
                       column(5,
                              p(""),
-
+                             
                              # Slider input: social distancing
-                             sliderInput("m2", "social distancing:",
+                             sliderInput("m2", "social distancing (%):",
                                          min = 0, max = 100, step = 1, value = 20,
                                          width = '100%'),
+                             helpText("The green curve shows the effect of social distancing"),
                              helpText("0%: no efforts to enact social distancing"),
                              helpText("100%: complete isolation"),
                              sliderInput("H2", "Hospital capacity (% of population):",
                                          min = 0, max = 0.3, step = .01, value = 0.2,
                                          width = '100%'),
-
+                             helpText("Move the slider and the grey line will change"),
+                             
                              # Text in sidebar
                              p("Here we answer some of your questions we received by email."),
-                             p(tags$b("Q1. How can we estimate the health care capacity?")),
+                             p(tags$b("Q1. How can we estimate the hospital capacity?")),
                              p(tags$a(href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model", "The SIR equations"), "do not distinguish between infected individuals
-                               that require hospitalization and those that don't. Since health care capacity is such
-                               a fundamental component of 'flatten the curve', my decision was to tackle this by using
-                               an 'SIHR' framework where H refers to infected people that require critical care in a hospital, and
-                              I is infected people who do not require critical care.")
+                               that require hospitalization and those who don't. Since hospital capacity is
+                               a fundamental component of 'flatten the curve', I addressed this question by using
+                               an 'SIHR' model to distinguish between infected people that require
+                               critical care (H) and those who do not (I)."),
+                             p("The top panel on the right shows the percentage of the population that is infected at a
+                               given time, while the middle panel shows the percentage of the population that
+                              requires critical care. Note that both graphs have nearly the same shape, but that
+                              the percentage of people requiring critical care at anytime is much smaller (<0.3% of the population).
+                               "),
+                             p("In terms of what you can 'flatten', as the average citizen it is unlikely that you will require
+                               critical care, so you can flatten the infections curve (the top panel). However, a consequence
+                              of flattening the infections curve is to also flatten the critical care curve (the middle panel).
+                               This is central to the idea of flattening the curve: we implement social distancing not necessarily to protect ourselves, but to protect the most vulernable."),
+                             p("The hospital capacity line is relevant to the percentage of the population
+                               requiring critical care; the default value shows hosptial capacity as 0.2% of the population, i.e,
+                               if more than 2 out of every 1000 people require critical care, then hospital capacity is exceeded.
+                               Admittedly, this sounds like a very well-funded healthcare system, so please see the 'More models' tab to understand that the numbers generated by this app should not be taken too literally."),
+                             p(tags$b("Q2. What does social distancing equal to 20% mean?")),
+                             p("For COVID-19, a contact is defined as coming within 1-2m of another person.
+                               Therefore, if at your baseline level (social distancing =0%) you contacted 50 people each day,
+                               social distancing at 20% means that you reduce your contacts to 80% of your
+                              baseline level (=40 people per day). Please remember that you
+                               are not supposed to take these numbers too literally: many of the graphs here suggest that
+                               social distancing at 20% will prevent hospital overload: these models are too simple for
+                               their results to be understood that precisely (see the 'More models' tab)."),
+                             p("My answer above is not very good. What about becoming infected via touching a contaminated
+                              surface? What about touching a contaminated surface 1 day after the contamination? And what about coming
+                              into contact with someone else for 1 minute vs. 1 hour? These details should matter, but classically
+                              this component of epidemiological models has been difficult to pin down.")
                       ),
             
                       column(7,
-             plotOutput("SIHR"),
-             textOutput("selected_var")
+                             plotOutput("SIHR"),
+                             helpText("Blue curve: no social distancing; Green curve: with social distancing; Grey line: hospital capacity."),
+                             helpText("Cumulative unmet need is the percentage of the population that had an unmet need because they required
+                                      critical care, when the capacity to provide critical care was exceeded. For the default parameters no
+                                      green curve appears because the hospital capacity is never exceeded with social distancing at 20%."),
+                             helpText("Final unmet need (%): after 250 days, the percentage of the population that had an unmet need for critical care."),
+                             helpText("Final critical care need (%): after 250 days, the percentage of the population that required critical care"),
+                             helpText("Final infected (%): after 250 days, the percentage of the population was infected. Note these
+                                      numbers are much too high. Please see the 'More models' tab for a disclaimer."),
     ))),
     # More models tab
     tabPanel("More models",
@@ -350,14 +379,14 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     tabPanel("Newfoundland",
              column(10,
                     p(""),
-                    p("We aim to make some Newfoundland-specific graphs, but this work
+                    p("We aim to make some Newfoundland-specific graphs and analysis, but this work
                     is currently in progress")
                     ),
 
-             plotOutput("scrapePlot"),
-             tags$br(),
-             tags$br(),
-             tags$br(),
+             #plotOutput("scrapePlot"),
+             #tags$br(),
+             #tags$br(),
+             #tags$br(),
              tableOutput("scrapeTab"))
 ))
 
