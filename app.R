@@ -242,15 +242,18 @@ server <- function(input, output) {
   })
 
 
-  output$scrapeTab <- renderTable({
-    invalidateLater(24 * 60 * 60 * 1000)
+  dataNL <- reactive({
     data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[
-      Province == 'NL'][, .(Province, Date, negative, presumptive_negative, presumptive_positive, confirmed_positive)]
+      Province == 'NL']
+  })
+
+  output$scrapeTab <- renderTable({
+    dataNL()[, .(Province, Date, negative, presumptive_negative, presumptive_positive, confirmed_positive)]
   })
 
   output$scrapePlot <- renderPlot({
     invalidateLater(24 * 60 * 60 * 1000)
-    NL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
+    NL <- dataNL()
 
     for (j in names(NL)) set(NL, which(is.na(NL[[j]])), j, 0)
 
