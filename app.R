@@ -393,16 +393,16 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     									# this link looks good: http://gabgoh.github.io/COVID/index.html
     # Newfoundland tab
     tabPanel("Newfoundland",
-             column(10,
+             column(12,
                     p(""),
                     p("We aim to make some Newfoundland-specific graphs and analysis, but this work
                     is currently in progress")
                     ),
 
-             #plotOutput("scrapePlot"),
-             #tags$br(),
-             #tags$br(),
-             #tags$br(),
+             plotOutput("scrapePlot", width = "55%"),
+             tags$br(),
+             tags$br(),
+             tags$br(),
              tableOutput("scrapeTab"))
 ))
 
