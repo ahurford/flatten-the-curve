@@ -21,6 +21,9 @@ theme_set(theme_light() +
               legend.text = element_text(size = 14)
             ))
 
+cols <- c('No changes implemented' = '#a6cee3',
+          'With social distancing' = '#b2df8a',
+          'Hospital capacity' = 'grey')
 
 ### Functions ----
 SIR <- function(t, y, p) {
