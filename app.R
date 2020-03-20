@@ -269,12 +269,9 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     p(""),
 
                     # Slider input: social distancing
-                    sliderInput("m1", "social distancing (%):",
+                    sliderInput("m1", "social distancing: 0%: no efforts - 100%: complete isolation",
                                 min = 0, max = 100, step = 1, value = 20,
                                 width = '100%'),
-                    helpText("The green curve shows the effect of social distancing"),
-                    helpText("0%: no efforts to enact social distancing"),
-                    helpText("100%: complete isolation"),
 
                     # Text in sidebar
                     p("Have you heard the remark:"),
