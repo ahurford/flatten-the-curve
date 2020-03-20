@@ -266,13 +266,6 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     # Left column
     tabPanel("Social distancing",
              column(5,
-                    p(""),
-
-                    # Slider input: social distancing
-                    sliderInput("m1", "social distancing: 0%: no efforts - 100%: complete isolation",
-                                min = 0, max = 100, step = 1, value = 20,
-                                width = '100%'),
-
                     # Text in sidebar
                     p("Have you heard the remark:"),
                     p(tags$b(" 'We'll never know the effect that social distancing has had;
@@ -301,6 +294,11 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
            # Output SIR plot and help text below:
            plotOutput("SIR"),
+
+           # Slider input: social distancing
+           sliderInput("m1", "social distancing: 0%: no efforts - 100%: complete isolation",
+                       min = 0, max = 100, step = 1, value = 20,
+                       width = '100%'),
 
            tableOutput("SIRtab"),
 
