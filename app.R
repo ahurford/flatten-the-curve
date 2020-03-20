@@ -94,12 +94,13 @@ server <- function(input, output) {
     # Plot percent population infected
     areaAlpha <- 0.6
     cols <- c('No changes implemented' = '#a6cee3',
-              'With social distancing' = '#b2df8a')
+              'With social distancing' = '#b2df8a',
+              'Hospital capacity' = 'grey')
     g1 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = Ix * 100, fill = 'No changes implemented'), show.legend = TRUE, alpha = areaAlpha - 0.2) +
       geom_area(aes(y = I * 100, fill = 'With social distancing'), show.legend = TRUE, alpha = areaAlpha) +
-      geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
-      labs(x = NULL, y = NULL, title = "Percent of the population currently infected", fill = NULL)
+      geom_hline(aes(yintercept = H, color = 'Hospital capacity'), show.legend = TRUE, alpha = 0.8, size = 2.5) +
+      labs(x = NULL, y = NULL, title = "Percent of the population currently infected", fill = NULL, color = NULL)
 
     # Plot cumulative fatalities
     g2 <- ggplot(df, aes(x = time)) +
@@ -113,7 +114,11 @@ server <- function(input, output) {
         scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
                            labels = function(x) paste0(x, "%")) &
         scale_x_continuous(expand = expand_scale(mult = c(0, 0))) &
-        scale_fill_manual(values = cols)) /
+        scale_fill_manual(values = cols) &
+        scale_color_manual(values = cols) &
+        guides(fill = guide_legend(override.aes = list(linetype = 0),
+                                   nrow = 1),
+               color = guide_legend(override.aes = list(fill = 'white')))) /
       guide_area() +
       plot_layout(guides = 'collect', heights = c(5, 5, 2))
   })
@@ -195,7 +200,7 @@ server <- function(input, output) {
       data.frame(
         " " = c("no distancing", "with distancing"),
         "Final unmet need (%)" = c(final.unmet.x, final.unmet),
-        "Final critical care need (%):" =c(final.hosp.x, final.hosp),
+        "Final critical care need (%):" = c(final.hosp.x, final.hosp),
         "Final infected (%)" = c(final.cases.x, final.cases),
         check.names = FALSE
       )
