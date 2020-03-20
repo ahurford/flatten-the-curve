@@ -15,7 +15,12 @@ library(curl)
 # in R Console
 
 ### Theme ----
-theme_set(theme_light())
+theme_set(theme_light() +
+            theme(
+              axis.text = element_text(size = 14),
+              legend.text = element_text(size = 14)
+            ))
+
 
 ### Functions ----
 SIR <- function(t, y, p) {
