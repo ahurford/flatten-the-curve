@@ -221,8 +221,7 @@ server <- function(input, output) {
       geom_point(aes(y = confirmed_positive), color = 'black') +
       # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
       labs(x = "date", y = NULL, title = "log(cases in NL)") +
-      scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
-                         labels = function(x) paste0(x, "%"))
+      scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)))
   })
 
 }
