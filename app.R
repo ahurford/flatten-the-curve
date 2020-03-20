@@ -119,12 +119,9 @@ server <- function(input, output) {
                            labels = function(x) paste0(x, "%")) &
         scale_x_continuous(expand = expand_scale(mult = c(0, 0))) &
         scale_fill_manual(values = cols) &
-        scale_color_manual(values = cols) &
-        guides(fill = guide_legend(override.aes = list(linetype = 0),
-                                   nrow = 1),
-               color = guide_legend(override.aes = list(fill = 'white')))) /
+        scale_color_manual(values = cols)) /
       guide_area() +
-      plot_layout(guides = 'collect', heights = c(5, 5, 2))
+      plot_layout(guides = 'collect', heights = c(5, 5, 3))
   })
 
   output$SIRtab <- renderTable({
