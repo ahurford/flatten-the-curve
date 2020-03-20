@@ -18,7 +18,8 @@ library(curl)
 theme_set(theme_light() +
             theme(
               axis.text = element_text(size = 14),
-              legend.text = element_text(size = 14)
+              legend.text = element_text(size = 14),
+              legend.spacing.y = unit(0.1, 'mm')
             ))
 
 cols <- c('No changes implemented' = '#a6cee3',
@@ -161,7 +162,7 @@ server <- function(input, output) {
     # 0.2*(52/201)*(v + gamma) = sigma*(1 - 0.2*(52/201))
     sigma <- 0.2*(52/201)*(0.00238 + 1/13)/(1 - 0.2*(52/201))
 
-    parms <- c(a = a, m2 =input$m2/100, c = c, gamma = gamma,
+    parms <- c(a = a, m2 = input$m2/100, c = c, gamma = gamma,
                v = v, H2 = input$H2, rho = rho, vH = vH, sigma = sigma)
     I0 <- 0.005
     S0 <- 1 - I0
