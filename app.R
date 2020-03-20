@@ -93,16 +93,18 @@ server <- function(input, output) {
 
     # Plot percent population infected
     areaAlpha <- 0.6
+    cols <- c('No changes implemented' = '#a6cee3',
+              'With social distancing' = '#b2df8a')
     g1 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
-      geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
+      geom_area(aes(y = Ix * 100, fill = 'No changes implemented'), show.legend = TRUE, alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = I * 100, fill = 'With social distancing'), show.legend = TRUE, alpha = areaAlpha) +
       geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
       labs(x = NULL, y = NULL, title = "Percent of the population currently infected")
 
     # Plot cumulative fatalities
     g2 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = Fx * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
-      geom_area(aes(y = FS * 100), fill = '#b2df8a', alpha = areaAlpha) +
+      geom_area(aes(y = Fx * 100, fill = 'No changes implemented'), show.legend = TRUE, alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = FS * 100, fill = 'With social distancing'), show.legend = TRUE, alpha = areaAlpha) +
       labs(x = "time (days)", y = NULL, title = "Cumulative fatalities (% of the population)")
 
     # Generate data.frame to print
@@ -126,8 +128,10 @@ server <- function(input, output) {
       g2 &
         scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
                            labels = function(x) paste0(x, "%")) &
-        scale_x_continuous(expand = expand_scale(mult = c(0, 0)))) /
-      tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
+        scale_x_continuous(expand = expand_scale(mult = c(0, 0))) &
+        scale_fill_manual(values = cols)) /
+      (tableGrob(toprint, rows = NULL, theme = ttheme_minimal()) +
+         guide_area()) + plot_layout(guides = 'collect')
   })
 
   output$SIHR <- renderPlot({
