@@ -327,20 +327,6 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     tabPanel("Your questions",
              tabPanel("Your questions",
                       column(5,
-                             p(""),
-
-                             # Slider input: social distancing
-                             sliderInput("m2", "social distancing (%):",
-                                         min = 0, max = 100, step = 1, value = 20,
-                                         width = '100%'),
-                             helpText("The green curve shows the effect of social distancing"),
-                             helpText("0%: no efforts to enact social distancing"),
-                             helpText("100%: complete isolation"),
-                             sliderInput("H2", "Hospital capacity (% of population):",
-                                         min = 0, max = 0.3, step = .01, value = 0.2,
-                                         width = '100%'),
-                             helpText("Move the slider and the grey line will change"),
-
                              # Text in sidebar
                              p("Here we answer some of your questions we received by email."),
                              p(tags$b("Q1. How can we estimate the hospital capacity?")),
@@ -378,7 +364,18 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
                       column(7,
                              plotOutput("SIHR"),
-                             helpText("Blue curve: no social distancing; Green curve: with social distancing; Grey line: hospital capacity."),
+                             tags$br(),
+
+
+
+                             # Slider input: social distancing
+                             sliderInput("m2", "social distancing: 0%: no efforts - 100%: complete isolation",
+                                         min = 0, max = 100, step = 1, value = 20,
+                                         width = '100%'),
+                             sliderInput("H2", "Hospital capacity (% of population):",
+                                         min = 0, max = 0.3, step = .01, value = 0.2,
+                                         width = '100%'),
+
                              helpText("Cumulative unmet need is the percentage of the population that had an unmet need because they required
                                       critical care, when the capacity to provide critical care was exceeded. For the default parameters no
                                       green curve appears because the hospital capacity is never exceeded with social distancing at 20%."),
