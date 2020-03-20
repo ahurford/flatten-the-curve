@@ -98,12 +98,19 @@ DT <- round(log(2) / (a * c - v - gamma), 1)
 ### Server ----
 
 server <- function(input, output) {
-  output$SIR <- renderPlot({
-    parms <- c(a = a, m1 = input$m1/100, c = c, gamma = gamma,
-               v = v, H = H)
-    out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx=0, S = S0, I = I0, FS = 0, C=0), times = seq(mintime, maxtime, 1), SIR, parms)
-    df <- data.table(out)
 
+  dataSIR <- reactive({
+
+      parms <- c(a = a, m1 = input$m1/100, c = c, gamma = gamma,
+                 v = v, H = H)
+      out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx=0, S = S0, I = I0, FS = 0, C=0), times = seq(mintime, maxtime, 1), SIR, parms)
+
+    })
+
+
+  output$SIR <- renderPlot({
+
+    df <- data.table(dataSIR())
 
     # Plot percent population infected
     areaAlpha <- 0.6
@@ -136,9 +143,7 @@ server <- function(input, output) {
   })
 
   output$SIRtab <- renderTable({
-    parms <- c(a = a, m1 = input$m1/100, c = c, gamma = gamma,
-               v = v, H = H)
-    out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx=0, S = S0, I = I0, FS = 0, C=0), times = seq(mintime, maxtime, 1), SIR, parms)
+    out <- dataSIR()
 
     R_2 <- round((1 - input$m1/100) * R_0, 1)
     DT_2 <- max(round(log(2) / ((1 - input$m1) * a * c - v - gamma), 1), 0)
