@@ -304,7 +304,6 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
            tableOutput("SIRtab"),
 
-           helpText("Blue curve: no changes implemented; Green curve: with social distancing; Grey line: hospital capacity."),
            helpText("Cumulative fatalities does not account for an increased death rate when health resourses are exceeded."),
            helpText("Doubling time: Early on in the epidemic, the time for the number of infected people to double."),
            helpText("R0: Early on in the epidemic, the average number of people subsequently infected by an infected person."),
