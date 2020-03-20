@@ -173,22 +173,27 @@ server <- function(input, output) {
     areaAlpha <- 0.6
 
     g1 <- ggplot(df, aes(x = time)) +
-    	geom_area(aes(y = Ix * 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
-    	geom_area(aes(y = I * 100), fill = '#b2df8a', alpha = areaAlpha) +
+    	geom_area(aes(y = Ix * 100, fill = 'No changes implemented'), alpha = areaAlpha - 0.2) +
+    	geom_area(aes(y = I * 100, fill = 'With social distancing'), alpha = areaAlpha) +
     	#geom_hline(aes(yintercept = input$H2/100), alpha = 0.2, size = 3) +
-    	labs(x = NULL, y = NULL, title = "Infected (% of population)")
+    	labs(x = NULL, y = NULL, fill = NULL, title = "Infected (% of population)") +
+      guides(fill = FALSE)
 
     g2 <- ggplot(df, aes(x = time)) +
-      geom_area(aes(y = 100*Hx1), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
-      geom_area(aes(y = 100*H1), fill = '#b2df8a', alpha = areaAlpha) +
-    	geom_hline(aes(yintercept = input$H2), alpha = 0.2, size = 3) +
-      labs(x = NULL, title = "Requiring critical care (% of population)", y= NULL)
+      geom_area(aes(y = 100*Hx1, fill = 'No changes implemented'), show.legend = TRUE, alpha = areaAlpha - 0.2) +
+      geom_area(aes(y = 100*H1, fill = 'With social distancing'), show.legend = TRUE, alpha = areaAlpha) +
+    	geom_hline(aes(yintercept = input$H2, color = 'Hospital capacity'), show.legend = TRUE, alpha = 0.9, size = 3) +
+      labs(x = NULL, fill = NULL, color = NULL, title = "Requiring critical care (% of population)", y = NULL) +
+      guides(fill = guide_legend(override.aes = list(linetype = 0),
+                                 nrow = 1),
+             color = guide_legend(override.aes = list(fill = 'white')))
 
     g3 <- ggplot(df, aes(x = time)) +
-    	geom_area(aes(y = Ux* 100), fill = '#a6cee3', alpha = areaAlpha - 0.2) +
-    	geom_area(aes(y = U * 100), fill = '#b2df8a', alpha = areaAlpha) +
+    	geom_area(aes(y = Ux* 100, fill = 'No changes implemented'), alpha = areaAlpha - 0.2) +
+    	geom_area(aes(y = U * 100, fill = 'With social distancing'), alpha = areaAlpha) +
     	#geom_hline(aes(yintercept = input$H2/100), alpha = 0.2, size = 3) +
-    	labs(x = "time (days)", y = NULL, title = "Cumulative unmet need (% of population)")
+    	labs(x = "time (days)", fill = NULL, y = NULL, title = "Cumulative unmet need (% of population)") +
+      guides(fill = FALSE)
 
     final.unmet.x = round(last(df$Ux)*100,2)
     final.unmet = round(last(df$U)*100,2)
@@ -209,12 +214,14 @@ server <- function(input, output) {
     # Combine plots and table with patchwork
     (g1 /
         g2 /
-    			g3
-      &
+    			g3 &
         scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
                            labels = function(x) paste0(x, "%")) &
-        scale_x_continuous(expand = expand_scale(mult = c(0, 0)))) /
-      tableGrob(toprint, rows = NULL, theme = ttheme_minimal())
+        scale_x_continuous(expand = expand_scale(mult = c(0, 0))) &
+        scale_fill_manual(values = cols) &
+        scale_color_manual(values = cols)) /
+      guide_area() +
+      plot_layout(guides = 'collect', heights = c(5, 5, 5, 3))
 
   })
 
