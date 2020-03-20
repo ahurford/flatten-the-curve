@@ -213,16 +213,23 @@ server <- function(input, output) {
     invalidateLater(24 * 60 * 60 * 1000)
     NL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[Province == 'NL']
 
+    for (j in names(NL)) set(NL, which(is.na(NL[[j]])), j, 0)
+
     # Plot cases in NL
+    cols <- c('Presumptive Positive' = '#881a58',
+              'Confirmed Positive' = '#0e288e')
     ggplot(NL, aes(x = Date, group = 1)) +
-      geom_line(aes(y = presumptive_positive), color = 'grey') +
-      geom_point(aes(y = presumptive_positive), color = 'grey') +
-      geom_line(aes(y = confirmed_positive), color = 'black') +
-      geom_point(aes(y = confirmed_positive), color = 'black') +
-      # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
-      labs(x = "date", y = NULL, title = "log(cases in NL)") +
-      scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)))
-  })
+      geom_line(aes(y = presumptive_positive, color = 'Presumptive Positive'),
+                show.legend = TRUE) +
+      geom_point(aes(y = presumptive_positive), color = '#881a58') +
+      geom_line(aes(y = confirmed_positive, color = 'Confirmed Positive'),
+                show.legend = TRUE) +
+      geom_point(aes(y = confirmed_positive), color = '#0e288e') +
+      labs(x = "date", y = NULL, title = "Cases in NL", color  = FALSE) +
+      scale_color_manual(values = cols)
+      scale_y_continuous(#expand = expand_scale(mult = c(0, 0.1)),
+                         limits = c(0, max(c(NL$presumptive_positive, NL$confirmed_positive), na.rm = TRUE) + 2))
+   })
 
 }
 
