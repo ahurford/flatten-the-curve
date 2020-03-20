@@ -208,14 +208,6 @@ server <- function(input, output) {
     	labs(x = "time (days)", fill = NULL, y = NULL, title = "Cumulative unmet need (% of population)") +
       guides(fill = FALSE)
 
-    # For SIHRtab
-    final.unmet.x = round(last(df$Ux)*100,2)
-    final.unmet = round(last(df$U)*100,2)
-    final.hosp.x = round(last(df$Hcumx)*100,2)
-    final.cases.x = round(last(df$Cx)*100,0)
-    final.cases = round(last(df$C)*100,0)
-    final.hosp = round(last(df$Hcum)*100,2)
-
     # Combine plots and table with patchwork
     (g1 /
         g2 /
@@ -230,6 +222,16 @@ server <- function(input, output) {
   })
 
   output$SIHRtab <- renderTable({
+    df <- data.table(dataSIHR())
+
+    # For SIHRtab
+    final.unmet.x = round(last(df$Ux)*100,2)
+    final.unmet = round(last(df$U)*100,2)
+    final.hosp.x = round(last(df$Hcumx)*100,2)
+    final.cases.x = round(last(df$Cx)*100,0)
+    final.cases = round(last(df$C)*100,0)
+    final.hosp = round(last(df$Hcum)*100,2)
+
     data.frame(
         " " = c("no distancing", "with distancing"),
         "Final unmet need (%)" = c(final.unmet.x, final.unmet),
