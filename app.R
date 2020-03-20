@@ -113,8 +113,9 @@ server <- function(input, output) {
         scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
                            labels = function(x) paste0(x, "%")) &
         scale_x_continuous(expand = expand_scale(mult = c(0, 0))) &
-        scale_fill_manual(values = cols))  +
-      plot_layout(guides = 'collect')
+        scale_fill_manual(values = cols)) /
+      guide_area() +
+      plot_layout(guides = 'collect', heights = c(5, 5, 2))
   })
 
   output$SIRtab <- renderTable({
