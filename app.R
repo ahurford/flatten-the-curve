@@ -196,22 +196,6 @@ server <- function(input, output) {
     	labs(x = "time (days)", fill = NULL, y = NULL, title = "Cumulative unmet need (% of population)") +
       guides(fill = FALSE)
 
-    final.unmet.x = round(last(df$Ux)*100,2)
-    final.unmet = round(last(df$U)*100,2)
-    final.hosp.x = round(last(df$Hcumx)*100,2)
-    final.cases.x = round(last(df$Cx)*100,0)
-    final.cases = round(last(df$C)*100,0)
-    final.hosp = round(last(df$Hcum)*100,2)
-
-    toprint <-
-      data.frame(
-        " " = c("no distancing", "with distancing"),
-        "Final unmet need (%)" = c(final.unmet.x, final.unmet),
-        "Final critical care need (%):" = c(final.hosp.x, final.hosp),
-        "Final infected (%)" = c(final.cases.x, final.cases),
-        check.names = FALSE
-      )
-
     # Combine plots and table with patchwork
     (g1 /
         g2 /
@@ -224,6 +208,22 @@ server <- function(input, output) {
       guide_area() +
       plot_layout(guides = 'collect', heights = c(5, 5, 5, 3))
 
+    final.unmet.x = round(last(df$Ux)*100,2)
+    final.unmet = round(last(df$U)*100,2)
+    final.hosp.x = round(last(df$Hcumx)*100,2)
+    final.cases.x = round(last(df$Cx)*100,0)
+    final.cases = round(last(df$C)*100,0)
+    final.hosp = round(last(df$Hcum)*100,2)
+  })
+
+  output$SIHRtab <- renderTable({
+    data.frame(
+        " " = c("no distancing", "with distancing"),
+        "Final unmet need (%)" = c(final.unmet.x, final.unmet),
+        "Final critical care need (%):" = c(final.hosp.x, final.hosp),
+        "Final infected (%)" = c(final.cases.x, final.cases),
+        check.names = FALSE
+      )
   })
 
 
@@ -273,9 +273,6 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
   # Tabsets
   tabsetPanel(
-
-    # tabPanel('Introduction',
-             # )
 
     # Left column
     tabPanel("Social distancing",
@@ -376,13 +373,15 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                                          min = 0, max = 0.3, step = .01, value = 0.2,
                                          width = '100%'),
 
+                             tableOutput("SIHRtab"),
+
                              helpText("Cumulative unmet need is the percentage of the population that had an unmet need because they required
                                       critical care, when the capacity to provide critical care was exceeded. For the default parameters no
                                       green curve appears because the hospital capacity is never exceeded with social distancing at 20%."),
                              helpText("Final unmet need (%): after 250 days, the percentage of the population that had an unmet need for critical care."),
                              helpText("Final critical care need (%): after 250 days, the percentage of the population that required critical care"),
                              helpText("Final infected (%): after 250 days, the percentage of the population was infected. Note these
-                                      numbers are much too high. Please see the 'More models' tab for a disclaimer."),
+                                      numbers are much too high. Please see the 'More models' tab for a disclaimer.")
     ))),
     # More models tab
     tabPanel("More models",
