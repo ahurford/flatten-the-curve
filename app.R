@@ -215,8 +215,10 @@ server <- function(input, output) {
 
     # Plot cases in NL
     ggplot(NL, aes(x = Date, group = 1)) +
-      geom_area(aes(y = log(presumptive_positive)), color = 'grey', alpha = 0.5) +
-      geom_area(aes(y = log(confirmed_positive)), color = 'black', alpha = 0.6) +
+      geom_line(aes(y = presumptive_positive), color = 'grey') +
+      geom_point(aes(y = presumptive_positive), color = 'grey') +
+      geom_line(aes(y = confirmed_positive), color = 'black') +
+      geom_point(aes(y = confirmed_positive), color = 'black') +
       # geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
       labs(x = "date", y = NULL, title = "log(cases in NL)") +
       scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
