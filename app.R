@@ -99,29 +99,13 @@ server <- function(input, output) {
       geom_area(aes(y = Ix * 100, fill = 'No changes implemented'), show.legend = TRUE, alpha = areaAlpha - 0.2) +
       geom_area(aes(y = I * 100, fill = 'With social distancing'), show.legend = TRUE, alpha = areaAlpha) +
       geom_hline(aes(yintercept = H), alpha = 0.2, size = 3) +
-      labs(x = NULL, y = NULL, title = "Percent of the population currently infected")
+      labs(x = NULL, y = NULL, title = "Percent of the population currently infected", fill = NULL)
 
     # Plot cumulative fatalities
     g2 <- ggplot(df, aes(x = time)) +
       geom_area(aes(y = Fx * 100, fill = 'No changes implemented'), show.legend = TRUE, alpha = areaAlpha - 0.2) +
       geom_area(aes(y = FS * 100, fill = 'With social distancing'), show.legend = TRUE, alpha = areaAlpha) +
-      labs(x = "time (days)", y = NULL, title = "Cumulative fatalities (% of the population)")
-
-    # Generate data.frame to print
-    R_0 <- round(a * c / (v + gamma), 1)
-    R_2 <- round((1 - input$m1/100) * R_0, 1)
-    DT <- round(log(2) / (a * c - v - gamma), 1)
-    DT_2 <- max(round(log(2) / ((1 - input$m1) * a * c - v - gamma), 1), 0)
-    fat <- round(100 * out[length(out[, 1]), 4], 1)
-    fat_2 <- round(100 * out[length(out[, 1]), 7], 1)
-    toprint <-
-      data.frame(
-        " " = c("no distancing", "with distancing"),
-        "doubling time" = c(DT, DT_2),
-        "R0" = c(R_0, R_2),
-        "fatalities" = c(fat, fat_2),
-        check.names = FALSE
-    )
+      labs(x = "time (days)", y = NULL, title = "Cumulative fatalities (% of the population)", fill = NULL)
 
     # Combine plots and table with patchwork
     (g1 /
@@ -129,9 +113,26 @@ server <- function(input, output) {
         scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
                            labels = function(x) paste0(x, "%")) &
         scale_x_continuous(expand = expand_scale(mult = c(0, 0))) &
-        scale_fill_manual(values = cols)) /
-      (tableGrob(toprint, rows = NULL, theme = ttheme_minimal()) +
-         guide_area()) + plot_layout(guides = 'collect')
+        scale_fill_manual(values = cols)) +
+               guide_area() + #&
+      plot_layout(guides = 'collect')
+  })
+
+  output$SIRtab <- renderTable({
+    # Generate data.frame to print
+    R_0 <- round(a * c / (v + gamma), 1)
+    R_2 <- round((1 - input$m1/100) * R_0, 1)
+    DT <- round(log(2) / (a * c - v - gamma), 1)
+    DT_2 <- max(round(log(2) / ((1 - input$m1) * a * c - v - gamma), 1), 0)
+    fat <- round(100 * out[length(out[, 1]), 4], 1)
+    fat_2 <- round(100 * out[length(out[, 1]), 7], 1)
+    data.frame(
+        " " = c("no distancing", "with distancing"),
+        "doubling time" = c(DT, DT_2),
+        "R0" = c(R_0, R_2),
+        "fatalities" = c(fat, fat_2),
+        check.names = FALSE
+      )
   })
 
   output$SIHR <- renderPlot({
@@ -259,6 +260,9 @@ ui <- fluidPage(title = "The math behind flatten the curve",
   # Tabsets
   tabsetPanel(
 
+    # tabPanel('Introduction',
+             # )
+
     # Left column
     tabPanel("Social distancing",
              column(5,
@@ -300,6 +304,8 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 
            # Output SIR plot and help text below:
            plotOutput("SIR"),
+
+           tableOutput("SIRtab"),
 
            helpText("Blue curve: no changes implemented; Green curve: with social distancing; Grey line: hospital capacity."),
            helpText("Cumulative fatalities does not account for an increased death rate when health resourses are exceeded."),
