@@ -76,24 +76,34 @@ SIHR <- function(t, y, p) {
   })
 }
 
+### Global variables ----
+## SIR
+# Parameters are taken from Bolker & Dushoff model
+gamma <- 1/13
+chi <- 0.03
+v <- gamma * chi / (1 - chi)
+H <- 15
+c <- 0.4
+a <- 0.5
+I0 <- 0.005
+S0 <- 1 - I0
+mintime <- 0
+maxtime <- 250
+
+# For data.frame to print
+R_0 <- round(a * c / (v + gamma), 1)
+DT <- round(log(2) / (a * c - v - gamma), 1)
+
+
 ### Server ----
+
 server <- function(input, output) {
   output$SIR <- renderPlot({
-    # Parameters are taken from Bolker & Dushoff model
-    gamma <- 1/13
-    chi <- 0.03
-    v <- gamma * chi / (1 - chi)
-    H <- 15
-    c <- 0.4
-    a <- 0.5
     parms <- c(a = a, m1 = input$m1/100, c = c, gamma = gamma,
                v = v, H = H)
-    I0 <- 0.005
-    S0 <- 1 - I0
-    mintime <- 0
-    maxtime <- 250
     out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx=0, S = S0, I = I0, FS = 0, C=0), times = seq(mintime, maxtime, 1), SIR, parms)
     df <- data.table(out)
+
 
     # Plot percent population infected
     areaAlpha <- 0.6
