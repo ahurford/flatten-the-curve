@@ -244,16 +244,15 @@ server <- function(input, output) {
     cols <- c('Presumptive Positive' = '#881a58',
               'Confirmed Positive' = '#0e288e')
     ggplot(NL, aes(x = Date, group = 1)) +
-      geom_line(aes(y = presumptive_positive, color = 'Presumptive Positive'),
+      geom_line(aes(y = presumptive_positive, color = 'Presumptive Positive'), size = 1.5,
                 show.legend = TRUE) +
-      geom_point(aes(y = presumptive_positive), color = '#881a58') +
-      geom_line(aes(y = confirmed_positive, color = 'Confirmed Positive'),
+      geom_point(aes(y = presumptive_positive, color = 'Presumptive Positive'), size = 2) +
+      geom_line(aes(y = confirmed_positive, color = 'Confirmed Positive'), size = 1.5,
                 show.legend = TRUE) +
-      geom_point(aes(y = confirmed_positive), color = '#0e288e') +
+      geom_point(aes(y = confirmed_positive, color = 'Confirmed Positive'), size = 2) +
       labs(x = NULL, y = NULL, title = "Cases in NL", color  = NULL) +
       scale_color_manual(values = cols) +
-      scale_y_continuous(#expand = expand_scale(mult = c(0, 0.1)),
-                         limits = c(0, max(c(NL$presumptive_positive, NL$confirmed_positive), na.rm = TRUE) + 2))
+      scale_y_continuous()#expand = expand_scale(mult = c(0, 0.1)))
    })
 
 }
@@ -409,10 +408,10 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     # Newfoundland tab
     tabPanel("Newfoundland",
              column(12,
-                    p(""),
                     p("We aim to make some Newfoundland-specific graphs and analysis, but this work
                     is currently in progress")
                     ),
+             tags$br(),
 
              plotOutput("scrapePlot", width = "55%"),
              tags$br(),
