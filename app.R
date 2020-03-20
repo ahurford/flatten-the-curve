@@ -97,6 +97,21 @@ R_0 <- round(a * c / (v + gamma), 1)
 DT <- round(log(2) / (a * c - v - gamma), 1)
 
 
+## SIHR
+# Yang: Lancet Respiratory Medicine - Clinical course and outcomes
+# Survial of non-survivors 1-2 weeks. Median ICU to death 7 days
+# 61.5% died before 28 days.
+# 52/201 with pneumonia included.
+# Assume 20% infections are severe.
+rho <- 1/7
+# 0.62 = vH/(vH + rho)
+# <=> 0.62*(1/7) = vH*(1-0.62)
+vH <- 0.62*(1/7)/(1-0.62)
+# 0.2*(52/201) = sigma/(v + gamma + sigma)
+# 0.2*(52/201)*(v + gamma) = sigma*(1 - 0.2*(52/201))
+sigma <- 0.2*(52/201)*(0.00238 + 1/13)/(1 - 0.2*(52/201))
+
+
 ### Server ----
 
 server <- function(input, output) {
