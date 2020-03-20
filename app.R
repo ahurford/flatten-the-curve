@@ -26,6 +26,8 @@ cols <- c('No changes implemented' = '#a6cee3',
           'With social distancing' = '#b2df8a',
           'Hospital capacity' = 'grey')
 
+areaAlpha <- 0.6
+
 ### Functions ----
 SIR <- function(t, y, p) {
   with(as.list(c(y, p)), {
