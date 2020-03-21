@@ -260,7 +260,7 @@ server <- function(input, output) {
     # Plot cases in NL
     cols <- c('Presumptive Positive' = '#881a58',
               'Confirmed Positive' = '#0e288e')
-    ggplot(NL, aes(x = Date, group = 1)) +
+    (ggplot(NL, aes(x = Date, group = 1)) +
       geom_line(aes(y = presumptive_positive, color = 'Presumptive Positive'), size = 1.5,
                 show.legend = TRUE) +
       geom_point(aes(y = presumptive_positive, color = 'Presumptive Positive'), size = 2) +
@@ -269,7 +269,9 @@ server <- function(input, output) {
       geom_point(aes(y = confirmed_positive, color = 'Confirmed Positive'), size = 2) +
       labs(x = NULL, y = NULL, title = "Cases in NL", color  = NULL) +
       scale_color_manual(values = cols) +
-      scale_y_continuous()#expand = expand_scale(mult = c(0, 0.1)))
+      scale_y_continuous())  /
+      guide_area() +
+      plot_layout(guides = 'collect', heights = c(5, 3))#expand = expand_scale(mult = c(0, 0.1)))
    })
 
 }
@@ -339,7 +341,6 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     will die from COVID-19 under social distancing."),
            helpText("The parameterization for this SIR model was taken from Bolker and Dushoff (2020)."))),
     tabPanel("Your questions",
-             tabPanel("Your questions",
                       column(5,
                              # Text in sidebar
                              p("Here we answer some of your questions we received by email."),
@@ -399,7 +400,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                              helpText("Final critical care need (%): after 250 days, the percentage of the population that required critical care"),
                              helpText("Final infected (%): after 250 days, the percentage of the population was infected. Note these
                                       numbers are much too high. Please see the 'More models' tab for a disclaimer.")
-    ))),
+    )),
     # More models tab
     tabPanel("More models",
              column(10,
@@ -426,16 +427,16 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     tabPanel("Newfoundland",
              column(12,
                     p("We aim to make some Newfoundland-specific graphs and analysis, but this work
-                    is currently in progress")
-                    ),
-             tags$br(),
+                    is currently in progress")),
+             column(4,
+                    plotOutput("scrapePlot", width = "100%")
 
-             plotOutput("scrapePlot", width = "55%"),
-             tags$br(),
-             tags$br(),
-             tags$br(),
-             tableOutput("scrapeTab"))
-))
+                    ),
+             column(6,
+                    tableOutput("scrapeTab")
+
+             )
+)))
 
 ### Run app ----
 shinyApp(ui = ui, server = server)
