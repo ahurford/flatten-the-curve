@@ -124,7 +124,6 @@ server <- function(input, output) {
 
     })
 
-
   output$SIR <- renderPlot({
 
     df <- data.table(dataSIR())
@@ -245,6 +244,20 @@ server <- function(input, output) {
   dataNL <- reactive({
     data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[
       Province == 'NL']
+  })
+  
+  # Here I am trying to start writing some more code, but I'm having a hard
+  # time debugging because I can't print out varaibles to find the errors
+  datafit <-reactive({
+    df<-dataNL()
+    # This is something that I am trying to print out to my console so that
+    # I can write the code. Can I print is 
+    print(df)
+  })
+  # Another try to see the data format:
+  output$checker <- renderTable({
+    df <-dataNL()
+    glimpse(df) # something that relies on the reactive, same thing here for simplicty
   })
 
   output$scrapeTab <- renderTable({
