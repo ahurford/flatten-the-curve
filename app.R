@@ -9,6 +9,7 @@ library(patchwork)
 library(gridExtra)
 library(data.table)
 library(curl)
+library(bbmle)
 
 ### To deploy ----
 #rsconnect::deployApp("/Users/amyhurford/Desktop/flatten-the-curve")
@@ -438,7 +439,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     # Newfoundland tab
     tabPanel("Newfoundland & Labrador",
              column(12,
-                    p("The data below is compiled by Michael Li", tags$a(href = "https://github.com/wzmli/COVID19-Canada/blob/master/README.md", "(here)."), "When COVID-19 cases from local spread dominate imported cases in Newfoundland and Labrador, we will show fits of an SEIR model to these data. ")),
+                    p("The data below is compiled by Michael Li", tags$a(href = "https://github.com/wzmli/COVID19-Canada/blob/master/README.md", "(here)."))),
              column(7,
                     plotOutput("scrapePlot", width = "100%")
 
