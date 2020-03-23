@@ -162,9 +162,9 @@ server <- function(input, output) {
     out <- dataSIR()
 
     R_2 <- round((1 - input$m1/100) * R_0, 1)
-    DT_2 <- max(round(log(2) / ((1 - input$m1) * a * c - v - gamma), 1), 0)
+    DT_2 <- max(round(log(2) / ((1 - input$m1/100) * a * c - v - gamma), 1), 0)
     fat <- round(100 * out[length(out[, 1]), 4], 1)
-    fat_2 <- round(100 * out[length(out[, 1]), 7], 1)
+    fat_2 <- round(100 * out[length(out[, 1]), 8], 1)
 
     data.frame(
       " " = c("no distancing", "with distancing"),
@@ -257,7 +257,7 @@ server <- function(input, output) {
   # Another try to see the data format:
   output$checker <- renderTable({
     df <-dataNL()
-    glimpse(df) # something that relies on the reactive, same thing here for simplicty
+    glimpse(df) 
   })
 
   output$scrapeTab <- renderTable({
@@ -274,14 +274,13 @@ server <- function(input, output) {
     cols <- c('Presumptive Positive' = '#881a58',
               'Confirmed Positive' = '#0e288e')
     (ggplot(NL, aes(x = Date, group = 1)) +
-      geom_line(aes(y = presumptive_positive, color = 'Presumptive Positive'), size = 1.5,
-                show.legend = TRUE) +
-      geom_point(aes(y = presumptive_positive, color = 'Presumptive Positive'), size = 2) +
-      geom_line(aes(y = confirmed_positive, color = 'Confirmed Positive'), size = 1.5,
-                show.legend = TRUE) +
-      geom_point(aes(y = confirmed_positive, color = 'Confirmed Positive'), size = 2) +
-      labs(x = NULL, y = NULL, title = "Cases in NL", color  = NULL) +
-      scale_color_manual(values = cols) +
+      #geom_line(aes(y = presumptive_positive + confirmed_positive, color = '#881a58'), size = 1.5) +
+      geom_point(aes(y = presumptive_positive + confirmed_positive, color = '#881a58'), size = 4) +
+      #geom_line(aes(y = confirmed_positive, color = 'Confirmed Positive'), size = 1.5,
+                #show.legend = TRUE) +
+      #geom_point(aes(y = confirmed_positive, color = 'Confirmed Positive'), size = 2) +
+      labs(x = NULL, y = NULL, title = "Cases in NL (presumptive + confirmed)", color  = NULL) +
+      #scale_color_manual(values = cols) +
       scale_y_continuous())  /
       guide_area() +
       plot_layout(guides = 'collect', heights = c(5, 3))#expand = expand_scale(mult = c(0, 0.1)))
@@ -346,7 +345,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
            tableOutput("SIRtab"),
 
            helpText("Cumulative fatalities does not account for an increased death rate when health resourses are exceeded."),
-           helpText("Doubling time: Early on in the epidemic, the time for the number of infected people to double."),
+           helpText("Doubling time: Early on in the epidemic, the days for the number of infected people to double."),
            helpText("R0: Early on in the epidemic, the average number of people subsequently infected by an infected person."),
            helpText("Fatalities: The percentage of the population that has died from COVID-19 after 250 days, however this
                     does not consider an increased death rate when the hospital capacity is exceeded. Epidemic models, such as SIR, suggest
@@ -437,15 +436,14 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                       tags$a(href = "https://alhill.shinyapps.io/COVID19seir/", "Hill (2020).")))),
     									# this link looks good: http://gabgoh.github.io/COVID/index.html
     # Newfoundland tab
-    tabPanel("Newfoundland",
+    tabPanel("Newfoundland & Labrador",
              column(12,
-                    p("We aim to make some Newfoundland-specific graphs and analysis, but this work
-                    is currently in progress")),
-             column(4,
+                    p("The data below is compiled by Michael Li", tags$a(href = "https://github.com/wzmli/COVID19-Canada/blob/master/README.md", "(here)."), "When COVID-19 cases from local spread dominate imported cases in Newfoundland and Labrador, we will show fits of an SEIR model to these data. ")),
+             column(7,
                     plotOutput("scrapePlot", width = "100%")
 
                     ),
-             column(6,
+             column(5,
                     tableOutput("scrapeTab")
 
              )
