@@ -4,12 +4,19 @@ rm(list=ls())
 library(deSolve)
 library(bbmle)
 library(chron)
+library(tidyr)
 
 NLData <-data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[
   Province == 'NL']
 
 julian(3,1,2020)
 NLData$Date[1]
+New.Dates = data.frame(date = NLData$Date, stringsAsFactors = FALSE)
+# This %>% is from the tidyr package
+New.Dates = New.Dates %>% separate(date, sep="-", into = c("day", "month", "year"))
+New.Dates$day = as.numeric(New.Dates$day)
+New.Dates$month = as.numeric(New.Dates$month)
+New.Dates$year = as.numeric(New.Dates$year)
 
 SIR.fit <- function(t, y, p) {
   with(as.list(c(y, p)), {
