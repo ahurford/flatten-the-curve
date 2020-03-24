@@ -3,6 +3,13 @@ rm(list=ls())
 
 library(deSolve)
 library(bbmle)
+library(chron)
+
+NLData <-data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[
+  Province == 'NL']
+
+julian(3,1,2020)
+NLData$Date[1]
 
 SIR.fit <- function(t, y, p) {
   with(as.list(c(y, p)), {
