@@ -10,6 +10,8 @@ library(gridExtra)
 library(data.table)
 library(curl)
 library(bbmle)
+library(tidyr)
+library(chron)
 
 ### To deploy ----
 #rsconnect::deployApp("/Users/amyhurford/Desktop/flatten-the-curve")
@@ -114,7 +116,6 @@ sigma <- 0.2*(52/201)*(0.00238 + 1/13)/(1 - 0.2*(52/201))
 
 
 ### Server ----
-
 server <- function(input, output) {
 
   dataSIR <- reactive({
@@ -246,46 +247,41 @@ server <- function(input, output) {
     data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[
       Province == 'NL']
   })
-  
-  # Here I am trying to start writing some more code, but I'm having a hard
-  # time debugging because I can't print out varaibles to find the errors
-  datafit <-reactive({
-    df<-dataNL()
-    # This is something that I am trying to print out to my console so that
-    # I can write the code. Can I print is 
-    print(df)
-  })
-  # Another try to see the data format:
-  output$checker <- renderTable({
-    df <-dataNL()
-    glimpse(df) 
-  })
 
   output$scrapeTab <- renderTable({
-    dataNL()[, .(Province, Date, negative, presumptive_negative, presumptive_positive, confirmed_positive)]
+    dataNL()[, .(Province, Date, negative, presumptive_positive, confirmed_positive)]
   })
 
   output$scrapePlot <- renderPlot({
     invalidateLater(24 * 60 * 60 * 1000)
-    NL <- dataNL()
+    NLData <- dataNL()
+    New.Dates = data.frame(date = NLData$Date, stringsAsFactors = FALSE)
+    # This %>% is from the tidyr package
+    New.Dates = New.Dates %>% separate(date, sep="-", into = c("year", "month", "day"))
+    New.Dates$day = as.numeric(New.Dates$day)
+    New.Dates$month = as.numeric(New.Dates$month)
+    New.Dates$year = as.numeric(New.Dates$year)
+		Days.Since = julian(New.Dates$month,New.Dates$day, New.Dates$year,  c(month = 3,day= 16,year = 2020))
 
-    for (j in names(NL)) set(NL, which(is.na(NL[[j]])), j, 0)
+    plot(Days.Since,NLData$presumptive_positive+NLData$confirmed_positive, pch = 16, ylab = "cumulative cases", xlab = "days since first case")
 
-    # Plot cases in NL
-    cols <- c('Presumptive Positive' = '#881a58',
-              'Confirmed Positive' = '#0e288e')
-    (ggplot(NL, aes(x = Date, group = 1)) +
-      #geom_line(aes(y = presumptive_positive + confirmed_positive, color = '#881a58'), size = 1.5) +
-      geom_point(aes(y = presumptive_positive + confirmed_positive, color = '#881a58'), size = 4) +
-      #geom_line(aes(y = confirmed_positive, color = 'Confirmed Positive'), size = 1.5,
-                #show.legend = TRUE) +
-      #geom_point(aes(y = confirmed_positive, color = 'Confirmed Positive'), size = 2) +
-      labs(x = NULL, y = NULL, title = "Cases in NL (presumptive + confirmed)", color  = NULL) +
-      #scale_color_manual(values = cols) +
-      scale_y_continuous())  /
-      guide_area() +
-      plot_layout(guides = 'collect', heights = c(5, 3))#expand = expand_scale(mult = c(0, 0.1)))
-   })
+   #  for (j in names(NL)) set(NL, which(is.na(NL[[j]])), j, 0)
+   #
+   #  # Plot cases in NL
+   #  cols <- c('Presumptive Positive' = '#881a58',
+   #            'Confirmed Positive' = '#0e288e')
+   #  (ggplot(NL, aes(x = Date, group = 1)) +
+   #    #geom_line(aes(y = presumptive_positive + confirmed_positive, color = '#881a58'), size = 1.5) +
+   #    geom_point(aes(y = presumptive_positive + confirmed_positive, color = '#881a58'), size = 4) +
+   #    #geom_line(aes(y = confirmed_positive, color = 'Confirmed Positive'), size = 1.5,
+   #              #show.legend = TRUE) +
+   #    #geom_point(aes(y = confirmed_positive, color = 'Confirmed Positive'), size = 2) +
+   #    labs(x = NULL, y = NULL, title = "Cases in NL (presumptive + confirmed)", color  = NULL) +
+   #    #scale_color_manual(values = cols) +
+   #    scale_y_continuous())  /
+   #    guide_area() +
+   #    plot_layout(guides = 'collect', heights = c(5, 3))#expand = expand_scale(mult = c(0, 0.1)))
+    })
 
 }
 
