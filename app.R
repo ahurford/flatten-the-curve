@@ -81,6 +81,15 @@ SIHR <- function(t, y, p) {
   })
 }
 
+SIR2 <- function(t, y, p) {
+	with(as.list(c(y, p)), {
+		dS <- -beta * S * I
+		dI <-  beta * S * I - gamma * I - v * I
+		dC <- beta * S * I
+		list(c(S = dS, I = dI, C = dC))
+	})
+}
+
 ### Global variables ----
 ## SIR
 # Parameters are taken from Bolker & Dushoff model
@@ -242,10 +251,18 @@ server <- function(input, output) {
       )
   })
 
-
   dataNL <- reactive({
     data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[
       Province == 'NL']
+  })
+
+
+  dataSIRbeta <- reactive({
+  	parms <- c(beta = input$R0*(gamma + v), gamma = gamma,
+  						 v = v)
+  	I0 = 1/519716
+  	out <- ode(y = c(S = 1-I0, I = I0, C=0), times = seq(mintime, maxtime, 1), SIR2, parms)
+
   })
 
   output$scrapeTab <- renderTable({
@@ -262,8 +279,15 @@ server <- function(input, output) {
     New.Dates$month = as.numeric(New.Dates$month)
     New.Dates$year = as.numeric(New.Dates$year)
 		Days.Since = julian(New.Dates$month,New.Dates$day, New.Dates$year,  c(month = 3,day= 16,year = 2020))
-
+		# Replace "NA" with 0 for comfirmed and presumptive cases.
+		NLData$presumptive_positive[is.na(NLData$presumptive_positive)] <- 0
+		NLData$confirmed_positive[is.na(NLData$confirmed_positive)] <- 0
+		df <- data.table(dataSIR())
+		options(scipen=10)
+		par(mfrow = c(2,1))
     plot(Days.Since,NLData$presumptive_positive+NLData$confirmed_positive, pch = 16, ylab = "cumulative cases", xlab = "days since first case")
+    df <- data.frame(dataSIRbeta())
+    lines(df$time, df$C*519716, typ="l", ylab = "cumulative cases", xlab = "days since first case", las=1)
 
    #  for (j in names(NL)) set(NL, which(is.na(NL[[j]])), j, 0)
    #
@@ -437,6 +461,10 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              column(12,
                     p("The data below is compiled by Michael Li", tags$a(href = "https://github.com/wzmli/COVID19-Canada/blob/master/README.md", "(here)."))),
              column(7,
+             			 # Slider input: social distancing
+             			 sliderInput("R0", "new infections per infected person (assumes many susceptible)",
+             			 						min = 0, max = 10, step = .1, value = 5,
+             			 						width = '100%'),
                     plotOutput("scrapePlot", width = "100%")
 
                     ),
