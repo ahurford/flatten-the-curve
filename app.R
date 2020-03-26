@@ -122,7 +122,7 @@ vH <- 0.62*(1/7)/(1-0.62)
 # 0.2*(52/201) = sigma/(v + gamma + sigma)
 # 0.2*(52/201)*(v + gamma) = sigma*(1 - 0.2*(52/201))
 sigma <- 0.2*(52/201)*(0.00238 + 1/13)/(1 - 0.2*(52/201))
-
+pop.size <- 519716
 
 ### Server ----
 server <- function(input, output) {
@@ -260,13 +260,13 @@ server <- function(input, output) {
   dataSIRbeta <- reactive({
   	parms <- c(beta = input$R0*(gamma + v), gamma = gamma,
   						 v = v)
-  	I0 = 1/519716
+  	I0 = 1/pop.size
   	out <- ode(y = c(S = 1-I0, I = I0, C=0), times = seq(mintime, maxtime, .5), SIRbeta, parms)
 
   })
 
   output$scrapeTab <- renderTable({
-    dataNL()[, .(Province, Date, negative, presumptive_positive, confirmed_positive)]
+    dataNL()[, .(Province, Date, presumptive_positive, confirmed_positive,negative)]
   })
 
   output$scrapePlot <- renderPlot({
@@ -284,8 +284,8 @@ server <- function(input, output) {
 		NLData$confirmed_positive[is.na(NLData$confirmed_positive)] <- 0
 		df <- data.table(dataSIR())
     plot(Days.Since,NLData$presumptive_positive+NLData$confirmed_positive, pch = 16, ylab = "cumulative cases", xlab = "days since first case")
-    df <- data.frame(dataSIRbeta())
-    lines(df$time, df$C*519716, typ="l", ylab = "cumulative cases", xlab = "days since first case", las=1)
+    #df <- data.frame(dataSIRbeta())
+    #lines(df$time, df$C*pop.size, typ="l", ylab = "cumulative cases", xlab = "days since first case", las=1)
 
    #  for (j in names(NL)) set(NL, which(is.na(NL[[j]])), j, 0)
    #
@@ -304,6 +304,29 @@ server <- function(input, output) {
    #    guide_area() +
    #    plot_layout(guides = 'collect', heights = c(5, 3))#expand = expand_scale(mult = c(0, 0.1)))
     })
+
+  output$SIRbetatab <- renderTable({
+  	out <- data.frame(dataSIRbeta())
+  	i1 = min(which(out$time>=30))
+  	finalC <- round(last(out$C)*pop.size,-2)
+  	month1<- round(out$C[i1]*pop.size,0)
+  	i2 = min(which(out$time>=61))
+  	month2<-round(out$C[i2]*pop.size,0)
+  	i3 = min(which(out$time>=92))
+  	month3<-round(out$C[i3]*pop.size,0)
+  	idown = min(which(diff(out$I)<=0))
+  	fat<-1
+
+  	data.frame(
+  		"1 month" = c(month1),
+  		"2 months" = c(month2),
+  		"3 months" = c(month3),
+  		"end" = c(finalC),
+  		"week of peak" = c(fat),
+  		"daily case at peak" = c(fat),
+  		check.names = FALSE
+  	)
+  })
 
 }
 
@@ -457,13 +480,23 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     # Newfoundland tab
     tabPanel("Newfoundland & Labrador",
              column(12,
-                    p("The data below is compiled by Michael Li", tags$a(href = "https://github.com/wzmli/COVID19-Canada/blob/master/README.md", "(here)."))),
+                    p("The data in the table (right) are filtered from a dataset by Dr. Michael Li", tags$a(href = "https://github.com/wzmli/COVID19-Canada/blob/master/README.md", "(here)."),
+										"These data are compiled by recording information from provincal health websites every day at 11.30pm NST.
+                    	"),
+										p("On this page you will be able to compare the trajectory of an SIR model (see the 'Social distancing'
+											tab) to the recorded number of cases in Newfoundland and Labrador. However, since the SIR model assumes
+											only community spread of infections, this feature will only be enabled when the cases in Newfoundland and Labrador are predominantly
+											due to community spread. Currently, this option is disabled since
+											most of the cases of COVID-19 in Newfoundland and Labrador are travel-related.")
+										),
              column(7,
              			 # Slider input: social distancing
-             			 sliderInput("R0", "new infections per infected person (assumes many susceptible)",
-             			 						min = 0, max = 10, step = .05, value = 5,
-             			 						width = '100%'),
+             			 # sliderInput("R0", "new infections per infected person (assumes many susceptible)",
+             			 # 						min = 0, max = 10, step = .05, value = 5,
+             			 # 						width = '100%'),
                     plotOutput("scrapePlot", width = "100%")
+             			 # comma needs to be inserted above
+             			 #tableOutput("SIRbetatab")
 
                     ),
              column(5,
