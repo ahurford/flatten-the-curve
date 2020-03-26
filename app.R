@@ -81,7 +81,7 @@ SIHR <- function(t, y, p) {
   })
 }
 
-SIR2 <- function(t, y, p) {
+SIRbeta <- function(t, y, p) {
 	with(as.list(c(y, p)), {
 		dS <- -beta * S * I
 		dI <-  beta * S * I - gamma * I - v * I
@@ -261,7 +261,7 @@ server <- function(input, output) {
   	parms <- c(beta = input$R0*(gamma + v), gamma = gamma,
   						 v = v)
   	I0 = 1/519716
-  	out <- ode(y = c(S = 1-I0, I = I0, C=0), times = seq(mintime, maxtime, 1), SIR2, parms)
+  	out <- ode(y = c(S = 1-I0, I = I0, C=0), times = seq(mintime, maxtime, .5), SIRbeta, parms)
 
   })
 
@@ -283,8 +283,6 @@ server <- function(input, output) {
 		NLData$presumptive_positive[is.na(NLData$presumptive_positive)] <- 0
 		NLData$confirmed_positive[is.na(NLData$confirmed_positive)] <- 0
 		df <- data.table(dataSIR())
-		options(scipen=10)
-		par(mfrow = c(2,1))
     plot(Days.Since,NLData$presumptive_positive+NLData$confirmed_positive, pch = 16, ylab = "cumulative cases", xlab = "days since first case")
     df <- data.frame(dataSIRbeta())
     lines(df$time, df$C*519716, typ="l", ylab = "cumulative cases", xlab = "days since first case", las=1)
@@ -463,7 +461,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              column(7,
              			 # Slider input: social distancing
              			 sliderInput("R0", "new infections per infected person (assumes many susceptible)",
-             			 						min = 0, max = 10, step = .1, value = 5,
+             			 						min = 0, max = 10, step = .05, value = 5,
              			 						width = '100%'),
                     plotOutput("scrapePlot", width = "100%")
 
