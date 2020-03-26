@@ -284,8 +284,8 @@ server <- function(input, output) {
 		NLData$confirmed_positive[is.na(NLData$confirmed_positive)] <- 0
 		df <- data.table(dataSIR())
     plot(Days.Since,NLData$presumptive_positive+NLData$confirmed_positive, pch = 16, ylab = "cumulative cases", xlab = "days since first case")
-    #df <- data.frame(dataSIRbeta())
-    #lines(df$time, df$C*pop.size, typ="l", ylab = "cumulative cases", xlab = "days since first case", las=1)
+    df <- data.frame(dataSIRbeta())
+    lines(df$time, df$C*pop.size, typ="l", ylab = "cumulative cases", xlab = "days since first case", las=1)
 
    #  for (j in names(NL)) set(NL, which(is.na(NL[[j]])), j, 0)
    #
@@ -491,12 +491,12 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 										),
              column(7,
              			 # Slider input: social distancing
-             			 # sliderInput("R0", "new infections per infected person (assumes many susceptible)",
-             			 # 						min = 0, max = 10, step = .05, value = 5,
-             			 # 						width = '100%'),
-                    plotOutput("scrapePlot", width = "100%")
+             			 sliderInput("R0", "new infections per infected person (assumes many susceptible)",
+             			 						min = 0, max = 10, step = .05, value = 5,
+             			 						width = '100%'),
+                    plotOutput("scrapePlot", width = "100%"),
              			 # comma needs to be inserted above
-             			 #tableOutput("SIRbetatab")
+             			 tableOutput("SIRbetatab")
 
                     ),
              column(5,
