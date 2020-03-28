@@ -99,6 +99,16 @@ SEIR <- function(t, y, p) {
 	})
 }
 
+SEIRnull <- function(t, y, p) {
+	with(as.list(c(y, p)), {
+			dS <- -beta * S * (I+E)
+			dE <- beta * S * (I+E) - a1*E
+			dI <- a1*E - gamma1 * I - v1 * I
+			dC <- a1*E
+		list(c(S = dS,E=dE, I = dI, C = dC))
+	})
+}
+
 ### Global variables ----
 
 # Parameters are taken from Bolker & Dushoff model
@@ -270,7 +280,6 @@ server <- function(input, output) {
       Province == 'NL']
   })
 
-
   dataSEIR <- reactive({
   	NLData <- dataNL()
   	New.Dates = data.frame(date = NLData$Date, stringsAsFactors = FALSE)
@@ -283,20 +292,29 @@ server <- function(input, output) {
   	today <- max(Days.Since)
 
   	parms <- c(beta = input$R0*a1*(gamma1+v1)/(gamma1 + v1+a1), gamma1 = gamma1,
-  						 v1 = v1, a1=a1, today = today, beta1 = 0.4)
+  						 v1 = v1, a1=a1, today = today, beta1 = input$R01*a1*(gamma1+v1)/(gamma1 + v1+a1))
   	I0 = 102/pop.size
   	E0 = 204/pop.size
   	out <- ode(y = c(S = 1-I0, E=E0, I = I0, C=102/pop.size), times = seq(11, maxtime, .5), SEIR, parms)
 
   })
+  dataSEIRnull <- reactive({
+  	parmsnull <- c(beta = input$R0*a1*(gamma1+v1)/(gamma1 + v1+a1), gamma1 = gamma1,
+  						 v1 = v1, a1=a1)
+  	I0 = 102/pop.size
+  	E0 = 204/pop.size
+  	outnull <- ode(y = c(S = 1-I0, E=E0, I = I0, C=102/pop.size), times = seq(11, maxtime, .5), SEIRnull, parmsnull)
+  })
 
   output$scrapeTab <- renderTable({
-    dataNL()[, .(Province, "Date" = rev(Date), "confirmed positive" = rev(confirmed_positive),"negative" = rev(negative), "presumptive positive"=rev(presumptive_positive))]
+  	# The 9th observation is repeated: remove
+    dataNL()[-9, .(Province, "Date" = rev(Date), "confirmed positive" = rev(confirmed_positive),"negative" = rev(negative), "presumptive positive"=rev(presumptive_positive))]
   })
 
   output$scrapePlot <- renderPlot({
     invalidateLater(24 * 60 * 60 * 1000)
     NLData <- dataNL()
+    NLData <-NLData[-9,]
     New.Dates = data.frame(date = NLData$Date, stringsAsFactors = FALSE)
     # This %>% is from the tidyr package
     New.Dates = New.Dates %>% separate(date, sep="-", into = c("year", "month", "day"))
@@ -307,15 +325,24 @@ server <- function(input, output) {
 		# Replace "NA" with 0 for comfirmed and presumptive cases.
 		NLData$presumptive_positive[is.na(NLData$presumptive_positive)] <- 0
 		NLData$confirmed_positive[is.na(NLData$confirmed_positive)] <- 0
+		TotalCases = NLData$presumptive_positive+NLData$confirmed_positive
+		NewCases = TotalCases-c(0,head(TotalCases,-1))
+		DaysBetween = c(1,tail(Days.Since,-1)-head(Days.Since,-1))
+		NewCasesPerDay = NewCases/DaysBetween
 
 
 		par(mfrow = c(2,1), mar=c(4,4,1,1))
 
     df <- data.frame(dataSEIR())
-    plot(df$time, df$C*pop.size, typ="l", ylab = "cumulative cases", xlab = "days since first case", las=1, lwd = 4, col="dodgerblue", ylim = c(0,4*max(NLData$confirmed_positive)), xlim = c(0, max(Days.Since)+10))
+    dfnull <-data.frame(dataSEIRnull())
+
+    plot(df$time, df$C*pop.size, typ="l", ylab = "cumulative cases", xlab = "days since first case", las=1, lwd = 4, col='#b2df8a', ylim = c(0,4*max(NLData$confirmed_positive)), xlim = c(0, max(Days.Since)+10))
+   	lines(dfnull$time, dfnull$C*pop.size, col='#a6cee3',lwd=4)
     points(Days.Since,NLData$presumptive_positive+NLData$confirmed_positive, pch = 16)
 
-    plot(tail(df$time, -1)/7, c(diff(df$C)*pop.size), typ="l", ylab = "new cases",las=1, xlab = "weeks since first case", lwd=4, col="dodgerblue")
+    plot(tail(df$time, -1)/7, c(diff(df$C)*pop.size), typ="l", ylab = "new cases",las=1, xlab = "weeks since first case", lwd=4, col='#b2df8a', ylim =c(0,max(diff(df$C)*pop.size, diff(dfnull$C)*pop.size)))
+    lines(tail(dfnull$time, -1)/7, c(diff(dfnull$C)*pop.size), col = '#a6cee3',lwd=4)
+    points(Days.Since/7, NewCasesPerDay, pch=16)
     #points(tail(NLData$presumptive_positive+NLData$confirmed_positive, -1) - head(NLData$presumptive_positive+NLData$confirmed_positive, -1))
 
     # t <-seq(11,100, .1)
@@ -343,28 +370,35 @@ server <- function(input, output) {
   output$SEIRtab <- renderTable({
   	out <- data.frame(dataSEIR())
   	i1 = min(which(out$time>=30))
-  	finalC <- round(last(out$C)*100,digits=1)
-  	month1<- round(out$C[i1]*100,digits=1)
+  	finalC <- round(last(out$C)*100,digits=0)
+  	month1<- round(out$C[i1]*100,digits=0)
   	i2 = min(which(out$time>=61))
-  	month2<-round(out$C[i2]*100,digits=1)
+  	month2<-round(out$C[i2]*100,digits=0)
   	i3 = min(which(out$time>=92))
-  	month3<-round(out$C[i3]*100,digits=1)
+  	month3<-round(out$C[i3]*100,digits=0)
   	idown = min(which(diff(out$I)<=0))
-  	lambda=1
-  	Double.time = log(2)/lambda
   	ipeak = min(which(diff(out$I)<=0))
   	peakweek = round(out$time[ipeak]/7,0)
   	newcases = diff(out$C)*pop.size
   	peakcases = round(newcases[ipeak],0)
-  	# output$table <- renderTable({
-  	# 	data.frame(as.character(c(1, input$number)))
-  	# }, rownames = T)
+		#### Null stats
+  	outnull <-data.frame(dataSEIRnull())
+  	finalCnull <- round(last(outnull$C)*100,digits=0)
+  	month1null<- round(outnull$C[i1]*100,digits=0)
+  	month2null<-round(outnull$C[i2]*100,digits=0)
+  	month3null<-round(outnull$C[i3]*100,digits=0)
+  	idown = min(which(diff(outnull$I)<=0))
+  	ipeak = min(which(diff(outnull$I)<=0))
+  	peakweeknull = round(outnull$time[ipeak]/7,0)
+  	newcases = diff(outnull$C)*pop.size
+  	peakcasesnull = round(newcases[ipeak],0)
   	data.frame(
-  		"1 month (%)" = as.character(c(month1)),
-  		"2 months (%)" = as.character(c(month2)),
-  		"3 months (%)" = as.character(c(month3)),
-  		"end (%)" = as.character(c(finalC)),
-  		"week of peak" = as.character(c(peakweek)),
+  		" " = c("no change", "with change"),
+  		"1 month (%)" = as.character(c(month1null, month1)),
+  		"2 months (%)" = as.character(c(month2null, month2)),
+  		"3 months (%)" = as.character(c(month3null, month3)),
+  		"end (%)" = as.character(c(finalCnull,finalC)),
+  		"week of peak" = as.character(c(peakweeknull,peakweek)),
   		check.names = FALSE)
 
   })
@@ -521,9 +555,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     # Newfoundland tab
     tabPanel("Newfoundland & Labrador",
              column(12,
-                    p("The data in the table (right) are filtered from a dataset by Dr. Michael Li", tags$a(href = "https://github.com/wzmli/COVID19-Canada/blob/master/README.md", "(here)."),
-										"These data are compiled by recording information from provincal health websites every day at 11.30pm NST.
-                    	"),
+                    p(),
 										p("On this page you will be able to compare the trajectory of an SIR model (see the 'Social distancing'
 											tab) to the recorded number of cases in Newfoundland and Labrador. However, since the SIR model assumes
 											only community spread of infections, this feature will only be enabled when the cases in Newfoundland and Labrador are predominantly
@@ -532,16 +564,24 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 										),
              column(7,
              			 # Slider input: social distancing
-             			 sliderInput("R0", "R0: new infections per infected person (assumes many susceptible)",
-             			 						min = 0, max = 5, step = .01, value = 2.5,
+             			 sliderInput("R0", "R0 past ---------- shift the slider to achieve agreement of the curve with the data points",
+             			 						min = 0, max =3.5, step = .01, value = 2,
              			 						width = '100%'),
+             			 sliderInput("R01", "R0 future ---------- shift the slider to consider a different future scenario",
+             			 						min = 0, max = 5, step = .01, value = 1.5,
+             			 						width = '100%'),
+             			 helpText("When estimating the number of people that are infected per one infected person, "),
                     plotOutput("scrapePlot", width = "100%"),
              			 # comma needs to be inserted above
              			 tableOutput("SEIRtab")
 
                     ),
              column(5,
+             			 helpText("The data below are filtered from a dataset by Dr. Michael Li", tags$a(href = "https://github.com/wzmli/COVID19-Canada/blob/master/README.md", "(here)."),
+             			 				 "These data are compiled by recording information from provincal health websites around 11.30pm NST.
+             			 				 "),
                     tableOutput("scrapeTab")
+
 
              )
 )))
