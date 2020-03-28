@@ -291,13 +291,14 @@ server <- function(input, output) {
 		NLData$confirmed_positive[is.na(NLData$confirmed_positive)] <- 0
 
 
-		par(mfrow = c(2,1), mar=c(3,4,1,2))
+		par(mfrow = c(2,1), mar=c(4,4,1,1))
 
     df <- data.frame(dataSEIR())
-    plot(df$time, df$C*pop.size, typ="l", ylab = "cumulative cases", xlab = "", las=1, lwd = 4, col="lightblue", ylim = c(0,4*max(NLData$confirmed_positive)), xlim = c(0, max(Days.Since)+10))
-    points(Days.Since,NLData$presumptive_positive+NLData$confirmed_positive, pch = 16, ylab = "cumulative cases", xlab = "")
-    # Alec: this one can be filled
-    plot(tail(df$time, -1)/7, c(diff(df$C)*pop.size), typ="l", ylab = "new cases", xlab = "",las=2)
+    plot(df$time, df$C*pop.size, typ="l", ylab = "cumulative cases", xlab = "days since first case", las=1, lwd = 4, col="dodgerblue", ylim = c(0,4*max(NLData$confirmed_positive)), xlim = c(0, max(Days.Since)+10))
+    points(Days.Since,NLData$presumptive_positive+NLData$confirmed_positive, pch = 16)
+
+    plot(tail(df$time, -1)/7, c(diff(df$C)*pop.size), typ="l", ylab = "new cases",las=1, xlab = "weeks since first case", lwd=4, col="dodgerblue")
+    #points(tail(NLData$presumptive_positive+NLData$confirmed_positive, -1) - head(NLData$presumptive_positive+NLData$confirmed_positive, -1))
 
     # t <-seq(11,100, .1)
     # lambda <- 1
@@ -337,16 +338,17 @@ server <- function(input, output) {
   	peakweek = round(out$time[ipeak]/7,0)
   	newcases = diff(out$C)*pop.size
   	peakcases = round(newcases[ipeak],0)
-
+  	# output$table <- renderTable({
+  	# 	data.frame(as.character(c(1, input$number)))
+  	# }, rownames = T)
   	data.frame(
-  		"Doubling time (days)" = c(Double.time),
-  		"1 month (%)" = c(month1),
-  		"2 months (%)" = c(month2),
-  		"3 months (%)" = c(month3),
-  		"end (%)" = c(finalC),
-  		"week of peak" = c(peakweek),
-  		check.names = FALSE
-  	)
+  		"1 month (%)" = as.character(c(month1)),
+  		"2 months (%)" = as.character(c(month2)),
+  		"3 months (%)" = as.character(c(month3)),
+  		"end (%)" = as.character(c(finalC)),
+  		"week of peak" = as.character(c(peakweek)),
+  		check.names = FALSE)
+
   })
 
 }
@@ -513,7 +515,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              column(7,
              			 # Slider input: social distancing
              			 sliderInput("R0", "R0: new infections per infected person (assumes many susceptible)",
-             			 						min = 0, max = 10, step = .05, value = 2.5,
+             			 						min = 0, max = 5, step = .01, value = 2.5,
              			 						width = '100%'),
                     plotOutput("scrapePlot", width = "100%"),
              			 # comma needs to be inserted above
