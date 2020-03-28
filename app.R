@@ -81,17 +81,18 @@ SIHR <- function(t, y, p) {
   })
 }
 
-SIRbeta <- function(t, y, p) {
+SEIR <- function(t, y, p) {
 	with(as.list(c(y, p)), {
-		dS <- -beta * S * I
-		dI <-  beta * S * I - gamma * I - v * I
-		dC <- beta * S * I
-		list(c(S = dS, I = dI, C = dC))
+		dS <- -beta * S * (I+E)
+		dE <- beta * S * (I+E) - a1*E
+		dI <- a1*E - gamma1 * I - v1 * I
+		dC <- a1*E
+		list(c(S = dS,E=dE, I = dI, C = dC))
 	})
 }
 
 ### Global variables ----
-## SIR
+
 # Parameters are taken from Bolker & Dushoff model
 gamma <- 1/13
 chi <- 0.03
@@ -101,6 +102,11 @@ c <- 0.4
 a <- 0.5
 I0 <- 0.005
 S0 <- 1 - I0
+# Parameters from Hill 2020
+a1 <- 0.2
+gamma1 <-0.133
+v1 <-gamma1 * chi / (1 - chi)
+
 mintime <- 0
 maxtime <- 250
 
@@ -257,16 +263,17 @@ server <- function(input, output) {
   })
 
 
-  dataSIRbeta <- reactive({
-  	parms <- c(beta = input$R0*(gamma + v), gamma = gamma,
-  						 v = v)
-  	I0 = 1/pop.size
-  	out <- ode(y = c(S = 1-I0, I = I0, C=0), times = seq(mintime, maxtime, .5), SIRbeta, parms)
+  dataSEIR <- reactive({
+  	parms <- c(beta = input$R0*a1*(gamma1+v1)/(gamma1 + v1+a1), gamma1 = gamma1,
+  						 v1 = v1, a1=a1)
+  	I0 = 100/pop.size
+  	E0 = 200/pop.size
+  	out <- ode(y = c(S = 1-I0, E=E0, I = I0, C=102/pop.size), times = seq(11, maxtime, .5), SEIR, parms)
 
   })
 
   output$scrapeTab <- renderTable({
-    dataNL()[, .(Province, Date, presumptive_positive, confirmed_positive,negative)]
+    dataNL()[, .(Province, "Date" = rev(Date), "confirmed positive" = rev(confirmed_positive),"negative" = rev(negative), "presumptive positive"=rev(presumptive_positive))]
   })
 
   output$scrapePlot <- renderPlot({
@@ -282,11 +289,20 @@ server <- function(input, output) {
 		# Replace "NA" with 0 for comfirmed and presumptive cases.
 		NLData$presumptive_positive[is.na(NLData$presumptive_positive)] <- 0
 		NLData$confirmed_positive[is.na(NLData$confirmed_positive)] <- 0
-		df <- data.table(dataSIR())
-    plot(Days.Since,NLData$presumptive_positive+NLData$confirmed_positive, pch = 16, ylab = "cumulative cases", xlab = "days since first case")
-    df <- data.frame(dataSIRbeta())
-    lines(df$time, df$C*pop.size, typ="l", ylab = "cumulative cases", xlab = "days since first case", las=1)
 
+
+		par(mfrow = c(2,1), mar=c(3,4,1,2))
+
+    df <- data.frame(dataSEIR())
+    plot(df$time, df$C*pop.size, typ="l", ylab = "cumulative cases", xlab = "", las=1, lwd = 4, col="lightblue", ylim = c(0,4*max(NLData$confirmed_positive)), xlim = c(0, max(Days.Since)+10))
+    points(Days.Since,NLData$presumptive_positive+NLData$confirmed_positive, pch = 16, ylab = "cumulative cases", xlab = "")
+    # Alec: this one can be filled
+    plot(tail(df$time, -1)/7, c(diff(df$C)*pop.size), typ="l", ylab = "new cases", xlab = "",las=2)
+
+    # t <-seq(11,100, .1)
+    # lambda <- 1
+    # plot(t, lambda*t+log(102*exp(-lambda*11)), col = "dodgerblue", lwd=4, ylab = "log(cumulative cases)", xlab = "days since first case", typ="l", ylim = c(0,4*max(log(NLData$confirmed_positive))), xlim = c(0, max(Days.Since)+10))
+    # points(Days.Since,log(NLData$presumptive_positive+NLData$confirmed_positive), pch = 16)
    #  for (j in names(NL)) set(NL, which(is.na(NL[[j]])), j, 0)
    #
    #  # Plot cases in NL
@@ -305,25 +321,30 @@ server <- function(input, output) {
    #    plot_layout(guides = 'collect', heights = c(5, 3))#expand = expand_scale(mult = c(0, 0.1)))
     })
 
-  output$SIRbetatab <- renderTable({
-  	out <- data.frame(dataSIRbeta())
+  output$SEIRtab <- renderTable({
+  	out <- data.frame(dataSEIR())
   	i1 = min(which(out$time>=30))
-  	finalC <- round(last(out$C)*pop.size,-2)
-  	month1<- round(out$C[i1]*pop.size,0)
+  	finalC <- round(last(out$C)*100,digits=1)
+  	month1<- round(out$C[i1]*100,digits=1)
   	i2 = min(which(out$time>=61))
-  	month2<-round(out$C[i2]*pop.size,0)
+  	month2<-round(out$C[i2]*100,digits=1)
   	i3 = min(which(out$time>=92))
-  	month3<-round(out$C[i3]*pop.size,0)
+  	month3<-round(out$C[i3]*100,digits=1)
   	idown = min(which(diff(out$I)<=0))
-  	fat<-1
+  	lambda=1
+  	Double.time = log(2)/lambda
+  	ipeak = min(which(diff(out$I)<=0))
+  	peakweek = round(out$time[ipeak]/7,0)
+  	newcases = diff(out$C)*pop.size
+  	peakcases = round(newcases[ipeak],0)
 
   	data.frame(
-  		"1 month" = c(month1),
-  		"2 months" = c(month2),
-  		"3 months" = c(month3),
-  		"end" = c(finalC),
-  		"week of peak" = c(fat),
-  		"daily case at peak" = c(fat),
+  		"Doubling time (days)" = c(Double.time),
+  		"1 month (%)" = c(month1),
+  		"2 months (%)" = c(month2),
+  		"3 months (%)" = c(month3),
+  		"end (%)" = c(finalC),
+  		"week of peak" = c(peakweek),
   		check.names = FALSE
   	)
   })
@@ -491,12 +512,12 @@ ui <- fluidPage(title = "The math behind flatten the curve",
 										),
              column(7,
              			 # Slider input: social distancing
-             			 sliderInput("R0", "new infections per infected person (assumes many susceptible)",
-             			 						min = 0, max = 10, step = .05, value = 5,
+             			 sliderInput("R0", "R0: new infections per infected person (assumes many susceptible)",
+             			 						min = 0, max = 10, step = .05, value = 2.5,
              			 						width = '100%'),
                     plotOutput("scrapePlot", width = "100%"),
              			 # comma needs to be inserted above
-             			 tableOutput("SIRbetatab")
+             			 tableOutput("SEIRtab")
 
                     ),
              column(5,
