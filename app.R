@@ -83,10 +83,18 @@ SIHR <- function(t, y, p) {
 
 SEIR <- function(t, y, p) {
 	with(as.list(c(y, p)), {
+		if (t <= today){
 		dS <- -beta * S * (I+E)
 		dE <- beta * S * (I+E) - a1*E
 		dI <- a1*E - gamma1 * I - v1 * I
 		dC <- a1*E
+		} else
+		{
+			dS <- -beta1 * S * (I+E)
+			dE <- beta1 * S * (I+E) - a1*E
+			dI <- a1*E - gamma1 * I - v1 * I
+			dC <- a1*E
+		}
 		list(c(S = dS,E=dE, I = dI, C = dC))
 	})
 }
@@ -264,10 +272,20 @@ server <- function(input, output) {
 
 
   dataSEIR <- reactive({
+  	NLData <- dataNL()
+  	New.Dates = data.frame(date = NLData$Date, stringsAsFactors = FALSE)
+  	# This %>% is from the tidyr package
+  	New.Dates = New.Dates %>% separate(date, sep="-", into = c("year", "month", "day"))
+  	New.Dates$day = as.numeric(New.Dates$day)
+  	New.Dates$month = as.numeric(New.Dates$month)
+  	New.Dates$year = as.numeric(New.Dates$year)
+  	Days.Since = julian(New.Dates$month,New.Dates$day, New.Dates$year,  c(month = 3,day= 16,year = 2020))
+  	today <- max(Days.Since)
+
   	parms <- c(beta = input$R0*a1*(gamma1+v1)/(gamma1 + v1+a1), gamma1 = gamma1,
-  						 v1 = v1, a1=a1)
-  	I0 = 100/pop.size
-  	E0 = 200/pop.size
+  						 v1 = v1, a1=a1, today = today, beta1 = 0.4)
+  	I0 = 102/pop.size
+  	E0 = 204/pop.size
   	out <- ode(y = c(S = 1-I0, E=E0, I = I0, C=102/pop.size), times = seq(11, maxtime, .5), SEIR, parms)
 
   })
