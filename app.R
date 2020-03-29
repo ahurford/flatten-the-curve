@@ -276,8 +276,8 @@ server <- function(input, output) {
   })
 
   dataNL <- reactive({
-    data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[
-      Province == 'NL']
+  	# Added fill = TRUE based on an error generated.
+    data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv', fill=TRUE)[Province == 'NL']
   })
 
   dataSEIR <- reactive({
@@ -294,16 +294,16 @@ server <- function(input, output) {
   	parms <- c(beta = input$R0*a1*(gamma1+v1)/(gamma1 + v1+a1), gamma1 = gamma1,
   						 v1 = v1, a1=a1, today = today, beta1 = input$R01*a1*(gamma1+v1)/(gamma1 + v1+a1))
   	I0 = 102/pop.size
-  	E0 = 204/pop.size
-  	out <- ode(y = c(S = 1-I0, E=E0, I = I0, C=102/pop.size), times = seq(11, maxtime, .5), SEIR, parms)
+  	E0 = 2*I0
+  	out <- ode(y = c(S = 1-I0, E=E0, I = I0, C=I0), times = seq(11, maxtime, .5), SEIR, parms)
 
   })
   dataSEIRnull <- reactive({
   	parmsnull <- c(beta = input$R0*a1*(gamma1+v1)/(gamma1 + v1+a1), gamma1 = gamma1,
   						 v1 = v1, a1=a1)
   	I0 = 102/pop.size
-  	E0 = 204/pop.size
-  	outnull <- ode(y = c(S = 1-I0, E=E0, I = I0, C=102/pop.size), times = seq(11, maxtime, .5), SEIRnull, parmsnull)
+  	E0 = 2/pop.size
+  	outnull <- ode(y = c(S = 1-I0, E=E0, I = I0, C=I0), times = seq(11, maxtime, .5), SEIRnull, parmsnull)
   })
 
   output$scrapeTab <- renderTable({
@@ -564,10 +564,10 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              column(7,
              			 # Slider input: social distancing
              			 sliderInput("R0", "R0 past ---------- shift the slider to achieve agreement of the curve with the reported cases (black dots)",
-             			 						min = 0, max =3.5, step = .01, value = 2,
+             			 						min = 1, max =3.5, step = .01, value = 2,
              			 						width = '100%'),
              			 sliderInput("R01", "R0 future ---------- shift the slider to consider a different future scenario",
-             			 						min = 0, max = 5, step = .01, value = 1.5,
+             			 						min = 1, max = 3.5, step = .01, value = 1.5,
              			 						width = '100%'),
              			 helpText("R0 is the average number of people that are infected per one infected person, when most other people are susceptible.
              			 				 R0 past: considers March 27 (day 11 since the first case) to today. R0 future: considers from today, forward."),
