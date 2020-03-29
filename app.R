@@ -34,10 +34,16 @@ areaAlpha <- 0.6
 ### Functions ----
 SIR <- function(t, y, p) {
   with(as.list(c(y, p)), {
+  	# No social distancing
+  	# Susceptible
     dSx <- -a * c * Sx * Ix
+    # Infected
     dIx <- a * c * Sx * Ix - gamma * Ix - v * Ix
+    # Cumultative fatalities
     dFx <- v * Ix
+    # Cumulative cases
     dCx <- a*c*Sx*Ix
+    # Variables as above but with social distancing
     dS <- -a * (1 - m1) * c * S * I
     dI <-  a * (1 - m1) * c * S * I - gamma * I - v * I
     dF <- v * I
