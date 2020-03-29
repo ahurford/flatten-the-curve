@@ -399,6 +399,7 @@ server <- function(input, output) {
   		"3 months (%)" = as.character(c(month3null, month3)),
   		"end (%)" = as.character(c(finalCnull,finalC)),
   		"week of peak" = as.character(c(peakweeknull,peakweek)),
+  		"new cases at peak"= as.character(c(peakcasesnull,peakcases)),
   		check.names = FALSE)
 
   })
@@ -556,11 +557,9 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     tabPanel("Newfoundland & Labrador",
              column(12,
                     p(),
-										p("On this page you will be able to compare the trajectory of an SIR model (see the 'Social distancing'
-											tab) to the recorded number of cases in Newfoundland and Labrador. However, since the SIR model assumes
-											only community spread of infections, this feature will only be enabled when the cases in Newfoundland and Labrador are predominantly
-											due to community spread. Currently, this option is disabled since
-											most of the cases of COVID-19 in Newfoundland and Labrador are travel-related.")
+										p("Here you can consider the computational output of a", tags$a(href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology", "SEIR epidemic model"), "relative to the recorded number of cases in Newfoundland and Labrador (black dots). However, since the SEIR model assumes
+											only community spread of infections, we compare only to data beginning on March 27, when cumulative cases first exceeded 100 in Newfoundland and Labrador. This app allows you to consider different future scenarios (green curve) regarding
+											better or worse infection rates than in the past. Please note that this is a simple model, and predictions will give a general picture, but the exact numerical values are unlikely to come to pass. See the bottom for a discussion of model limitations.")
 										),
              column(7,
              			 # Slider input: social distancing
@@ -570,10 +569,12 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              			 sliderInput("R01", "R0 future ---------- shift the slider to consider a different future scenario",
              			 						min = 0, max = 5, step = .01, value = 1.5,
              			 						width = '100%'),
-             			 helpText("When estimating the number of people that are infected per one infected person, "),
+             			 helpText("R0 is the average number of people that are infected per one infected person, when most other people are susceptible.
+             			 				 R0 past: considers March 27 (day 11 since the first case) to today. R0 future: considers from today forward."),
                     plotOutput("scrapePlot", width = "100%"),
              			 # comma needs to be inserted above
-             			 tableOutput("SEIRtab")
+             			 tableOutput("SEIRtab"),
+             			 helpText("")
 
                     ),
              column(5,
