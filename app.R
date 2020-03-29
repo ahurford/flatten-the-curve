@@ -308,7 +308,7 @@ server <- function(input, output) {
   	parmsnull <- c(beta = input$R0*a1*(gamma1+v1)/(gamma1 + v1+a1), gamma1 = gamma1,
   						 v1 = v1, a1=a1)
   	I0 = 102/pop.size
-  	E0 = 2/pop.size
+  	E0 = 2*I0
   	outnull <- ode(y = c(S = 1-I0, E=E0, I = I0, C=I0), times = seq(11, maxtime, .5), SEIRnull, parmsnull)
   })
 
