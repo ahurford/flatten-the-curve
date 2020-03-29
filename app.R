@@ -557,24 +557,25 @@ ui <- fluidPage(title = "The math behind flatten the curve",
     tabPanel("Newfoundland & Labrador",
              column(12,
                     p(),
-										p("On this tab you can consider the computational output of a", tags$a(href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology", "SEIR epidemic model"), "relative to the recorded number of cases in Newfoundland and Labrador (black dots). However, since the SEIR model assumes
-											only community spread of infections, we compare only to data beginning on March 27, when cumulative cases first exceeded 100 in Newfoundland and Labrador. This app allows you to consider different future scenarios (green curve) regarding
-											better or worse infection rates than in the past. Please note that this is a simple model, and predictions will give a general picture, but the exact numerical values are unlikely to come to pass. See the right for a discussion of model limitations.")
+										p("On this tab you can consider the computational output of a", tags$a(href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology", "SEIR epidemic model"), "relative to the recorded number of COVID-19 cases in Newfoundland and Labrador (black dots). However, since the SEIR model assumes
+											only community spread of infections, we compare only to the reported cases beginning on March 27, when cumulative cases first exceeded 100 in Newfoundland and Labrador. This app allows you to consider different future scenarios (green curve) regarding
+											better or worse infection rates than in the past. Please note that this is a simple epidemic model, and predictions will give a general picture: the exact numerical values are unlikely to come to pass. See the right for a discussion of the model's limitations.")
 										),
              column(7,
              			 # Slider input: social distancing
-             			 sliderInput("R0", "R0 past ---------- shift the slider to achieve agreement of the curve with the data points",
+             			 sliderInput("R0", "R0 past ---------- shift the slider to achieve agreement of the curve with the reported cases (black dots)",
              			 						min = 0, max =3.5, step = .01, value = 2,
              			 						width = '100%'),
              			 sliderInput("R01", "R0 future ---------- shift the slider to consider a different future scenario",
              			 						min = 0, max = 5, step = .01, value = 1.5,
              			 						width = '100%'),
              			 helpText("R0 is the average number of people that are infected per one infected person, when most other people are susceptible.
-             			 				 R0 past: considers March 27 (day 11 since the first case) to today. R0 future: considers from today forward."),
+             			 				 R0 past: considers March 27 (day 11 since the first case) to today. R0 future: considers from today, forward."),
                     plotOutput("scrapePlot", width = "100%"),
+             			 helpText("Blue curve (no change): assumes that 'R0 past' continues into the future. Green curve (with change): assumes that after today, R0 changes to 'R0 future'."),
              			 # comma needs to be inserted above
              			 tableOutput("SEIRtab"),
-             			 helpText("1 month (%): percentage of the NL population that have been infected 1 month from the first cases (2 month, 3 month, and end (%) are definited similarly)."),
+             			 helpText("1 month (%): percentage of the NL population that have been infected 1 month from the first case (2 month, 3 month, and end (%) are definited similarly)."),
 									 helpText("Week of peak: the week when the peak number of cases occurs. The week of the first case is week 0."),
 									 helpText("New cases at peak: the number of cases reported on the day when the epidemic reaches its peak. Note that the default slider settings give
 									 				 values that seem much too high.")
@@ -583,10 +584,10 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                     ),
              column(5,
              			 h4("Model limitations"),
-             			 p("The model does not differentiate based on where people live: R0 averages across the entire population.
+             			 p("The model does not differentiate based on where people live: R0 averages across the entire provincial population.
              			 	However, the rate that St. John's residents contact others will be much different than this same rate in rural Newfoundland and Labrador."),
              			 p("The model does not consider asymptomatic infections."),
-             			 p("The model parameters correspond to a 5 day period, where a person is infectious but has not yet developed symptoms.
+             			 p("The model parameters correspond to a 5 day period, where a person is infectious, but has not yet developed symptoms.
      A person assumed to be symptomatic and infectious for 7.5 days. Of infected people, it is assumed that 3% do not survive.
              			 These values are based on", tags$a(href = "https://alhill.shinyapps.io/COVID19seir/", "Hill (2020).")),
              			 helpText("The data below are filtered from a dataset by Dr. Michael Li", tags$a(href = "https://github.com/wzmli/COVID19-Canada/blob/master/README.md", "(here)."),

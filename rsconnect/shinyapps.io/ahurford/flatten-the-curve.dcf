@@ -5,6 +5,6 @@ account: ahurford
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1952159
-bundleId: 2925487
+bundleId: 2937823
 url: https://ahurford.shinyapps.io/flatten-the-curve/
-when: 1585186830.14559
+when: 1585442765.32686
