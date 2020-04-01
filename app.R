@@ -353,7 +353,7 @@ server <- function(input, output) {
     #plot(tail(df$time, -1), c(diff(df$C)*pop.size), typ="l", ylab = "new cases",las=1, xlab = "days since first case on March 16", lwd=4, col='#b2df8a', xlim = c(0, max(Days.Since)+10),ylim = c(0,35))
   #ylim =c(0,max(diff(df$C)*pop.size, diff(dfnull$C)*pop.size)
     #lines(tail(dfnull$time, -1), c(diff(dfnull$C)*pop.size), col = '#a6cee3',lwd=4)
-    plot(Days.Since, NewCasesPerDay, pch=16, xlab = "days since first case on March 16", ylab = "new cases")
+    barplot(NewCasesPerDay, pch=16, xlab = "days since first case on March 16", ylab = "new cases", col='#a6cee3')
     #points(tail(NLData$presumptive_positive+NLData$confirmed_positive, -1) - head(NLData$presumptive_positive+NLData$confirmed_positive, -1))
 
     # t <-seq(11,100, .1)
