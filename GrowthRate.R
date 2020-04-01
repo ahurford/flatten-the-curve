@@ -21,4 +21,5 @@ i = min(which(TotalCases>=100))
 # index of last obs.
 i1 = length(Days.Since)
 
-plot(Days.Since[i:i1], NewCasesPerDay[i:i1]/TotalCases[i:i1-1], typ = "l", ylab = "Change in cases per case", xlab = "Days sine March 16")
+plot(Days.Since[i:(i1-1)], (NewCasesPerDay[(i+1):i1]-NewCasesPerDay[i:(i1-1)])/TotalCases[i:(i1-1)], typ = "l", ylab = "Change in cases per case", xlab = "Days since March 16")
+plot(Days.Since, NLData$negative, typ="l", ylab = "Negative test", xlab = "Days since March 16" )

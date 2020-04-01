@@ -341,21 +341,24 @@ server <- function(input, output) {
 		NewCasesPerDay = NewCases/DaysBetween
 
 
-		par(mfrow = c(2,1), mar=c(4,4,1,1))
+		par(mfrow = c(3,1), mar=c(4,4,1,1))
 
     df <- data.frame(dataSEIR())
     dfnull <-data.frame(dataSEIRnull())
-
-    plot(dfnull$time, dfnull$C*pop.size/1000, typ="l", ylab = "cumulative cases (in thousands)", xlab = "days since first case on March 16", las=1, lwd = 4, col='#b2df8a')
+    
+    
+   plot(dfnull$time, dfnull$C*pop.size/1000, typ="l", ylab = "cumulative cases (in thousands)", xlab = "", las=1, lwd = 4, col='#b2df8a', bty="n")
    	lines(df$time, df$C*pop.size/1000, col='#a6cee3',lwd=4)
     points(Days.Since,(NLData$presumptive_positive+NLData$confirmed_positive)/1000, pch = 16)
 
     #plot(tail(df$time, -1), c(diff(df$C)*pop.size), typ="l", ylab = "new cases",las=1, xlab = "days since first case on March 16", lwd=4, col='#b2df8a', xlim = c(0, max(Days.Since)+10),ylim = c(0,35))
   #ylim =c(0,max(diff(df$C)*pop.size, diff(dfnull$C)*pop.size)
     #lines(tail(dfnull$time, -1), c(diff(dfnull$C)*pop.size), col = '#a6cee3',lwd=4)
-    barplot(NewCasesPerDay, pch=16, xlab = "days since first case on March 16", ylab = "new cases", col='#a6cee3')
+    plot(Days.Since, NewCasesPerDay, pch=16, xlab = "", ylab = "new cases", bty="n")
     #points(tail(NLData$presumptive_positive+NLData$confirmed_positive, -1) - head(NLData$presumptive_positive+NLData$confirmed_positive, -1))
 
+    plot(Days.Since, NLData$negative+NLData$presumptive_positive+NLData$confirmed_positive, ylab = "Daily tests reported", xlab = "Days since March 16", pch=16, bty="n")
+    
     # t <-seq(11,100, .1)
     # lambda <- 1
     # plot(t, lambda*t+log(102*exp(-lambda*11)), col = "dodgerblue", lwd=4, ylab = "log(cumulative cases)", xlab = "days since first case", typ="l", ylim = c(0,4*max(log(NLData$confirmed_positive))), xlim = c(0, max(Days.Since)+10))
