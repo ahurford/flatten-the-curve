@@ -303,7 +303,7 @@ server <- function(input, output) {
 
   	parms <- c(beta = input$R0*a1*(gamma1+v1)/(gamma1 + v1+a1), gamma1 = gamma1,
   						 v1 = v1, a1=a1, today = today, beta1 = input$R01*a1*(gamma1+v1)/(gamma1 + v1+a1))
-  	I0 = 102/pop.size
+  	I0 = 50/pop.size
   	E0 = 2*I0
   	out <- ode(y = c(S = 1-I0, E=E0, I = I0, C=I0), times = seq(11, maxtime, .5), SEIR, parms)
 
@@ -311,7 +311,7 @@ server <- function(input, output) {
   dataSEIRnull <- reactive({
   	parmsnull <- c(beta = input$R0*a1*(gamma1+v1)/(gamma1 + v1+a1), gamma1 = gamma1,
   						 v1 = v1, a1=a1)
-  	I0 = 102/pop.size
+  	I0 = 50/pop.size
   	E0 = 2*I0
   	outnull <- ode(y = c(S = 1-I0, E=E0, I = I0, C=I0), times = seq(11, maxtime, .5), SEIRnull, parmsnull)
   })
@@ -346,18 +346,21 @@ server <- function(input, output) {
     df <- data.frame(dataSEIR())
     dfnull <-data.frame(dataSEIRnull())
     
+
+    plot(Days.Since, NewCasesPerDay, pch=16, xlab = "", ylab = "new cases", bty="n", xlim = c(0,max(Days.Since)+10))
+    lines(tail(dfnull$time, -1), c(diff(dfnull$C)*pop.size),col='#a6cee3',lwd=4)
+    lines(tail(df$time, -1), diff(df$C)*pop.size, col='#b2df8a' ,lwd=4)
     
-   plot(dfnull$time, dfnull$C*pop.size/1000, typ="l", ylab = "cumulative cases (in thousands)", xlab = "", las=1, lwd = 4, col='#b2df8a', bty="n")
-   	lines(df$time, df$C*pop.size/1000, col='#a6cee3',lwd=4)
+   plot(dfnull$time, dfnull$C*pop.size/1000, typ="l", ylab = "cumulative cases (in thousands)", xlab = "", las=1, lwd = 4, col='#a6cee3', bty="n")
+   	lines(df$time, df$C*pop.size/1000, col='#b2df8a',lwd=4)
     points(Days.Since,(NLData$presumptive_positive+NLData$confirmed_positive)/1000, pch = 16)
 
     #plot(tail(df$time, -1), c(diff(df$C)*pop.size), typ="l", ylab = "new cases",las=1, xlab = "days since first case on March 16", lwd=4, col='#b2df8a', xlim = c(0, max(Days.Since)+10),ylim = c(0,35))
   #ylim =c(0,max(diff(df$C)*pop.size, diff(dfnull$C)*pop.size)
-    #lines(tail(dfnull$time, -1), c(diff(dfnull$C)*pop.size), col = '#a6cee3',lwd=4)
-    plot(Days.Since, NewCasesPerDay, pch=16, xlab = "", ylab = "new cases", bty="n")
-    #points(tail(NLData$presumptive_positive+NLData$confirmed_positive, -1) - head(NLData$presumptive_positive+NLData$confirmed_positive, -1))
 
-    plot(Days.Since, NLData$negative+NLData$presumptive_positive+NLData$confirmed_positive, ylab = "Daily tests reported", xlab = "Days since March 16", pch=16, bty="n")
+    #points(tail(NLData$presumptive_positive+NLData$confirmed_positive, -1) - head(NLData$presumptive_positive+NLData$confirmed_positive, -1))
+    Tests = NLData$negative+NLData$presumptive_positive+NLData$confirmed_positive
+    plot(tail(Days.Since, -1), tail(Tests, -1) - head(Tests, -1), ylab = "Daily tests reported", xlab = "Days since March 16", pch=16, bty="n")
     
     # t <-seq(11,100, .1)
     # lambda <- 1
