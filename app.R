@@ -32,97 +32,14 @@ cols <- c('No changes implemented' = '#a6cee3',
 areaAlpha <- 0.6
 
 ### Functions ----
-SIR <- function(t, y, p) {
-  with(as.list(c(y, p)), {
-  	# No social distancing
-  	# -----------------
-  	# Sx: Susceptible (no social distancing)
-    dSx <- -a * c * Sx * Ix
-    # Ix: Infected (no social distancing)
-    dIx <- a * c * Sx * Ix - gamma * Ix - v * Ix
-    # Fx: Cumultative fatalities (no)
-    dFx <- v * Ix
-    # Cumulative cases
-    dCx <- a*c*Sx*Ix
-    # Variables as above but with social distancing
-    # Social distancing is m1
-    dS <- -a * (1 - m1) * c * S * I
-    dI <-  a * (1 - m1) * c * S * I - gamma * I - v * I
-    dF <- v * I
-    dC <- a*c*(1-m1)*S*I
+source('R/SIR.R')
+source('R/SIHR.R')
+source('R/SEIR.R')
 
-    list(c(Sx = dSx, Ix = dIx, Fx = dFx, Cx = dCx, S = dS,
-           I = dI, Fs = dF, C=dC))
-  })
-}
-
-SIHR <- function(t, y, p) {
-  with(as.list(c(y, p)), {
-  	# The x subscript indicates "no social distancing".
-    dSx <- -a * c * Sx * Ix
-    dIx <- a * c * Sx * Ix - gamma * Ix - sigma*Ix - v*Ix
-    # Hospitalized without a capacity cap for reference
-    dHx1 <- sigma*Ix - vH*Hx1 - rho*Hx1
-    # Cx: Cumulative cases
-    dCx <- a * c * Sx * Ix
-    # Hcumx: Cumulative hospital admissions
-    dHcumx <- sigma*Ix
-		# Much better to code the below as min/max. Poor computation times
-    # with if esle.
-    	# Hospitalized with a capacity cap
-    # with cap on hospital admissions
-    dHx <- sigma*min(Ix,H2) - vH*H0 - rho*H0
-    # cumulative unmet need
-    dUx <- sigma*max(0,(Ix-H2))
-
-    # with social distancing
-    dS <- -a * (1 - m2) * c * S * I
-    dI <-  a * (1 - m2) * c * S * I - gamma * I - v * I - sigma*I
-    dHcum <- sigma*I
-    # without a cap on hospital resources
-    dH1 <- sigma*I - vH*H1 - rho*H1
-    # culmulative cases
-    dC <- a * (1 - m2) * c * S * I
-    # with cap on hospital admissions
-    dH0 <- sigma*min(I,H2) - vH*H0 - rho*H0
-    # cumulative unmet need
-    dU <- sigma*max(0,(I-H2))
-    list(c(Sx = dSx, Ix = dIx, Hx1 = dHx1, Hx=dHx, Ux=dUx,Cx=dCx, S = dS, I = dI, H1 = dH1, H0 = dH0, U=dU,C=dC, Hcum=dHcum, Hcumx=dHcumx))
-  })
-}
-
-SEIR <- function(t, y, p) {
-	with(as.list(c(y, p)), {
-		if (t <= today){
-		dS <- -beta * S * (I+E)
-		dE <- beta * S * (I+E) - a1*E
-		dI <- a1*E - gamma1 * I - v1 * I
-		dC <- a1*E
-		} else
-		{
-			dS <- -beta1 * S * (I+E)
-			dE <- beta1 * S * (I+E) - a1*E
-			dI <- a1*E - gamma1 * I - v1 * I
-			dC <- a1*E
-		}
-		list(c(S = dS,E=dE, I = dI, C = dC))
-	})
-}
-
-SEIRnull <- function(t, y, p) {
-	with(as.list(c(y, p)), {
-			dS <- -beta * S * (I+E)
-			dE <- beta * S * (I+E) - a1*E
-			dI <- a1*E - gamma1 * I - v1 * I
-			dC <- a1*E
-		list(c(S = dS,E=dE, I = dI, C = dC))
-	})
-}
 
 ### Global variables ----
-
 # Parameters are taken from Bolker & Dushoff model
-gamma <- 1/13
+gamma <- 1 / 13
 chi <- 0.03
 v <- gamma * chi / (1 - chi)
 H <- 15
@@ -132,8 +49,8 @@ I0 <- 0.005
 S0 <- 1 - I0
 # Parameters from Hill 2020
 a1 <- 0.2
-gamma1 <-0.133
-v1 <-gamma1 * chi / (1 - chi)
+gamma1 <- 0.133
+v1 <- gamma1 * chi / (1 - chi)
 
 mintime <- 0
 maxtime <- 250
@@ -149,13 +66,13 @@ DT <- round(log(2) / (a * c - v - gamma), 1)
 # 61.5% died before 28 days.
 # 52/201 with pneumonia included.
 # Assume 20% infections are severe.
-rho <- 1/7
+rho <- 1 / 7
 # 0.62 = vH/(vH + rho)
 # <=> 0.62*(1/7) = vH*(1-0.62)
-vH <- 0.62*(1/7)/(1-0.62)
+vH <- 0.62 * (1 / 7) / (1 - 0.62)
 # 0.2*(52/201) = sigma/(v + gamma + sigma)
 # 0.2*(52/201)*(v + gamma) = sigma*(1 - 0.2*(52/201))
-sigma <- 0.2*(52/201)*(0.00238 + 1/13)/(1 - 0.2*(52/201))
+sigma <- 0.2 * (52 / 201) * (0.00238 + 1 / 13) / (1 - 0.2 * (52 / 201))
 pop.size <- 519716
 
 ### Server ----
@@ -165,8 +82,9 @@ server <- function(input, output) {
 
       parms <- c(a = a, m1 = input$m1/100, c = c, gamma = gamma,
                  v = v, H = H)
-      out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx=0, S = S0, I = I0, FS = 0, C=0), times = seq(mintime, maxtime, 1), SIR, parms)
-
+      out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx = 0, S = S0, I = I0,
+      								 FS = 0, C = 0),
+      					 times = seq(mintime, maxtime, 1), SIR, parms)
     })
 
   output$SIR <- renderPlot({
@@ -223,7 +141,10 @@ server <- function(input, output) {
   dataSIHR <- reactive({
     parms <- c(a = a, m2 = input$m2/100, c = c, gamma = gamma,
                v = v, H2 = input$H2, rho = rho, vH = vH, sigma = sigma)
-    out <- ode(y = c(Sx = S0, Ix = I0, Hx1 = 0, Hx=0, Ux=0, Cx=0, S = S0, I = I0, H1 = 0, H0 = 0, U = 0, C=0, Hcum=0, Hcumx=0), times = seq(mintime, maxtime, 1), SIHR, parms)
+    out <- ode(y = c(Sx = S0, Ix = I0, Hx1 = 0, Hx = 0, Ux = 0, Cx = 0, S = S0,
+    								 I = I0, H1 = 0, H0 = 0, U = 0, C = 0, Hcum = 0, Hcumx = 0),
+    					 times = seq(mintime, maxtime, 1),
+    					 SIHR, parms)
   })
 
   output$SIHR <- renderPlot({
@@ -286,8 +207,8 @@ server <- function(input, output) {
   })
 
   dataNL <- reactive({
-  	# Added fill = TRUE based on an error generated.
-    data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv', fill=TRUE)[Province == 'NL']
+  	data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv',
+  										fill = TRUE)[Province == 'NL']
   })
 
   dataSEIR <- reactive({
@@ -301,11 +222,12 @@ server <- function(input, output) {
   	Days.Since = julian(New.Dates$month,New.Dates$day, New.Dates$year,  c(month = 3,day= 16,year = 2020))
   	today <- max(Days.Since)
 
-  	parms <- c(beta = input$R0*a1*(gamma1+v1)/(gamma1 + v1+a1), gamma1 = gamma1,
-  						 v1 = v1, a1=a1, today = today, beta1 = input$R01*a1*(gamma1+v1)/(gamma1 + v1+a1))
-  	I0 = 50/pop.size
-  	E0 = 2*I0
-  	out <- ode(y = c(S = 1-I0, E=E0, I = I0, C=I0), times = seq(11, maxtime, .5), SEIR, parms)
+  	parms <- c(beta = input$R0*a1 * (gamma1 + v1) / (gamma1 + v1 + a1), gamma1 = gamma1,
+  						 v1 = v1, a1 = a1, today = today,
+  						 beta1 = input$R01 * a1 * (gamma1 + v1) / (gamma1 + v1 + a1))
+  	I0 = 50 / pop.size
+  	E0 = 2 * I0
+  	out <- ode(y = c(S = 1 - I0, E = E0, I = I0, C = I0), times = seq(11, maxtime, .5), SEIR, parms)
 
   })
   dataSEIRnull <- reactive({
@@ -313,7 +235,7 @@ server <- function(input, output) {
   						 v1 = v1, a1=a1)
   	I0 = 50/pop.size
   	E0 = 2*I0
-  	outnull <- ode(y = c(S = 1-I0, E=E0, I = I0, C=I0), times = seq(11, maxtime, .5), SEIRnull, parmsnull)
+  	outnull <- ode(y = c(S = 1 - I0, E = E0, I = I0, C = I0), times = seq(11, maxtime, .5), SEIRnull, parmsnull)
   })
 
   output$scrapeTab <- renderTable({
@@ -345,12 +267,12 @@ server <- function(input, output) {
 
     df <- data.frame(dataSEIR())
     dfnull <-data.frame(dataSEIRnull())
-    
+
 
     plot(Days.Since, NewCasesPerDay, pch=16, xlab = "", ylab = "new cases", bty="n", xlim = c(0,max(Days.Since)+10))
     lines(tail(dfnull$time, -1), c(diff(dfnull$C)*pop.size),col='#a6cee3',lwd=4)
     lines(tail(df$time, -1), diff(df$C)*pop.size, col='#b2df8a' ,lwd=4)
-    
+
    plot(dfnull$time, dfnull$C*pop.size/1000, typ="l", ylab = "cumulative cases (in thousands)", xlab = "", las=1, lwd = 4, col='#a6cee3', bty="n")
    	lines(df$time, df$C*pop.size/1000, col='#b2df8a',lwd=4)
     points(Days.Since,(NLData$presumptive_positive+NLData$confirmed_positive)/1000, pch = 16)
@@ -361,7 +283,7 @@ server <- function(input, output) {
     #points(tail(NLData$presumptive_positive+NLData$confirmed_positive, -1) - head(NLData$presumptive_positive+NLData$confirmed_positive, -1))
     Tests = NLData$negative+NLData$presumptive_positive+NLData$confirmed_positive
     plot(tail(Days.Since, -1), tail(Tests, -1) - head(Tests, -1), ylab = "Daily tests reported", xlab = "Days since March 16", pch=16, bty="n")
-    
+
     # t <-seq(11,100, .1)
     # lambda <- 1
     # plot(t, lambda*t+log(102*exp(-lambda*11)), col = "dodgerblue", lwd=4, ylab = "log(cumulative cases)", xlab = "days since first case", typ="l", ylim = c(0,4*max(log(NLData$confirmed_positive))), xlim = c(0, max(Days.Since)+10))
