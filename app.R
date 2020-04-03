@@ -37,13 +37,9 @@ source('R/SIHR.R')
 source('R/SEIR.R')
 
 
-
-
-
 ### Global variables ----
-
 # Parameters are taken from Bolker & Dushoff model
-gamma <- 1/13
+gamma <- 1 / 13
 chi <- 0.03
 v <- gamma * chi / (1 - chi)
 H <- 15
@@ -53,8 +49,8 @@ I0 <- 0.005
 S0 <- 1 - I0
 # Parameters from Hill 2020
 a1 <- 0.2
-gamma1 <-0.133
-v1 <-gamma1 * chi / (1 - chi)
+gamma1 <- 0.133
+v1 <- gamma1 * chi / (1 - chi)
 
 mintime <- 0
 maxtime <- 250
@@ -70,13 +66,13 @@ DT <- round(log(2) / (a * c - v - gamma), 1)
 # 61.5% died before 28 days.
 # 52/201 with pneumonia included.
 # Assume 20% infections are severe.
-rho <- 1/7
+rho <- 1 / 7
 # 0.62 = vH/(vH + rho)
 # <=> 0.62*(1/7) = vH*(1-0.62)
-vH <- 0.62*(1/7)/(1-0.62)
+vH <- 0.62 * (1 / 7) / (1 - 0.62)
 # 0.2*(52/201) = sigma/(v + gamma + sigma)
 # 0.2*(52/201)*(v + gamma) = sigma*(1 - 0.2*(52/201))
-sigma <- 0.2*(52/201)*(0.00238 + 1/13)/(1 - 0.2*(52/201))
+sigma <- 0.2 * (52 / 201) * (0.00238 + 1 / 13) / (1 - 0.2 * (52 / 201))
 pop.size <- 519716
 
 ### Server ----
@@ -86,8 +82,9 @@ server <- function(input, output) {
 
       parms <- c(a = a, m1 = input$m1/100, c = c, gamma = gamma,
                  v = v, H = H)
-      out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx=0, S = S0, I = I0, FS = 0, C=0), times = seq(mintime, maxtime, 1), SIR, parms)
-
+      out <- ode(y = c(Sx = S0, Ix = I0, Fx = 0, Cx = 0, S = S0, I = I0,
+      								 FS = 0, C = 0),
+      					 times = seq(mintime, maxtime, 1), SIR, parms)
     })
 
   output$SIR <- renderPlot({
@@ -144,7 +141,10 @@ server <- function(input, output) {
   dataSIHR <- reactive({
     parms <- c(a = a, m2 = input$m2/100, c = c, gamma = gamma,
                v = v, H2 = input$H2, rho = rho, vH = vH, sigma = sigma)
-    out <- ode(y = c(Sx = S0, Ix = I0, Hx1 = 0, Hx=0, Ux=0, Cx=0, S = S0, I = I0, H1 = 0, H0 = 0, U = 0, C=0, Hcum=0, Hcumx=0), times = seq(mintime, maxtime, 1), SIHR, parms)
+    out <- ode(y = c(Sx = S0, Ix = I0, Hx1 = 0, Hx = 0, Ux = 0, Cx = 0, S = S0,
+    								 I = I0, H1 = 0, H0 = 0, U = 0, C = 0, Hcum = 0, Hcumx = 0),
+    					 times = seq(mintime, maxtime, 1),
+    					 SIHR, parms)
   })
 
   output$SIHR <- renderPlot({
@@ -207,8 +207,8 @@ server <- function(input, output) {
   })
 
   dataNL <- reactive({
-  	# Added fill = TRUE based on an error generated.
-    data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv', fill=TRUE)[Province == 'NL']
+  	data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv',
+  										fill = TRUE)[Province == 'NL']
   })
 
   dataSEIR <- reactive({
@@ -222,11 +222,12 @@ server <- function(input, output) {
   	Days.Since = julian(New.Dates$month,New.Dates$day, New.Dates$year,  c(month = 3,day= 16,year = 2020))
   	today <- max(Days.Since)
 
-  	parms <- c(beta = input$R0*a1*(gamma1+v1)/(gamma1 + v1+a1), gamma1 = gamma1,
-  						 v1 = v1, a1=a1, today = today, beta1 = input$R01*a1*(gamma1+v1)/(gamma1 + v1+a1))
-  	I0 = 50/pop.size
-  	E0 = 2*I0
-  	out <- ode(y = c(S = 1-I0, E=E0, I = I0, C=I0), times = seq(11, maxtime, .5), SEIR, parms)
+  	parms <- c(beta = input$R0*a1 * (gamma1 + v1) / (gamma1 + v1 + a1), gamma1 = gamma1,
+  						 v1 = v1, a1 = a1, today = today,
+  						 beta1 = input$R01 * a1 * (gamma1 + v1) / (gamma1 + v1 + a1))
+  	I0 = 50 / pop.size
+  	E0 = 2 * I0
+  	out <- ode(y = c(S = 1 - I0, E = E0, I = I0, C = I0), times = seq(11, maxtime, .5), SEIR, parms)
 
   })
   dataSEIRnull <- reactive({
@@ -234,7 +235,7 @@ server <- function(input, output) {
   						 v1 = v1, a1=a1)
   	I0 = 50/pop.size
   	E0 = 2*I0
-  	outnull <- ode(y = c(S = 1-I0, E=E0, I = I0, C=I0), times = seq(11, maxtime, .5), SEIRnull, parmsnull)
+  	outnull <- ode(y = c(S = 1 - I0, E = E0, I = I0, C = I0), times = seq(11, maxtime, .5), SEIRnull, parmsnull)
   })
 
   output$scrapeTab <- renderTable({
