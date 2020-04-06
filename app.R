@@ -45,13 +45,15 @@ rawNL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Cana
 dataNL <- unique(rawNL)
 dataNL[, Date := as.IDate(Date)]
 dataNL[, jul := julian(Date)]
+dataNL[, daysSince := jul - min(jul)]
 
 dataNL[, positive := sum(presumptive_positive, confirmed_positive, na.rm = TRUE),
 			 by = seq.int(nrow(dataNL))]
-dataNL[, tests := sum(presumptive_positive, confirmed_positive, negative, na.rm = TRUE),
-			 by = seq.int(nrow(dataNL))]
 dataNL[, casesPerDay := positive - shift(positive)]
-dataNL[, daysSince := jul - min(jul)]
+
+dataNL[, testsdaily := total_testing - shift(total_testing)]
+
+
 
 # Parameters are taken from Bolker & Dushoff model
 gamma <- 1 / 13
