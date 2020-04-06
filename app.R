@@ -244,12 +244,19 @@ server <- function(input, output) {
 
   output$scrapePlot <- renderPlot({
     df <- data.frame(dataSEIR())
-    dfnull <-data.frame(dataSEIRnull())
+    dfnull <- data.frame(dataSEIRnull())
 
 
-    plot(Days.Since, NewCasesPerDay, pch=16, xlab = "", ylab = "new cases", bty="n", xlim = c(0,max(Days.Since)+10))
-    lines(tail(dfnull$time, -1), c(diff(dfnull$C)*pop.size),col='#a6cee3',lwd=4)
-    lines(tail(df$time, -1), diff(df$C)*pop.size, col='#b2df8a' ,lwd=4)
+    gnew <- ggplot(dataNL) +
+    	geom_point(aes(daysSince, casesPerDay)) +
+    	labs(x = "", y = "New Cases") +
+    	geom_line(aes(time, (C - shift(C)) * pop.size), data = df) +
+    	geom_line(aes(time, (C - shift(C)) * pop.size), data = dfnull) +
+    	coord_cartesian(xlim = c(0, max(dataNL$daysSince, na.rm = TRUE) + 10),  ylim = c(0, max(dataNL$casesPerDay, na.rm = TRUE) + 10)) +
+    	geom_vline(aes(xintercept = 11), color = 'grey', alpha = 0.9)
+
+
+
 
    plot(dfnull$time, dfnull$C*pop.size/1000, typ="l", ylab = "cumulative cases (in thousands)", xlab = "", las=1, lwd = 4, col='#a6cee3', bty="n")
    	lines(df$time, df$C*pop.size/1000, col='#b2df8a',lwd=4)
