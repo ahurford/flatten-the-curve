@@ -42,6 +42,7 @@ rawNL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Cana
 										fill = TRUE)[Province == 'NL']
 # TODO: open PR to rm duplicated row
 dataNL <- unique(rawNL)
+dataNL[, Date := as.IDate(Date)]
 
 # Parameters are taken from Bolker & Dushoff model
 gamma <- 1 / 13
