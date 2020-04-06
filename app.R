@@ -48,6 +48,8 @@ dataNL[, jul := julian(Date)]
 
 dataNL[, positive := sum(presumptive_positive, confirmed_positive, na.rm = TRUE),
 			 by = seq.int(nrow(dataNL))]
+dataNL[, tests := sum(presumptive_positive, confirmed_positive, negative, na.rm = TRUE),
+			 by = seq.int(nrow(dataNL))]
 dataNL[, casesPerDay := positive - shift(positive)]
 dataNL[, daysSince := jul - min(jul)]
 
