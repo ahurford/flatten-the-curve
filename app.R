@@ -43,6 +43,8 @@ rawNL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Cana
 # TODO: open PR to rm duplicated row
 dataNL <- unique(rawNL)
 dataNL[, Date := as.IDate(Date)]
+dataNL[, positive := sum(presumptive_positive, confirmed_positive, na.rm = TRUE),
+			 by=seq.int(nrow(dataNL))]
 
 # Parameters are taken from Bolker & Dushoff model
 gamma <- 1 / 13
