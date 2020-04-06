@@ -250,28 +250,37 @@ server <- function(input, output) {
     df <- data.frame(dataSEIR())
     dfnull <- data.frame(dataSEIRnull())
 
-
     gnew <- ggplot(dataNL) +
     	geom_point(aes(daysSince, casesPerDay)) +
-    	labs(x = "", y = "New Cases") +
-    	geom_line(aes(time, (C - shift(C)) * pop.size), data = df) +
-    	geom_line(aes(time, (C - shift(C)) * pop.size), data = dfnull) +
+    	labs(x = "", y = "New cases") +
+    	geom_line(aes(time, (C - shift(C)) * pop.size, color = 'With social distancing'), show.legend = TRUE, data = df) +
+    	geom_line(aes(time, (C - shift(C)) * pop.size, color = 'No changes implemented'), show.legend = TRUE, data = dfnull) +
     	coord_cartesian(xlim = c(0, max(dataNL$daysSince, na.rm = TRUE) + 10),  ylim = c(0, max(dataNL$casesPerDay, na.rm = TRUE) + 10)) +
     	geom_vline(aes(xintercept = 11), color = 'grey', alpha = 0.9)
 
     gcumu <- ggplot(dataNL) +
     	geom_line(aes(daysSince, positive / 1000), size = 1.5) +
     	labs(x = "", y = "Cumulative cases (in thousands)") +
-    	geom_line(aes(time, C * pop.size / 1000), data = df) +
-    	geom_line(aes(time, C * pop.size / 1000), data = dfnull)
+    	geom_line(aes(time, C * pop.size / 1000, color = 'With social distancing'), show.legend = TRUE, data = df) +
+    	geom_line(aes(time, C * pop.size / 1000, color = 'No changes implemented'), show.legend = TRUE, data = dfnull)
+
+    gtests <- ggplot(dataNL) +
+    	geom_point(aes(Date, testsdaily)) +
+    	labs(x = NULL, y = "Daily tests reported")
+
+    (gnew /
+    		gcumu /
+    		gtests &
+    		scale_fill_manual(values = cols) &
+    		scale_color_manual(values = cols) &
+    		guides(color = FALSE, fill = FALSE)) /
+    	plot_layout(heights = c(5, 5, 5))
 
     #plot(tail(df$time, -1), c(diff(df$C)*pop.size), typ="l", ylab = "new cases",las=1, xlab = "days since first case on March 16", lwd=4, col='#b2df8a', xlim = c(0, max(Days.Since)+10),ylim = c(0,35))
   #ylim =c(0,max(diff(df$C)*pop.size, diff(dfnull$C)*pop.size)
 
     #points(tail(NLData$presumptive_positive+NLData$confirmed_positive, -1) - head(NLData$presumptive_positive+NLData$confirmed_positive, -1))
-		gtests <- ggplot(dataNL) +
-			geom_point(aes(Date, testsdaily)) +
-			labs(x = NULL, y = "Daily tests reported")
+
 
     # t <-seq(11,100, .1)
     # lambda <- 1
