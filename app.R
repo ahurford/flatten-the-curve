@@ -255,7 +255,11 @@ server <- function(input, output) {
     	coord_cartesian(xlim = c(0, max(dataNL$daysSince, na.rm = TRUE) + 10),  ylim = c(0, max(dataNL$casesPerDay, na.rm = TRUE) + 10)) +
     	geom_vline(aes(xintercept = 11), color = 'grey', alpha = 0.9)
 
-
+    gcumu <- ggplot(dataNL) +
+    	geom_line(aes(daysSince, positive / 1000), size = 1.5) +
+    	labs(x = "", y = "Cumulative cases (in thousands)") +
+    	geom_line(aes(time, C * pop.size / 1000), data = df) +
+    	geom_line(aes(time, C * pop.size / 1000), data = dfnull)
 
 
    plot(dfnull$time, dfnull$C*pop.size/1000, typ="l", ylab = "cumulative cases (in thousands)", xlab = "", las=1, lwd = 4, col='#a6cee3', bty="n")
