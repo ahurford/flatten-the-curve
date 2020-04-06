@@ -265,17 +265,13 @@ server <- function(input, output) {
     	geom_line(aes(time, C * pop.size / 1000), data = df) +
     	geom_line(aes(time, C * pop.size / 1000), data = dfnull)
 
-
-   plot(dfnull$time, dfnull$C*pop.size/1000, typ="l", ylab = "cumulative cases (in thousands)", xlab = "", las=1, lwd = 4, col='#a6cee3', bty="n")
-   	lines(df$time, df$C*pop.size/1000, col='#b2df8a',lwd=4)
-    points(Days.Since,(NLData$presumptive_positive+NLData$confirmed_positive)/1000, pch = 16)
-
     #plot(tail(df$time, -1), c(diff(df$C)*pop.size), typ="l", ylab = "new cases",las=1, xlab = "days since first case on March 16", lwd=4, col='#b2df8a', xlim = c(0, max(Days.Since)+10),ylim = c(0,35))
   #ylim =c(0,max(diff(df$C)*pop.size, diff(dfnull$C)*pop.size)
 
     #points(tail(NLData$presumptive_positive+NLData$confirmed_positive, -1) - head(NLData$presumptive_positive+NLData$confirmed_positive, -1))
-    Tests = NLData$negative+NLData$presumptive_positive+NLData$confirmed_positive
-    plot(tail(Days.Since, -1), tail(Tests, -1) - head(Tests, -1), ylab = "Daily tests reported", xlab = "Days since March 16", pch=16, bty="n")
+		gtests <- ggplot(dataNL) +
+			geom_point(aes(Date, testsdaily)) +
+			labs(x = NULL, y = "Daily tests reported")
 
     # t <-seq(11,100, .1)
     # lambda <- 1
