@@ -1,0 +1,17 @@
+Package: MathBehindFlattenTheCurve
+Title: The math behind flatten the curve
+Version: 0.0.1.9000
+Authors@R: 
+    c(person(given = "Amy",
+             family = "Hurford",
+             role = "aut"),
+     person(given = "Alec L.",
+             family = "Robitaille",
+             role = c("aut", "cre"),
+             email = "robit.alec@gmail.com",
+             comment = c(ORCID = "0000-0002-4706-1762")))
+Description: Package wrapping Shiny app "The math behind flatten the curve". 
+Depends: R
+License: GPL-3 | file LICENSE
+Encoding: UTF-8
+URL: https://github.com/ahurford/flatten-the-curve, https://ahurford.shinyapps.io/flatten-the-curve/
