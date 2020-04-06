@@ -38,17 +38,17 @@ source('R/SEIR.R')
 
 
 ### Global variables ----
+# NL
 rawNL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv',
 										fill = TRUE)[Province == 'NL']
 # TODO: open PR to rm duplicated row
 dataNL <- unique(rawNL)
 dataNL[, Date := as.IDate(Date)]
-dataNL[, positive := sum(presumptive_positive, confirmed_positive, na.rm = TRUE),
-			 by = seq.int(nrow(dataNL))]
 dataNL[, jul := julian(Date)]
 
-Days.Since <- dataNL$jul - min(dataNL$jul)
-today <- max(Days.Since)
+dataNL[, positive := sum(presumptive_positive, confirmed_positive, na.rm = TRUE),
+			 by = seq.int(nrow(dataNL))]
+dataNL[, casesPerDay := positive - shift(positive)]
 
 # Parameters are taken from Bolker & Dushoff model
 gamma <- 1 / 13
