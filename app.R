@@ -237,27 +237,17 @@ server <- function(input, output) {
 
   output$scrapeTab <- renderTable({
   	# The 9th observation is repeated: remove
-    dataNL()[-9, .(Province, "Date" = rev(Date), "confirmed positive" = rev(confirmed_positive),"negative" = rev(negative), "presumptive positive"=rev(presumptive_positive))]
+  	dataNL[order(-Date), .(Province,
+  												 Date,
+  												 positive = confirmed_positive + presumptive_positive,
+  												 rowSums(c(confirmed_positive,presumptive_positive), na.rm = TRUE),
+  												 negative,
+  												 confirmed_positive,
+  												 presumptive_positive)] %>% View
   })
 
   output$scrapePlot <- renderPlot({
-    invalidateLater(24 * 60 * 60 * 1000)
-    NLData <- dataNL()
-    NLData <-NLData[-9,]
-    New.Dates = data.frame(date = NLData$Date, stringsAsFactors = FALSE)
-    # This %>% is from the tidyr package
-    New.Dates = New.Dates %>% separate(date, sep="-", into = c("year", "month", "day"))
-    New.Dates$day = as.numeric(New.Dates$day)
-    New.Dates$month = as.numeric(New.Dates$month)
-    New.Dates$year = as.numeric(New.Dates$year)
-		Days.Since = julian(New.Dates$month,New.Dates$day, New.Dates$year,  c(month = 3,day= 16,year = 2020))
-		# Replace "NA" with 0 for comfirmed and presumptive cases.
-		NLData$presumptive_positive[is.na(NLData$presumptive_positive)] <- 0
-		NLData$confirmed_positive[is.na(NLData$confirmed_positive)] <- 0
-		TotalCases = NLData$presumptive_positive+NLData$confirmed_positive
-		NewCases = TotalCases-c(0,head(TotalCases,-1))
-		DaysBetween = c(1,tail(Days.Since,-1)-head(Days.Since,-1))
-		NewCasesPerDay = NewCases/DaysBetween
+
 
 
 		par(mfrow = c(3,1), mar=c(4,4,1,1))
