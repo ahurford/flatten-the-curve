@@ -44,7 +44,11 @@ rawNL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Cana
 dataNL <- unique(rawNL)
 dataNL[, Date := as.IDate(Date)]
 dataNL[, positive := sum(presumptive_positive, confirmed_positive, na.rm = TRUE),
-			 by=seq.int(nrow(dataNL))]
+			 by = seq.int(nrow(dataNL))]
+dataNL[, jul := julian(Date)]
+
+Days.Since <- dataNL$jul - min(dataNL$jul)
+today <- max(Days.Since)
 
 # Parameters are taken from Bolker & Dushoff model
 gamma <- 1 / 13
@@ -215,16 +219,6 @@ server <- function(input, output) {
   })
 
   dataSEIR <- reactive({
-  	NLData <- dataNL()
-  	New.Dates = data.frame(date = NLData$Date, stringsAsFactors = FALSE)
-  	# This %>% is from the tidyr package
-  	New.Dates = New.Dates %>% separate(date, sep="-", into = c("year", "month", "day"))
-  	New.Dates$day = as.numeric(New.Dates$day)
-  	New.Dates$month = as.numeric(New.Dates$month)
-  	New.Dates$year = as.numeric(New.Dates$year)
-  	Days.Since = julian(New.Dates$month,New.Dates$day, New.Dates$year,  c(month = 3,day= 16,year = 2020))
-  	today <- max(Days.Since)
-
   	parms <- c(beta = input$R0*a1 * (gamma1 + v1) / (gamma1 + v1 + a1), gamma1 = gamma1,
   						 v1 = v1, a1 = a1, today = today,
   						 beta1 = input$R01 * a1 * (gamma1 + v1) / (gamma1 + v1 + a1))
