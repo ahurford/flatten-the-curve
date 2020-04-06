@@ -38,6 +38,11 @@ source('R/SEIR.R')
 
 
 ### Global variables ----
+rawNL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv',
+										fill = TRUE)[Province == 'NL']
+# TODO: open PR to rm duplicated row
+dataNL <- unique(rawNL)
+
 # Parameters are taken from Bolker & Dushoff model
 gamma <- 1 / 13
 chi <- 0.03
@@ -204,11 +209,6 @@ server <- function(input, output) {
         "Final infected (%)" = c(final.cases.x, final.cases),
         check.names = FALSE
       )
-  })
-
-  dataNL <- reactive({
-  	data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv',
-  										fill = TRUE)[Province == 'NL']
   })
 
   dataSEIR <- reactive({
