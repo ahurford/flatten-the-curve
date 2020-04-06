@@ -1,6 +1,11 @@
 ### The math behind flatten the curve ===
 # by Amy Hurford and Alec Robitaille (Memorial University)
 
+# TODO: split ui and server
+# TODO: load packages only once
+# TODO: sort unrelated scripts
+# TODO: one column
+
 ### Packages ----
 library(deSolve)
 library(shiny)
