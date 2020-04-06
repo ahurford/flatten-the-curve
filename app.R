@@ -237,22 +237,12 @@ server <- function(input, output) {
   })
 
   output$scrapeTab <- renderTable({
-  	# The 9th observation is repeated: remove
-  	dataNL[order(-Date), .(Province,
-  												 Date,
-  												 positive = confirmed_positive + presumptive_positive,
-  												 rowSums(c(confirmed_positive,presumptive_positive), na.rm = TRUE),
-  												 negative,
-  												 confirmed_positive,
-  												 presumptive_positive)] %>% View
+  	dataNL[order(-Date), .(Date,
+  												 positive,
+  												 negative)]
   })
 
   output$scrapePlot <- renderPlot({
-
-
-
-		par(mfrow = c(3,1), mar=c(4,4,1,1))
-
     df <- data.frame(dataSEIR())
     dfnull <-data.frame(dataSEIRnull())
 
