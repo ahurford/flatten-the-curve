@@ -39,10 +39,9 @@ source('R/SEIR.R')
 
 ### Global variables ----
 # NL
-rawNL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv',
+dataNL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID19_Canada.csv',
 										fill = TRUE)[Province == 'NL']
 # TODO: open PR to rm duplicated row
-dataNL <- unique(rawNL)
 dataNL[, Date := as.IDate(Date)]
 dataNL[, jul := julian(Date)]
 dataNL[, daysSince := jul - min(jul)]
