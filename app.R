@@ -53,7 +53,7 @@ dataNL[, casesPerDay := positive - shift(positive)]
 
 dataNL[, testsdaily := total_testing - shift(total_testing)]
 
-
+today <- dataNL[, max(daysSince)]
 
 # Parameters are taken from Bolker & Dushoff model
 gamma <- 1 / 13
