@@ -1,4 +1,4 @@
-rm(list=ls()) 
+rm(list=ls())
 # Code to be embedded in the app
 
 library(deSolve)
@@ -6,7 +6,7 @@ library(bbmle)
 library(chron)
 library(tidyr)
 
-NLData <-data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv')[
+NLData <-data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID-19_test.csv', fill="TRUE")[
   Province == 'NL']
 
 julian(3,1,2020)
@@ -36,7 +36,7 @@ nLL = function(beta){
   maxtime <- 250
   out <- ode(y = c(S = S0, I = I0, FS = 0, C=0), times = seq(mintime, maxtime, 1), SIR.fit, parms)
   df <- data.frame(out)
- 
+
   Model.pred=NULL
   # Extract the model predictions corresponding to the times
   # in the data
@@ -89,4 +89,4 @@ lines(df.lower$time, df.upper$I, lty=2)
 
 # The last plot needs to be of
 # time of the release of the last data vs.
-# the new for this new data beta.est with 95% CIs 
+# the new for this new data beta.est with 95% CIs
