@@ -239,7 +239,7 @@ server <- function(input, output) {
   })
 
   output$scrapeTab <- renderTable({
-  	dataNL[order(-Date), .(Date,
+  	dataNL[order(-Date), .(Date = as.character(Date),
   												 positive,
   												 negative)]
   })
