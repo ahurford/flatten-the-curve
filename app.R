@@ -41,7 +41,6 @@ source('R/SEIR.R')
 # NL
 dataNL <- data.table::fread('https://raw.githubusercontent.com/wzmli/COVID19-Canada/master/COVID19_Canada.csv',
 										fill = TRUE)[Province == 'NL']
-# TODO: open PR to rm duplicated row
 dataNL[, Date := as.IDate(Date)]
 dataNL[, jul := julian(Date)]
 dataNL[, daysSince := jul - min(jul)]
