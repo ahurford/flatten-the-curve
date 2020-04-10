@@ -252,8 +252,8 @@ server <- function(input, output) {
     gnew <- ggplot(dataNL) +
     	geom_point(aes(daysSince, casesPerDay)) +
     	labs(x = "", y = "New cases") +
-    	geom_line(aes(time, (C - shift(C)) * pop.size, color = 'With social distancing'), show.legend = TRUE, data = df) +
-    	geom_line(aes(time, (C - shift(C)) * pop.size, color = 'No changes implemented'), show.legend = TRUE, data = dfnull) +
+    	#geom_line(aes(time, (C - shift(C)) * pop.size, color = 'With social distancing'), show.legend = TRUE, data = df) +
+    	#geom_line(aes(time, (C - shift(C)) * pop.size, color = 'No changes implemented'), show.legend = TRUE, data = dfnull) +
     	coord_cartesian(xlim = c(0, max(dataNL$daysSince, na.rm = TRUE) + 10),  ylim = c(0, max(dataNL$casesPerDay, na.rm = TRUE) + 10)) +
     	geom_vline(aes(xintercept = 11), color = 'grey', alpha = 0.9)
 
@@ -267,8 +267,8 @@ server <- function(input, output) {
     	geom_point(aes(Date, testsdaily)) +
     	labs(x = NULL, y = "Daily tests reported")
 
-    (gnew /
-    		gcumu /
+    (gcumu /
+    		gnew /
     		gtests &
     		scale_fill_manual(values = cols) &
     		scale_color_manual(values = cols) &
@@ -419,7 +419,7 @@ ui <- fluidPage(title = "The math behind flatten the curve",
                              p("The top panel on the right shows the percentage of the population that is infected at a
                                given time, while the middle panel shows the percentage of the population that
                               requires critical care. Note that both graphs have nearly the same shape, but that
-                              the percentage of people requiring critical care at anytime is much smaller (<0.3% of the population).
+                              the percentage of people requiring critical care at any time is much smaller (<0.3% of the population).
                                "),
                              p("In terms of what you can 'flatten', as the average citizen it is unlikely that you will require
                                critical care, so you can flatten the infections curve (the top panel). However, a consequence
@@ -500,10 +500,10 @@ ui <- fluidPage(title = "The math behind flatten the curve",
              column(7,
              			 # Slider input: social distancing
              			 sliderInput("R0", "R0 past ---------- shift the slider to achieve agreement of the curve with the reported cases (black dots)",
-             			 						min = 1, max =3.5, step = .01, value = 2,
+             			 						min = 1, max =3, step = .01, value = 2,
              			 						width = '100%'),
              			 sliderInput("R01", "R0 future ---------- shift the slider to consider a different future scenario",
-             			 						min = 1, max = 3.5, step = .01, value = 1.5,
+             			 						min = 1, max = 3, step = .01, value = 1.5,
              			 						width = '100%'),
              			 helpText("R0 is the average number of people that are infected per one infected person, when most other people are susceptible.
              			 				 R0 past: considers March 27 (day 11 since the first case) to today. R0 future: considers from today, forward."),
